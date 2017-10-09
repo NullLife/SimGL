@@ -35,7 +35,7 @@ public:
     virtual void unlock();
     
     virtual const GLuint getBufferId() const = 0;
-    virtual void writeData(size_t start, size_t length, const void* source) = 0;
+    virtual void writeData(size_t start, size_t length, const void* source);
     
 protected:
     virtual void* _lockImpl(size_t start, size_t length) = 0;

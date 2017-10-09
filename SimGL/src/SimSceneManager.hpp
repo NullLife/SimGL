@@ -63,27 +63,24 @@ public:
 
     Model *createModel(const String &name, const String& material);
 
-    Model *createModel(MeshManager::MeshPtr mesh);
+    Model *createModel(Mesh* mesh);
 
     void updateScene();
 
 private:
     void _processRenderQueue();
-
     void _render();
-
     void _clearRenderQueue();
-    
     void _renderScene();
-
     void _renderSingleObject(Renderable *rend, Pass* pass);
     
+    void _updateBillboard(Node* billboard, Camera* camera);
     
     String mName;
     
     SceneNode* mSkyBoxNode;
-    
     SceneNode *mRootNode;
+    Mat4 mBillboardMatrix;
     
     NodeMap mNodeMap;
     

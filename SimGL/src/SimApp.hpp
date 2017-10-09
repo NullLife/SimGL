@@ -29,7 +29,8 @@
 #include "SimPass.hpp"
 #include "SimTexture.hpp"
 
-class App : public KeyEvent, public MouseEvent {
+class App : public KeyEvent, public MouseEvent
+{
 public:
     App(const String& name, int width = 800, int height = 600);
     virtual ~App();

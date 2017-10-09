@@ -149,7 +149,9 @@ enum ShaderConstantContent
     SCC_SURFACE_DIFFUSE_COLOR,
     SCC_SURFACE_SPECULAR_COLOR,
     SCC_SURFACE_EMISSIVE_COLOR,
-    SCC_SURFACE_SHININESS
+    SCC_SURFACE_SHININESS,
+    
+    SCC_TIME
 };
 
 /** Define constant for shader.
@@ -326,8 +328,6 @@ private:
     FloatConstantList _floatConstants;
     DoubleConstantList _doubleConstants;
     IntConstantList _intConstants;
-
-    ParamNameIndices mParamNameIndices;
     
 public:
     // Get shader parameter list.
@@ -363,10 +363,6 @@ public:
     int* getIntPointer(size_t pos);
     
     double* getDoublePointer(size_t pos);
-
-    void _writeMatrix4fOld(GLProgram* program, const String& name, Mat4& matrix);
-
-    void _writeIntOld(GLProgram* program, const String& name, int value);
 };
 
 #endif /* SimGLShaderParams_hpp */

@@ -29,12 +29,18 @@ HardwareBuffer::HardwareBuffer(Usage usage) :
     _lockStart(0),
     _lockSize(0)
 {
-    
 }
 
 HardwareBuffer::~HardwareBuffer()
 {
-    
+}
+
+void HardwareBuffer::writeData(size_t start, size_t length, const void *source)
+{
+    unsigned char *dst = static_cast<unsigned char *>(lock(start, length));
+    dst += start;
+    std::memcpy(dst, source, length);
+    unlock();
 }
 
 bool HardwareBuffer::isLocked() const

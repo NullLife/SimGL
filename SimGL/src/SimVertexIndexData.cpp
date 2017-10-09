@@ -9,23 +9,28 @@
 #include "SimHardwareIndexBuffer.hpp"
 
 VertexElement::VertexElement(const VertexElementSemantic semantic, const VertexElementType type) :
-        mSemantic(semantic),
-        mType(type) {
+    mSemantic(semantic),
+    mType(type)
+{
 }
 
-VertexElement::~VertexElement() {
+VertexElement::~VertexElement()
+{
     LogManager::getSingleton().debug("Delete VertexElement", std::to_string((long)this) + " semantic: " + std::to_string(mSemantic));
 }
 
-const VertexElementSemantic VertexElement::getVertexElementSemantic() const {
+const VertexElementSemantic VertexElement::getVertexElementSemantic() const
+{
     return mSemantic;
 }
 
-VertexElementType VertexElement::getVertexElementType() const {
+VertexElementType VertexElement::getVertexElementType() const
+{
     return mType;
 }
 
-size_t VertexElement::getVertexElementOffset(const VertexElementType type) {
+size_t VertexElement::getVertexElementOffset(const VertexElementType type)
+{
     size_t offset = 0;
     switch (type) {
         case VET_FLOAT3:
@@ -43,9 +48,11 @@ size_t VertexElement::getVertexElementOffset(const VertexElementType type) {
     return offset;
 }
 
-size_t VertexElement::getVertexElementComponentCount(const VertexElementType type) {
+size_t VertexElement::getVertexElementComponentCount(const VertexElementType type)
+{
     size_t offset = 0;
-    switch (type) {
+    switch (type)
+    {
         case VET_FLOAT3:
             offset = 3;
             break;
@@ -64,28 +71,37 @@ size_t VertexElement::getVertexElementComponentCount(const VertexElementType typ
 ////////////////////////////////////////////////
 
 VertexDataDeclare::VertexDataDeclare() :
-        mStride(0),
-        mNumber(0),
-        mComponentCount(0) {
+    mStride(0),
+    mNumber(0),
+    mComponentCount(0)
+{
 }
 
-VertexDataDeclare::~VertexDataDeclare() {
-    for (int i=0; i<mEles.size(); ++i) {
-        delete mEles[i];
+VertexDataDeclare::~VertexDataDeclare()
+{
+    LogManager::getSingleton().debug("Delete VertexDataDeclare");
+    VertexElements::iterator iter = mEles.begin();
+    VertexElements::const_iterator enditer = mEles.end();
+    for (; iter != enditer; ++iter)
+    {
+        delete *iter;
     }
     mEles.clear();
     mEles.shrink_to_fit();
-    LogManager::getSingleton().debug("Delete VertexDataDeclare");
 }
 
-const VertexDataDeclare::VertexElements & VertexDataDeclare::getVertexElements() const {
+const VertexDataDeclare::VertexElements & VertexDataDeclare::getVertexElements() const
+{
     return mEles;
 }
 
-void VertexDataDeclare::addElement(VertexElement* ele) {
+void VertexDataDeclare::addElement(VertexElement* ele)
+{
     auto it = mEles.begin();
-    while (it != mEles.end()) {
-        if ((*it)->getVertexElementSemantic() == ele->getVertexElementSemantic()) {
+    while (it != mEles.end())
+    {
+        if ((*it)->getVertexElementSemantic() == ele->getVertexElementSemantic())
+        {
             LogManager::getSingleton().debug("VertexDataDeclare::addElement", "A vertex semantic was declared twice!");
             return;
         }
@@ -97,38 +113,44 @@ void VertexDataDeclare::addElement(VertexElement* ele) {
     mComponentCount += VertexElement::getVertexElementComponentCount(ele->getVertexElementType());
 }
 
-const size_t &VertexDataDeclare::getNumber() const {
+const size_t &VertexDataDeclare::getNumber() const
+{
     return mNumber;
 }
 
-const size_t &VertexDataDeclare::getStride() const {
+const size_t &VertexDataDeclare::getStride() const
+{
     return mStride;
 }
 
-const int VertexDataDeclare::getComponentCount() const {
+const int VertexDataDeclare::getComponentCount() const
+{
     return mComponentCount;
 }
 
 ////////////////////////////////////////////////
 
 VertexData::VertexData(VertexDataDeclare* dataDeclaration) :
-        mDeclaration(dataDeclaration),
-        mVerBuffer(nullptr) {
-
+    mDeclaration(dataDeclaration),
+    mVerBuffer(nullptr),
+    _isBinded(false)
+{
 }
 
-VertexData::~VertexData() {
-    if (mDeclaration) {
+VertexData::~VertexData()
+{
+    LogManager::getSingleton().debug("Delete VertexData", "vertex number: " + std::to_string(mVerBuffer->getNumVertices()));
+    if (mDeclaration)
+    {
         delete mDeclaration;
         mDeclaration = nullptr;
     }
     
-    if (mVerBuffer) {
+    if (mVerBuffer)
+    {
         delete mVerBuffer;
         mVerBuffer = nullptr;
     }
-    
-    LogManager::getSingleton().debug("Delete VertexData", "vertex number");
 }
 
 void VertexData::initBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage)
@@ -139,15 +161,18 @@ void VertexData::initBuffer(size_t vertexSize, size_t numVertices, HardwareBuffe
 ///////////////////////////////////////////////
 
 IndexData::IndexData() :
-        mIdxBuffer(nullptr) {
+    mIdxBuffer(nullptr)
+{
 }
 
-IndexData::~IndexData() {
-    if (mIdxBuffer) {
+IndexData::~IndexData()
+{
+    LogManager::getSingleton().debug("Delete VertexIndexData", "indices number: " + std::to_string(mIdxBuffer->getNumIndices()));
+    if (mIdxBuffer)
+    {
         delete mIdxBuffer;
         mIdxBuffer = nullptr;
     }
-    LogManager::getSingleton().debug("Delete VertexIndexData", "indices number");
 }
 
 void IndexData::initBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndices, HardwareBuffer::Usage usage)

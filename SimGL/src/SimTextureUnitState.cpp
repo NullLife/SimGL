@@ -34,7 +34,7 @@ TextureUnitState::TextureUnitState(Pass* parent) :
     _texAlias(""),       // 正常的纹理贴图
     _minFilter(FO_LINEAR),
     _magFilter(FO_LINEAR),
-    _mipFilter(FO_LINEAR),
+    _mipFilter(FO_NONE),
     _textureMipmaps(0)   // 不需要产生Mipmap
 {
     _wrapMode.u = TWM_CLAMP;
@@ -54,6 +54,11 @@ Pass* TextureUnitState::getParent()
 bool TextureUnitState::is2DTexture() const
 {
     return _texture->getType() == Texture::TEX_TYPE_2D;
+}
+
+bool TextureUnitState::isCubicTexture() const
+{
+    return _texture->getType() == Texture::TEX_TYPE_CUBIC;
 }
 
 void TextureUnitState::setTexture(const String& name, const Texture::TextureType type)
@@ -217,15 +222,11 @@ bool TextureUnitState::_loadTexture(GLenum pixelDataType, GLenum pixelFormat, GL
     switch (_texture->getType())
     {
         case Texture::TEX_TYPE_2D:
-        {
             ret = _load2DTex(_texName, pixelDataType, pixelFormat, pixelComponent);
-        }
             break;
             
         case Texture::TEX_TYPE_CUBIC:
-        {
             ret = _loadCubicTex(_texName, pixelDataType, pixelFormat, pixelComponent);
-        }
             break;
             
         default:
@@ -234,34 +235,24 @@ bool TextureUnitState::_loadTexture(GLenum pixelDataType, GLenum pixelFormat, GL
     
     if (ret)
     {
-        // 标记已加载成功。
+        // Marking it for being loaded.
         _texture->markLoaded();
     }
-    
-//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-    
-//    glBindTexture(GL_TEXTURE_2D, 0);
     return ret;
 }
 
 bool TextureUnitState::_load2DTex(const std::string& filePath, GLenum pixelDataType, GLenum pixelFormat, GLint pixelComponent)
 {
+    // Bind texture.
+    glBindTexture(GL_TEXTURE_2D, _texture->getId());
+    
     // Read image data.
     int width, height, channels;
     unsigned char *data = readImage(filePath, &width, &height, &channels, SOIL_LOAD_RGBA);
-    
     if (data == NULL)
-    {
         return false;
-    }
     
     // Set texture content.
-    glBindTexture(GL_TEXTURE_2D, _texture->getId());
     glTexImage2D(GL_TEXTURE_2D, 0, pixelComponent, width, height, 0, pixelFormat, pixelDataType, data);
     
     // Free image.
@@ -276,8 +267,25 @@ bool TextureUnitState::_load2DTex(const std::string& filePath, GLenum pixelDataT
 
 bool TextureUnitState::_loadCubicTex(const String& texName, GLenum pixelDataType, GLenum pixelFormat, GLint pixelComponent)
 {
-    //...
     glBindTexture(GL_TEXTURE_CUBE_MAP, _texture->getId());
+    
+    // Read image data.
+    int width, height, channels;
+    Vector<String> names;
+    StringUtils::split(names, texName, ",");
+
+    for (int i=0; i<names.size(); ++i)
+    {
+        unsigned char *data = readImage(names[i], &width, &height, &channels, SOIL_LOAD_RGBA);
+        
+        if (data == NULL)
+            return false;
+        
+        // POSITIVE_X, NEGATIVE_X, POSITIVE_Y, NEGATIVE_Y, POSITIVE_Z, NEGATIVE_Z
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, pixelComponent, width, height, 0, pixelFormat, pixelDataType, data);
+        
+        SOIL_free_image_data(data);
+    }
     
     return true;
 }

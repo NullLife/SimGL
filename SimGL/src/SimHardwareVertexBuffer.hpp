@@ -11,7 +11,8 @@
 
 #include "SimHardwareBuffer.hpp"
 
-class HardwareVertexBuffer : public HardwareBuffer {
+class HardwareVertexBuffer : public HardwareBuffer
+{
 public:
     HardwareVertexBuffer(size_t vertexSize, size_t numVertices, Usage usage);
     ~HardwareVertexBuffer();
@@ -23,8 +24,6 @@ public:
     size_t getNumVertices() const;
     
     const GLuint getBufferId() const { return _bufferId; }
-    
-    void writeData(size_t start, size_t length, const void* source);
     
 private:
     void* _lockImpl(size_t start, size_t length);

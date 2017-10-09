@@ -6,99 +6,104 @@
 #include "SimTransform.hpp"
 
 Transform::Transform() :
-        mNeedUpdate(true),
-        mPos(Vec3(0.0f)),
-        mDistance(0.0f),
-        mScaleX(1.0f), mScaleY(1.0f), mScaleZ(1.0f),
-        mRotateX(0.0f), mRotateY(0.0f), mRotateZ(0.0f),
-        mMatrix(Mat4(1.0f)) {
-
+    _needUpdateMatrix(true),
+    _pos(Vec3(0.0f)),
+    _scale(Vec3(1.0f)),
+    _orientation(0, 0, 0, 1),
+    _pitch(0), _yaw(0), _roll(0),
+    _trans(Vec3(0, 0, 0)),
+    _modelMatrix(Mat4(1.0f))
+{
 }
 
-Transform::~Transform() {
+Transform::~Transform()
+{
     LogManager::getSingleton().debug("delete Transform");
 }
 
-void Transform::moveTo(const Vec3 &targetPos) {
-    mDistance = targetPos - mPos;
-    mPos = targetPos;
+void Transform::setPosition(const Vec3& pos)
+{
+    _pos = pos;
+    _needUpdateMatrix = true;
+}
+
+const Vec3 &Transform::getPosition()
+{
+    return _pos;
+}
+
+void Transform::translate(float dx, float dy, float dz)
+{
+    _trans = Vec3(dx, dy, dz);
     
-    // translate
-    mMatrix = glm::translate(mMatrix, mDistance);
-    mDistance = Vec3(0.0f);
+    _needUpdateMatrix = true;
 }
 
-void Transform::move(const Vec3& distance) {
-    mDistance = distance;
-    mPos += distance;
-    mNeedUpdate = true;
+
+void Transform::pitch(float rad)
+{
+    rotate(X_AXIS, rad);
+}
+
+void Transform::yaw(float rad)
+{
+    rotate(Y_AXIS, rad);
+}
+
+void Transform::roll(float rad)
+{
+    rotate(Z_AXIS, rad);
+}
+
+void Transform::rotate (Quat quat)
+{
+    _orientation = quat * _orientation;
+    _orientation = glm::normalize(_orientation);
+
+    _needUpdateMatrix = true;
     
-    // translate
-    mMatrix = glm::translate(mMatrix, mDistance);
-    mDistance = Vec3(0.0f);
 }
 
-void Transform::rotateX(const float angle) {
-    mRotateX = angle;
-    mMatrix = glm::rotate(mMatrix, mRotateX, X_AXIS);
-    mNeedUpdate = true;
+void Transform::rotate(Vec3 axis, float rad)
+{
+    axis = glm::normalize(axis);
+    Quat q(rad, axis);
+    q = glm::normalize(q);
+    rotate(q);
 }
 
-void Transform::rotateY(const float angle) {
-    mRotateY = angle;
-    mMatrix = glm::rotate(mMatrix, mRotateY, Y_AXIS);
-    mNeedUpdate = true;
+void Transform::scale(const Vec3& scaleF)
+{
+    _scale = scaleF;
+    _needUpdateMatrix = true;
 }
 
-void Transform::rotateZ(const float angle) {
-    mRotateZ = angle;
-    mMatrix = glm::rotate(mMatrix, mRotateZ, Z_AXIS);
-    mNeedUpdate = true;
+const Mat4 &Transform::getModelMatrix()
+{
+    update();
+    return _modelMatrix;
 }
 
-void Transform::scaleX(const float factor) {
-    mScaleX = factor;
-    mNeedUpdate = true;
-}
-
-void Transform::scaleY(const float factor) {
-    mScaleY = factor;
-    mNeedUpdate = true;
-}
-
-void Transform::scaleZ(const float factor) {
-    mScaleZ = factor;
-    mNeedUpdate = true;
-}
-
-void Transform::setPosition(const Vec3& pos) {
-    mDistance = pos - mPos;
-    mPos = pos;
-    mNeedUpdate = true;
-}
-
-Vec3 &Transform::getPosition() {
-    updateMatrix();
-    return mPos;
-}
-
-Mat4 &Transform::getMatrix() {
-    updateMatrix();
-    return mMatrix;
-}
-
-void Transform::updateMatrix() {
-    if (!mNeedUpdate) {
+void Transform::update()
+{
+    if (!_needUpdateMatrix)
         return;
-    }
+
+    // Translate
+    Mat4 tranM = glm::translate(_modelMatrix, _trans);
     
-    // scale
-    Vec3 scale(mScaleX, mScaleY, mScaleZ);
-    mMatrix = glm::scale(mMatrix, scale);
+    // Rotate
+    Mat4 rotM = glm::mat4_cast(_orientation);
+    
+    // Scale
+    Mat4 scaleM = glm::scale(_modelMatrix, _scale);
+    
+    _modelMatrix = tranM * rotM * scaleM;
 
-    mScaleX = 1.0f;
-    mScaleY = 1.0f;
-    mScaleZ = 1.0f;
-
-    mNeedUpdate = false;
+    // Reset
+    _scale = Vec3(1.0f);
+    _orientation = Quat(0, 0, 0, 1);
+    _trans = Vec3(0.0f);
+    
+    _needUpdateMatrix = false;
 }

@@ -16,7 +16,6 @@ class Technique;
 class Pass;
 class TextureUnitState;
 
-
 //==================== Script Translator ===============================//
 
 class ScriptTranslator
@@ -100,6 +99,7 @@ public:
 protected:
     void translateVertexShader(ScriptCompiler *compiler, ObjectAbstractNode *obj);
     void translateFragmentShader(ScriptCompiler *compiler, ObjectAbstractNode *obj);
+    void translateGeometryShader(ScriptCompiler *compiler, ObjectAbstractNode *obj);
 };
 
 //==================== Material Translator Manager ===============================//

@@ -1,24 +1,11 @@
 #version 410 core
 
-struct Transform {
-    mat4 M;
-    mat4 V;
-    mat4 P;
-} ;
+uniform samplerCube tex_sampler;
 
-struct Vertex {
-    vec4 pos;
-    vec3 normal;
-    vec2 texCoord;
-} ;
-
-in Vertex vVertex;
-in Transform vTrans;
-
-uniform sampler2D defaultSampler;
+in vec3 vTexCoord;
 
 out vec4 color;
 
 void main() {
-    color = texture(defaultSampler, vVertex.texCoord);
+    color = texture(tex_sampler, vTexCoord);
 }

@@ -18,7 +18,8 @@
 
 /** This class including base render informations. eg: material, world matrix, light and so on.
  */
-class Renderable {
+class Renderable
+{
 public:
     Renderable();
     virtual ~Renderable();
@@ -28,9 +29,10 @@ public:
     
     virtual void getRenderOperation(RenderOperation& op) = 0;
     
-    virtual Mat4& getWorldTransforms() = 0;
+    virtual const Mat4& getWorldTransforms() = 0;
     
     virtual const Technique* getTechnique();
+    
     
 };
 

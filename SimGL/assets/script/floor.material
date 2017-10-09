@@ -19,9 +19,9 @@ material floorGLSL
     
 			texture_unit   # texture information
 			{
-				texture bricks.jpg 2d
+				texture 2d bricks.jpg
                 sampler 0
-                filtering linear linear none
+                filtering linear near linear 8
 			}
 		}
 	}

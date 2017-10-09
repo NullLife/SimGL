@@ -45,3 +45,40 @@ int StringUtils::parseInt(const std::string& str, int defaultVal) {
         return defaultVal;
     return ret;
 }
+
+void StringUtils::split(std::vector<std::string>& result, const std::string& str, const std::string& pattern)
+{
+    size_t index = 0;
+    size_t pos = 0;
+    while (pos != -1)
+    {
+        pos = str.find(pattern, index);
+        result.push_back(str.substr(index, pos-index));
+        index = pos + 1;
+    }
+}
+
+std::string StringUtils::toString(const glm::vec3& val)
+{
+    return "x: " + std::to_string(val[0]) + ", y: " +  std::to_string(val[1]) + ", z: " +  std::to_string(val[2]);
+}
+
+std::string StringUtils::toString(const glm::vec4& val)
+{
+    return "x: " + std::to_string(val[0]) + ", y: " +  std::to_string(val[1]) + ", z: " +  std::to_string(val[2]) + ", w: " + std::to_string(val[3]);
+}
+
+std::string StringUtils::toString(const int val)
+{
+    return std::to_string(val);
+}
+
+std::string StringUtils::toString(const float val)
+{
+    return std::to_string(val);
+}
+
+std::string StringUtils::toString(const double val)
+{
+    return std::to_string(val);
+}

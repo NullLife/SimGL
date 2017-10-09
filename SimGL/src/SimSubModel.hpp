@@ -14,7 +14,8 @@ class Model;
 class SubMesh;
 class Material;
 
-class SubModel : public Renderable {
+class SubModel : public Renderable
+{
 public:
     SubModel(Model* mParent);
     ~SubModel();
@@ -39,7 +40,7 @@ public:
 
     const MaterialPtr& getMaterial();
     
-    Mat4& getWorldTransforms();
+    const Mat4& getWorldTransforms();
     
     void setVisible(bool visible);
     

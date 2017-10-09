@@ -8,19 +8,29 @@
 
 #include "SimApp.hpp"
 
-App::App(const String &name, int width, int height) {
+App::App(const String &name, int width, int height)
+{
     mWindow = new GameWindow(name, width, height);
 }
 
-App::~App() {
-    delete mWindow;
-    mWindow = nullptr;
+App::~App()
+{
+    if (mWindow)
+    {
+        mWindow->registerKeyEvent(nullptr);
+        mWindow->registerMouseEvent(nullptr);
+
+        delete mWindow;
+        mWindow = nullptr;
+    }
 }
 
-void App::setSceneManager(SceneManager* sceneManager) {
+void App::setSceneManager(SceneManager* sceneManager)
+{
     mWindow->setSceneManager(sceneManager);
 }
 
-GameWindow *App::getGameWindow() {
+GameWindow *App::getGameWindow()
+{
     return mWindow;
 }

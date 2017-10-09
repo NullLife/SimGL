@@ -8,46 +8,49 @@
 
 #include "SimCommon.hpp"
 
-class Transform {
+class Transform
+{
 public:
     Transform();
     ~Transform();
 
+    // Set position.
+    void setPosition(const Vec3& position);
+    const Vec3& getPosition();
+    
+    // Translation.
+    void translate(float dx, float dy, float dz);
+    
+    // Scale.
+    void scale(const Vec3& scaleF);
+    
+    // Rotate.
+    void pitch(float rad);
+    void yaw(float rad);
+    void roll(float rad);
+    
+    void rotate (Quat quat);
+    void rotate(Vec3 axis, float rad);
+    
+    const Mat4& getModelMatrix();
+    
 private:
-    Vec3 mPos;
-    Mat4 mMatrix;
-
-    float mScaleX;
-    float mScaleY;
-    float mScaleZ;
-
-    float mRotateX;
-    float mRotateY;
-    float mRotateZ;
-
-    Vec3 mDistance;   // Distance for translation
-
-    bool mNeedUpdate;
-
-public:
-    void moveTo(const Vec3& targetPos);
-    void move(const Vec3& distance);
-
-    void rotateX(const float angle);
-    void rotateY(const float angle);
-    void rotateZ(const float angle);
-
-    void scaleX(const float factor);
-    void scaleY(const float factor);
-    void scaleZ(const float factor);
-
-    void setPosition(const Vec3& pos);
-    Vec3& getPosition();
-
-    Mat4& getMatrix();
-
+    void update();
+    
 private:
-    void updateMatrix();
+    Mat4   _modelMatrix;
+    Vec3   _pos;
+    
+    Quat  _orientation;
+    float _pitch;
+    float _yaw;
+    float _roll;
+    
+    Vec3 _scale;
+    Vec3 _trans;
+    
+    // Flag for update matrix.
+    bool _needUpdateMatrix;
 };
 
 

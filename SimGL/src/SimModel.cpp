@@ -11,21 +11,28 @@
 #include "SimTechnique.hpp"
 #include "SimPass.hpp"
 
-
 Model::Model(const String &name) :
-        MovableObject(name) {
+    MovableObject(name),
+    _polyMode(PM_FILL),
+    _drawType(DT_TRIANGLES)
+{
     mMeshPtr = _loadMesh(name);
 }
 
-Model::Model(const MeshPtr& meshPtr) :
-        MovableObject(meshPtr->getName()),
-        mMeshPtr(meshPtr) {
-    _buildSubModelList(meshPtr);
+Model::Model(Mesh* mesh) :
+    MovableObject(mesh->getName()),
+    mMeshPtr(MeshPtr(mesh)),
+    _polyMode(PM_FILL),
+    _drawType(DT_TRIANGLES)
+{
+    _buildSubModelList(mMeshPtr);
 }
 
-Model::~Model() {
+Model::~Model()
+{
     SubModelList::iterator i;
-    for (i=mSubModelList.begin(); i!=mSubModelList.end(); ++i) {
+    for (i=mSubModelList.begin(); i!=mSubModelList.end(); ++i)
+    {
         delete (*i);
     }
     mSubModelList.clear();
@@ -34,11 +41,13 @@ Model::~Model() {
     LogManager::getSingleton().debug("Delete Model", "name: " + mName);
 }
 
-const MeshPtr& Model::getMesh() {
+const MeshPtr& Model::getMesh()
+{
     return mMeshPtr;
 }
 
-void Model::setParent(SceneNode* node) {
+void Model::setParent(SceneNode* node)
+{
     mParent = node;
 }
 
@@ -55,40 +64,50 @@ void Model::setMaterial(const String& material)
     setMaterial(MaterialManager::getSingleton().get(material));
 }
 
-const Model::SubModelList &Model::getSubModels() {
+const Model::SubModelList &Model::getSubModels()
+{
     return mSubModelList;
 }
 
-void Model::setRenderQueueGroup(const int queueID) {
+void Model::setRenderQueueGroup(const int queueID)
+{
     MovableObject::setRenderQueueGroup(queueID);
-    for (SubModel* sub : mSubModelList) {
+    for (SubModel* sub : mSubModelList)
+    {
         sub->setRenderQueueGroup(queueID);
     }
 }
 
-void Model::updateRenderQueue(RenderQueue* queue) {
-    for (SubModel* sub : mSubModelList) {
-        if (sub->isVisible()) {
+void Model::updateRenderQueue(RenderQueue* queue)
+{
+    for (SubModel* sub : mSubModelList)
+    {
+        if (sub->isVisible())
+        {
             queue->addRenderable(sub);
         }
     }
 }
 
-MeshPtr Model::_loadMesh(const String& name) {
+MeshPtr Model::_loadMesh(const String& name)
+{
     MeshPtr mesh = MeshManager::getSingleton().getMesh(name);
     _buildSubModelList(mesh);
     return mesh;
 }
 
-void Model::_buildSubModelList(const MeshPtr& mesh) {
-    if (!mesh) {
+void Model::_buildSubModelList(const MeshPtr& mesh)
+{
+    if (!mesh)
+    {
         LogManager::getSingleton().debug("Model::buildSubModelList","mesh is null");
     }
     const Mesh::SubMeshList& subMeshList = mesh->getSubMeshList();
     mSubModelList.resize(subMeshList.size());
     
     int index = 0;
-    for (SubMesh* subMesh : subMeshList) {
+    for (SubMesh* subMesh : subMeshList)
+    {
         SubModel* subModel = new SubModel(this);
         subModel->setSubMesh(subMesh);
         

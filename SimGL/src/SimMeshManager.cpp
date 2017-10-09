@@ -94,7 +94,8 @@ void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* 
     
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
     Vector<float> vertices;
-    for (unsigned int i = 0; i < ai_mesh->mNumVertices; i++) {
+    for (unsigned int i = 0; i < ai_mesh->mNumVertices; i++)
+    {
         // Pos
         const aiVector3D v3dPos = ai_mesh->mVertices[i];
         // Normal
@@ -108,20 +109,6 @@ void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* 
         vertices.push_back(v3dNormal.x);vertices.push_back(v3dNormal.y);vertices.push_back(v3dNormal.z);
         vertices.push_back(v3dTangent.x);vertices.push_back(v3dTangent.y);vertices.push_back(v3dTangent.z);
         vertices.push_back(v3dTexCoord.x);vertices.push_back(v3dTexCoord.y);
-
-//        size_t offset = 0;
-//        hvb->writeData(i*vertexDD->getStride(), sizeof(v3dPos), &v3dPos);
-//        offset = sizeof(Vec3);
-//        
-//        hvb->writeData(i*vertexDD->getStride() + offset, sizeof(v3dNormal), &v3dNormal);
-//        offset += sizeof(Vec3);
-//        
-//        hvb->writeData(i*vertexDD->getStride() + offset, sizeof(v3dTangent), &v3dTangent);
-//        offset += sizeof(Vec3);
-//        
-//        Vec2 texCoord = Vec2(v3dTexCoord.x, v3dTexCoord.y);
-//        hvb->writeData(i*vertexDD->getStride() + offset, sizeof(texCoord), &texCoord[0]);
-//        offset += sizeof(Vec2);
     }
     hvb->writeData(0, hvb->getSize(), &vertices[0]);
     // Release.
@@ -146,6 +133,8 @@ void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* 
     // Release.
     indices.clear();
     indices.shrink_to_fit();
+    
+    glBindVertexArray(0);
     
     // Record the vao object.
     SimUInt64 key = hvb->getBufferId();

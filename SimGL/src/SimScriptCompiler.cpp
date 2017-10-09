@@ -187,10 +187,14 @@ void ScriptCompiler::_initWordMap()
     // Texture ids
     mIds["texture"] = ID_TEXTURE;
     mIds["texture_alias"] = ID_TEXTURE_ALIAS;
+    mIds["1d"] = ID_1D;
+    mIds["2d"] = ID_2D;
+    mIds["3d"] = ID_3D;
+    mIds["cubic"] = ID_CUBIC;
+    mIds["2d_array"] = ID_2D_ARRAY;
+    mIds["sampler"] = ID_SAMPLER;
     mIds["filtering"] = ID_FILTERING;
     mIds["linear"] = ID_LINEAR;
-    mIds["2d"] = ID_2D;
-    mIds["sampler"] = ID_SAMPLER;
 }
 
 bool ScriptCompiler::_compile(const String& scrpitName, ConcreteNodeListPtr& nodes)

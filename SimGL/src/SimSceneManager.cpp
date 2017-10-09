@@ -7,6 +7,9 @@
 
 #include "SimResourceManager.hpp"
 #include "SimShaderManager.hpp"
+#include "SimVertexArrayManager.hpp"
+#include "SimGLProgramManager.hpp"
+
 #include "SimGLRenderSystem.hpp"
 #include "SimRenderQueue.hpp"
 #include "SimRenderQueueGroup.hpp"
@@ -24,18 +27,19 @@
 #include "SimParameterDataSource.hpp"
 
 SceneManager::SceneManager(const String &name) :
-        mName(name),
-        mClearColor(Vec4(0,0,0,1.0f)),
-        mClearDepth(1.0f),
-        mSkyBoxNode(nullptr),
-        mRootNode(nullptr),
-        mCamera(nullptr),
-        mOpenShadow(false),
-        mShadowFBuf(nullptr),
-        mShadowPass(nullptr),
-        mTestShadowPass(nullptr),
-        mRenderSystem(new GLRenderSystem()),
-        mRenderQueue(new RenderQueue())
+    mName(name),
+    mClearColor(Vec4(0.0f, 0.0f, 0.0f, 1.0f)),
+    mClearDepth(1.0f),
+    mSkyBoxNode(nullptr),
+    mRootNode(nullptr),
+    mCamera(nullptr),
+    mBillboardMatrix(Mat4(1.0f)),
+    mOpenShadow(false),
+    mShadowFBuf(nullptr),
+    mShadowPass(nullptr),
+    mTestShadowPass(nullptr),
+    mRenderSystem(new GLRenderSystem()),
+    mRenderQueue(new RenderQueue())
 {
     _paramDataSource = new ParameterDataSource();
     mRenderSystem->setSceneManager(this);
@@ -115,13 +119,19 @@ SceneManager::~SceneManager()
         _paramDataSource = nullptr;
     }
     
-    //Delete Shaders
+    // Delete vertex arrays.
+    VertexArrayManager::destroySingleton();
+    
+    // Delete Shaders.
     ShaderManager::destroySingleton();
     
-    // Delete Resource
+    // Delete programs.
+    GLProgramManager::destroySingleton();
+    
+    // Delete Resources.
     ResourceManager::destroySingleton();
 
-    // Delete Log
+    // Delete Log.
     LogManager::destroySingleton();
 }
 
@@ -130,15 +140,14 @@ const String &SceneManager::getName()
     return mName;
 }
 
-void SceneManager::setSkyBox(const String& imageName) {
+void SceneManager::setSkyBox(const String& mtl) {
     mSkyBoxNode = new SceneNode(this, "sky");
-
     
-    const float scaleFactor = 10;
-    mSkyBoxNode->getTransform()->scaleX(scaleFactor);
-    mSkyBoxNode->getTransform()->scaleY(scaleFactor);
-    mSkyBoxNode->getTransform()->scaleZ(scaleFactor);
-    mSkyBoxNode->getTransform()->move(Vec3(0, scaleFactor-0.001, 0));
+    Model* skyboxModel = createModel("cube.obj", mtl);
+    mSkyBoxNode->attach(skyboxModel);
+    
+    // 100
+    mSkyBoxNode->getTransform()->scale(Vec3(100.0f));
 }
 
 void SceneManager::setClearColor(const Vec4& color)
@@ -225,7 +234,7 @@ Model *SceneManager::createModel(const String &name, const String& material)
     return model;
 }
 
-Model *SceneManager::createModel(MeshManager::MeshPtr mesh)
+Model *SceneManager::createModel(Mesh* mesh)
 {
     return new Model(mesh);
 }
@@ -249,9 +258,6 @@ void SceneManager::_clearRenderQueue()
 
 void SceneManager::updateScene()
 {
-    if (!mRootNode)
-        return;
-
     _processRenderQueue();
 
     _render();
@@ -298,30 +304,84 @@ void SceneManager::_renderScene()
         }
     }
 }
-
+static int t=0;
 void SceneManager::_renderSingleObject(Renderable *rend, Pass* pass)
 {
-    // Vertex shader
+    // Vertex shader.
     GLShader* verShader = pass->getVertexShader();
-    if (verShader)
-        mRenderSystem->bindShader(verShader);
+    mRenderSystem->bindVertexShader(verShader);
     
-    // Fragment shader
+    // Geometry shader.
+    GLShader* geoShader = pass->getGeometryShader();
+    mRenderSystem->bindGeometryShader(geoShader);
+    
+    // Fragment shader.
     GLShader* fragShader = pass->getFragmentShader();
-    if (fragShader)
-        mRenderSystem->bindShader(fragShader);
+    mRenderSystem->bindFragmentShader(fragShader);
     
     RenderOperation ro;
     ro.mSrcRend = rend;
     rend->getRenderOperation(ro);
     
-    _paramDataSource->setModelMatrix(rend->getWorldTransforms());
+    Mat4 modelMatrix = rend->getWorldTransforms();
+    
+    SubModel* subModel = dynamic_cast<SubModel*>(rend);
+    glPolygonMode(GL_FRONT_AND_BACK, subModel->getParent()->getPolygonMode());
+    
+//    if (subModel && subModel->getParent()->getParentNode()->getName() == "billboard")
+//    {
+//        mCamera->setProjectionType(PT_ORTHOGRAPHIC);
+//        _updateBillboard(subModel->getParent()->getParentNode(), mCamera);
+//        modelMatrix *= mBillboardMatrix;
+//    }
+//    else
+//    {
+//        mCamera->setProjectionType(PT_PERSPECTIVE);
+//    }
+    
+    _paramDataSource->setModelMatrix(modelMatrix);
     _paramDataSource->setCurrentPass(pass);
     _paramDataSource->setCurrentCamera(mCamera);
+    _paramDataSource->setTime((float)glfwGetTime());
     
+    if (mSkyBoxNode)
+        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+        
     mRenderSystem->render(ro, pass);
 }
 
+static float oldAngle = 0;
+void SceneManager::_updateBillboard(Node* billboard, Camera* camera)
+{
+    // Axis Aligned Billboards
+    Transform* trans = billboard->getTransform();
+    // The direction of the billboard facing.
+    Vec3 facing = camera->getPosition() - trans->getPosition();
+    facing = glm::normalize(facing);
+    
+    float tan = facing[0] / facing[2];
+    float angle = atan(tan);
+    float changed = angle - oldAngle;
+    if (glm::abs(changed) > 0.001f)
+    {
+        mBillboardMatrix = glm::rotate(mBillboardMatrix, -changed, Z_AXIS);
+    }
+    oldAngle = angle;
+
+//    // Then we will calculate the right vector.
+//    Vec3 right = glm::cross(camera->getUp(), facing);
+//    right = glm::normalize(right);
+//
+//    // Up.
+//    Vec3 up = glm::cross(right, facing);
+//    up = glm::normalize(up);
+//
+//    // Billboarding matrix.
+//    mBillboardMatrix[0] = Vec4(right, 0);
+//    mBillboardMatrix[1] = Vec4(up, 0);
+//    mBillboardMatrix[2] = Vec4(facing, 0);
+//    mBillboardMatrix[3] = Vec4(Vec3(0), 1);
+}
 
 
 

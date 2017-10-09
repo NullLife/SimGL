@@ -220,9 +220,12 @@ void TechniqueTranslator::translate(ScriptCompiler *compiler, const AbstractNode
     {
         if (child->mType == ANT_PROPERTY)
         {
+            // nothing...
         }
         else if (child->mType == ANT_OBJECT)
+        {
             processNode(compiler, child);
+        }
     }
 }
 
@@ -250,9 +253,12 @@ void PassTranslator::translate(ScriptCompiler *compiler, const AbstractNodePtr &
     {
         if (child->mType == ANT_PROPERTY)
         {
+            // nothing...
         }
         else if (child->mType == ANT_OBJECT)
+        {
             processNode(compiler, child);
+        }
     }
 }
 
@@ -286,9 +292,8 @@ void TextureUnitTranslator::translate(ScriptCompiler *compiler, const AbstractNo
             {
                 case ID_TEXTURE:
                 {
-                    String texName = property->mValues[0]->getValue();
-                    
-                    AtomAbstractNode* atom1 = (AtomAbstractNode*) property->mValues[1].get();
+                    // Type.
+                    AtomAbstractNode* atom1 = (AtomAbstractNode*) property->mValues[0].get();
                     Texture::TextureType texType = Texture::TEX_TYPE_2D;
                     
                     if (atom1->mId == ID_2D)
@@ -296,14 +301,34 @@ void TextureUnitTranslator::translate(ScriptCompiler *compiler, const AbstractNo
                     else if (atom1->mId == ID_CUBIC)
                         texType = Texture::TEX_TYPE_CUBIC;
                     
-                    // Set texture.
-                    mTexUnitState->setTexture(texName, texType);
+                    // Get numbers of picture.
+                    int texNum = (int) property->mValues.size() - 1;
+                    if (texNum == 1)
+                    {
+                        // Name.
+                        String texName = property->mValues[1]->getValue();
+                        
+                        // Set texture.
+                        mTexUnitState->setTexture(texName, texType);
+                    }
+                    else if (texNum == 6)
+                    {
+                        String nameBK = property->mValues[1]->getValue();
+                        String nameDN = property->mValues[2]->getValue();
+                        String nameFR = property->mValues[3]->getValue();
+                        String nameLF = property->mValues[4]->getValue();
+                        String nameRT = property->mValues[5]->getValue();
+                        String nameUP = property->mValues[6]->getValue();
+                        
+                        String texName = nameBK + "," + nameDN + "," + nameFR + "," + nameLF + "," + nameRT + "," + nameUP;
+                        mTexUnitState->setTexture(texName, texType);
+                    }
                 }
                     break;
                     
                 case ID_SAMPLER:
                 {
-                    int val;
+                    int val = 0;
                     getInt(property->mValues[0].get(), &val);
                     mTexUnitState->setTextureUnit(val);
                 }
@@ -311,9 +336,38 @@ void TextureUnitTranslator::translate(ScriptCompiler *compiler, const AbstractNo
                     
                 case ID_FILTERING:
                 {
-//                    if (property->mValues[0]->getValue() == "linear") {
-//                        mTexUnitState->setFilterType(TFT_LINEAR);
-//                    }
+                    const int num = (int) property->mValues.size();
+                    String minFilter = property->mValues[0]->getValue();
+                    String magFilter = property->mValues[1]->getValue();
+                    
+                    if ("linear" == minFilter)
+                        mTexUnitState->setTextureFiltering(FT_MIN, FO_LINEAR);
+                    else if ("near" == minFilter)
+                        mTexUnitState->setTextureFiltering(FT_MIN, FO_NEAR);
+                
+                    if ("linear" == magFilter)
+                        mTexUnitState->setTextureFiltering(FT_MAG, FO_LINEAR);
+                    else if ("near" == magFilter)
+                        mTexUnitState->setTextureFiltering(FT_MAG, FO_NEAR);
+                    
+                    if (num <=2)
+                        break;
+                    
+                    String mipmapFilter = property->mValues[2]->getValue();
+                    
+                    if ("none" == mipmapFilter)
+                        mTexUnitState->setTextureFiltering(FT_MIP, FO_NONE);
+                    else if ("near" == mipmapFilter)
+                        mTexUnitState->setTextureFiltering(FT_MIP, FO_NEAR);
+                    else if ("linear" == mipmapFilter)
+                        mTexUnitState->setTextureFiltering(FT_MIP, FO_LINEAR);
+                    
+                    if (num <=3)
+                        break;
+                    
+                    int numMipmaps = 0;
+                    getInt(property->mValues[3].get(), &numMipmaps);
+                    mTexUnitState->setNumMipmaps(numMipmaps);
                 }
                     break;
                     
@@ -343,7 +397,7 @@ void GpuShaderTranslator::translate(ScriptCompiler *compiler, const AbstractNode
     if (obj->mName.empty())
     {
         std::stringstream ss;
-        ss << "The vertex shader is no name at lineNo: "<< node->mLineNo << ", in file:" << node->mFilename << "\n";
+        ss << "The shader is no name at lineNo: "<< node->mLineNo << ", in file:" << node->mFilename << "\n";
         LogManager::getSingleton().debug(ss);
         return;
     }
@@ -351,7 +405,7 @@ void GpuShaderTranslator::translate(ScriptCompiler *compiler, const AbstractNode
     if (obj->mValues.empty())
     {
         std::stringstream ss;
-        ss << "The vertex shader is no information for language or version at lineNo: "<< node->mLineNo << ", in file:" << node->mFilename << "\n";
+        ss << "The shader is no information for language or version at lineNo: "<< node->mLineNo << ", in file:" << node->mFilename << "\n";
         LogManager::getSingleton().debug(ss);
         return;
 
@@ -361,6 +415,8 @@ void GpuShaderTranslator::translate(ScriptCompiler *compiler, const AbstractNode
         translateVertexShader(compiler, obj);
     else if (obj->mId == ID_FRAGMENT_SHADER)
         translateFragmentShader(compiler, obj);
+    else if (obj->mId == ID_GEOMETRY_SHADER)
+        translateGeometryShader(compiler, obj);
 }
 
 void GpuShaderTranslator::translateVertexShader(ScriptCompiler *compiler, ObjectAbstractNode *obj)
@@ -380,7 +436,6 @@ void GpuShaderTranslator::translateVertexShader(ScriptCompiler *compiler, Object
         if (child->mType == ANT_PROPERTY)
         {
             PropertyAbstractNode *property = reinterpret_cast<PropertyAbstractNode*>(child.get());
-            LogManager::getSingleton().debug(property->getValue());
             
             if (property->mId == ID_PARAM_NAMED)
             {
@@ -479,6 +534,64 @@ void GpuShaderTranslator::translateFragmentShader(ScriptCompiler *compiler, Obje
     }
 }
 
+void GpuShaderTranslator::translateGeometryShader(ScriptCompiler *compiler, ObjectAbstractNode *obj)
+{
+    Pass* pass = reinterpret_cast<Pass*>(obj->mParent->mCxt);
+    pass->setGeometryShaderName(obj->mName);
+    
+    GLShader* gs = ShaderManager::getSingleton().createShader(obj->mName).get();
+    gs->setType(GST_GEOMETRY);
+    gs->setLanguage(obj->mValues[0]->getValue());
+    gs->setLanguageVerison(obj->mValues[1]->getValue());
+    
+    obj->mCxt = gs;
+    
+    for (AbstractNodePtr& child : obj->mChildren)
+    {
+        if (child->mType == ANT_PROPERTY)
+        {
+            PropertyAbstractNode *property = reinterpret_cast<PropertyAbstractNode*>(child.get());
+            LogManager::getSingleton().debug(property->getValue());
+            
+            if (property->mId == ID_PARAM_NAMED)
+            {
+                const size_t atomNum = property->mValues.size();
+                if (atomNum < 2)
+                {
+                    std::stringstream ss;
+                    ss << "The fragment shader is no property or less values at lineNo: "<< child->mLineNo << ", in file:" << child->mFilename << "\n";
+                    LogManager::getSingleton().debug(ss);
+                    return;
+                }
+                
+                GLShaderParamsPtr params = gs->getParameters();
+                
+                AbstractNodeList::const_iterator i0 = getNodeAt(property->mValues, 0);
+                AbstractNodeList::const_iterator i1 = getNodeAt(property->mValues, 1);
+                
+                AtomAbstractNode* atom0 = (AtomAbstractNode*)(*i0).get();
+                AtomAbstractNode* atom1 = (AtomAbstractNode*)(*i1).get();
+                
+                String name = atom0->mValue;
+                String type = atom1->mValue;
+                
+                if (type == "in")
+                {
+                    // Set draw type.
+                }
+                else if (type == "float")
+                {
+                    params->addConstantDefinition(name, SCT_FLOAT1, ScriptTranslatorManager::_ccMap[name]);
+                }
+            }
+        }
+        else if (child->mType == ANT_OBJECT)
+        {
+            processNode(compiler, child);
+        }
+    }
+}
+
 //======================== ScriptTranslatorManager ================================//
 
 ScriptTranslatorManager::ScriptTranslatorManager()
@@ -533,7 +646,7 @@ ConstantContentMap ScriptTranslatorManager::_ccMap =
     // Matrix
     { "model_matrix", SCC_MODEL_MATRIX },
     { "view_matrix", SCC_VIEW_MATRIX },
-    { "projective_matrix", SCC_PROJECTIVE_MATRIX },
+    { "projection_matrix", SCC_PROJECTIVE_MATRIX },
     { "mv_matrix", SCC_MV_MATRIX },
     { "mvp_matrix", SCC_MVP_MATRIX },
     
@@ -578,7 +691,7 @@ ConstantContentMap ScriptTranslatorManager::_ccMap =
     { "texcoord2", SCC_TEXCOORDS2 },
     
     // Sampler
-    { "texSampler", SCC_SAMPLER_2D },
+    { "tex_sampler", SCC_SAMPLER_2D },
     
     // Camera
     { "camera_position_objectspace", SCC_CAMERAPOSITION_OBJECT_SPACE },
@@ -616,5 +729,7 @@ ConstantContentMap ScriptTranslatorManager::_ccMap =
     { "surface_diffuse_color", SCC_SURFACE_DIFFUSE_COLOR },
     { "surface_specular_color", SCC_SURFACE_SPECULAR_COLOR },
     { "surface_emissive_color", SCC_SURFACE_EMISSIVE_COLOR },
-    { "surface_shininess", SCC_SURFACE_SHININESS }
+    { "surface_shininess", SCC_SURFACE_SHININESS },
+    
+    { "time", SCC_TIME }
 };

@@ -15,12 +15,14 @@ class GLShaderParams;
 
 enum GLShaderType {
     GST_VERTEX = 1,
-    GST_FRAGMENT
+    GST_FRAGMENT,
+    GST_GEOMETRY
 };
 
 typedef SharedPtr<GLShaderParams> GLShaderParamsPtr;
 
-class GLShader {
+class GLShader
+{
 public:
     GLShader(const String& name);
     ~GLShader();
@@ -53,8 +55,6 @@ public:
     GLuint getId() { return mId; };
     
     bool _compile();
-    
-    void bindProgram();
 };
 
 #endif /* SimGLShader_hpp */

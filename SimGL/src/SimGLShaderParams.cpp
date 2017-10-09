@@ -21,8 +21,6 @@ GLShaderParams::~GLShaderParams()
     _floatConstants.clear();
     _intConstants.clear();
     _doubleConstants.clear();
-
-    mParamNameIndices.clear();
 }
 
 void GLShaderParams::addConstantDefinition(const String& name, ShaderConstantType scType, ShaderConstantContent scc, size_t arraySize)
@@ -171,8 +169,10 @@ void GLShaderParams::_updateParameters(ParameterDataSource* dataSource)
             case SCC_CAMERAPOSITION_WORLD_SPACE:
                 _writeRawData(def._physicalIndex, &dataSource->getCameraPosition()[0], def._elementComponentSize);
                 break;
-                
-            default:
+              
+            // Other
+            case SCC_TIME:
+                _writeRawData(def._physicalIndex, dataSource->getTime());
                 break;
         }
     }
@@ -240,10 +240,12 @@ void GLShaderParams::_writeRawData(size_t index, const int val)
 {
     _writeRawData(index, &val, 1);
 }
+
 void GLShaderParams::_writeRawData(size_t index, const float val)
 {
     _writeRawData(index, &val, 1);
 }
+
 void GLShaderParams::_writeRawData(size_t index, const double val)
 {
     _writeRawData(index, &val, 1);
@@ -252,24 +254,27 @@ void GLShaderParams::_writeRawData(size_t index, const double val)
 void GLShaderParams::_writeRawData(size_t index, const int* val, size_t count)
 {
     if (index + count > _intConstants.size())
-        LogManager::getSingleton().error("FMKShaderParameters::_writeRawData", "Out of bound.");
+        LogManager::getSingleton().error("GLShaderParams::_writeRawData", "Out of bound.");
     
     memcpy(&_intConstants[index], val, sizeof(int) * count);
 }
+
 void GLShaderParams::_writeRawData(size_t index, const float* val, size_t count)
 {
     if (index + count > _floatConstants.size())
-        LogManager::getSingleton().error("FMKShaderParameters::_writeRawData", "Out of bound.");
+        LogManager::getSingleton().error("GLShaderParams::_writeRawData", "Out of bound.");
 
     memcpy(&_floatConstants[index], val, sizeof(int) * count);
 }
+
 void GLShaderParams::_writeRawData(size_t index, const double* val, size_t count)
 {
     if (index + count > _doubleConstants.size())
-        LogManager::getSingleton().error("FMKShaderParameters::_writeRawData", "Out of bound.");
+        LogManager::getSingleton().error("GLShaderParams::_writeRawData", "Out of bound.");
     
     memcpy(&_doubleConstants[index], val, sizeof(int) * count);
 }
+
 float* GLShaderParams::getFloatPointer(size_t pos)
 {
     return &_floatConstants[pos];
@@ -283,51 +288,4 @@ int* GLShaderParams::getIntPointer(size_t pos)
 double* GLShaderParams::getDoublePointer(size_t pos)
 {
     return &_doubleConstants[pos];
-}
-void GLShaderParams::_writeMatrix4fOld(GLProgram* program, const String& name, Mat4& matrix)
-{
-    if (!program->isActive())
-    {
-        LogManager::getSingleton().error("The program is not active...");
-    }
-
-    GLint index = -1;
-    auto iter = mParamNameIndices.find(name);
-    if (iter != mParamNameIndices.end())
-    {
-        index = iter->second;
-    }
-    else
-    {
-        index = glGetUniformLocation(program->getProgram(), name.c_str());
-        if (index >= 0)
-            mParamNameIndices[name] = index;
-    }
-
-    if (index >= 0)
-        glUniformMatrix4fv(index, 1, GL_FALSE, &matrix[0][0]);
-}
-
-void GLShaderParams::_writeIntOld(GLProgram *program, const String &name, int value) {
-    if (!program->isActive())
-    {
-        LogManager::getSingleton().error("The program is not active...");
-    }
-    GLint index = -1;
-    auto iter = mParamNameIndices.find(name);
-    if (iter != mParamNameIndices.end())
-    {
-        index = iter->second;
-    }
-    else
-    {
-        index = glGetUniformLocation(program->getProgram(), name.c_str());
-        if (index >= 0)
-        {
-            mParamNameIndices[name] = index;
-        }
-    }
-
-    if (index >=0)
-        glUniform1i(index, value);
 }

@@ -10,8 +10,11 @@
 #define SimStringUtils_hpp
 
 #include <string>
+#include <vector>
+#include <glm/glm.hpp>
 
-class StringUtils {
+class StringUtils
+{
 public:
     /** Delete empty line and empty chars.
      */
@@ -22,6 +25,14 @@ public:
     static bool toFloat(const std::string& str, float* val);
     
     static int parseInt(const std::string& str, int defaultVal = 0);
+    
+    static void split(std::vector<std::string>& result, const std::string& str, const std::string& pattern);
+    
+    static std::string toString(const glm::vec3& val);
+    static std::string toString(const glm::vec4& val);
+    static std::string toString(const int val);
+    static std::string toString(const float val);
+    static std::string toString(const double val);
 };
 
 #endif /* SimStringUtils_hpp */

@@ -13,17 +13,20 @@
 
 /** Types of members in vertex.
  */
-enum VertexElementSemantic {
+enum VertexElementSemantic
+{
     VES_POSITION = 0,
     VES_NORMAL,
     VES_TANGENT,
     VES_BITANGENT,
-    VES_TEXCOORD
+    VES_TEXCOORD,
+    VES_DIFFUSECOLOR
 };
 
 /** Data types for a member in vertex.
  */
-enum VertexElementType {
+enum VertexElementType
+{
     VET_FLOAT1 = 1,
     VET_FLOAT2,
     VET_FLOAT3,
@@ -32,7 +35,8 @@ enum VertexElementType {
 
 /** A member object in vertex.
  */
-class VertexElement {
+class VertexElement
+{
 public:
     static size_t getVertexElementOffset(VertexElementType type);
     static size_t getVertexElementComponentCount(VertexElementType type);
@@ -51,7 +55,8 @@ public:
 
 /** The declaration for a vertex including its members.
  */
-class VertexDataDeclare {
+class VertexDataDeclare
+{
 public:
     typedef Vector<VertexElement*> VertexElements;
 public:
@@ -75,7 +80,8 @@ public:
 
 /** Vertex collection.
  */
-class VertexData {
+class VertexData
+{
 public:
     VertexData(VertexDataDeclare* dataDeclaration);
     ~VertexData();
@@ -84,6 +90,8 @@ private:
     VertexDataDeclare* mDeclaration;    // Vertex declaration for including which members
     
     HardwareVertexBuffer* mVerBuffer;
+    
+    bool _isBinded;
 
 public:
     const VertexDataDeclare* getVertexDataDeclare() { return mDeclaration; }
@@ -92,11 +100,17 @@ public:
     void initBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage);
     
     HardwareVertexBuffer* getBuffer() { return mVerBuffer; }
+    
+    // Marking binded.
+    void markBinded() { _isBinded = true; }
+    
+    const bool isBinded() const { return _isBinded; }
 };
 
 /** Vertex index collection.
  */
-class IndexData {
+class IndexData
+{
 public:
     IndexData();
     ~IndexData();

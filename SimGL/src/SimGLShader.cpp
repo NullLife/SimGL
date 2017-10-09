@@ -8,25 +8,26 @@
 
 #include "SimGLShader.hpp"
 #include "SimGLShaderParams.hpp"
-#include "SimGLProgramManager.hpp"
 
 #include <fstream>
 #include <sstream>
 
 GLShader::GLShader(const String& name) :
-        mType(GST_VERTEX),
-        mName(name),
-        mCompiled(false),
-        mId(0),
-        mLanguage(""),
-        mVerison(""),
-        mShaderParams(nullptr)
+    mType(GST_VERTEX),
+    mName(name),
+    mCompiled(false),
+    mId(0),
+    mLanguage(""),
+    mVerison(""),
+    mShaderParams(nullptr)
 {
 }
 
 GLShader::~GLShader()
 {
-    LogManager::getSingleton().debug("Delete program file name", mName);
+    LogManager::getSingleton().debug("delete shader: " + mName);
+    if (mId > 0)
+        glDeleteShader(mId);
 }
 
 
@@ -39,14 +40,6 @@ const GLShaderParamsPtr& GLShader::getParameters()
     return mShaderParams;
 }
 
-void GLShader::bindProgram()
-{
-    if (mType == GST_VERTEX)
-        GLProgramManager::getSingleton().setActiveVertexShader(this);
-    else if (mType == GST_FRAGMENT)
-        GLProgramManager::getSingleton().setActiveFragmentShader(this);
-}
-
 bool GLShader::_compile()
 {
     if (mCompiled)
@@ -57,16 +50,18 @@ bool GLShader::_compile()
     LogManager::getSingleton().debug("GLSLShader::_compile", "compiling shader: " + filepath);
     
     GLenum type;
-    switch (mType) {
+    switch (mType)
+    {
         case GST_VERTEX:
             type = GL_VERTEX_SHADER;
             break;
-        
+            
+        case GST_GEOMETRY:
+            type = GL_GEOMETRY_SHADER;
+            break;
+
         case GST_FRAGMENT:
             type = GL_FRAGMENT_SHADER;
-            break;
-            
-        default:
             break;
     }
     

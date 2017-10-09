@@ -4,19 +4,23 @@
 //
 
 #include "SimGLRenderSystem.hpp"
+
+#include "SimGLProgramManager.hpp"
+#include "SimVertexArrayManager.hpp"
+
 #include "SimPass.hpp"
 #include "SimGLShader.hpp"
-#include "SimGLProgramManager.hpp"
 #include "SimGLProgram.hpp"
-#include "SimRenderOperation.hpp"
-#include "SimRenderable.hpp"
 #include "SimGLShaderParams.hpp"
 #include "SimTextureUnitState.hpp"
-#include "SimVertexArrayManager.hpp"
 #include "SimParameterDataSource.hpp"
+
+#include "SimRenderOperation.hpp"
+#include "SimRenderable.hpp"
 
 GLRenderSystem::GLRenderSystem() :
     _currVertShader(nullptr),
+    _currGeoShader(nullptr),
     _currFragShader(nullptr),
     _sceneManager(nullptr)
 {
@@ -31,37 +35,34 @@ void GLRenderSystem::setSceneManager(SceneManager* sm)
     _sceneManager = sm;
 }
 
-void GLRenderSystem::bindShader(GLShader* shader)
+void GLRenderSystem::bindVertexShader(GLShader* verShader)
 {
-    if (!shader)
+    if (_currVertShader != verShader)
     {
-        LogManager::getSingleton().error("GLRenderSystem::bindShader", "Can't bind to null...");
-    }
-    
-    switch (shader->getType())
-    {
-        case GST_VERTEX:
-            if (_currVertShader != shader)
-            {
-                _currVertShader = shader;
-                _currVertShader->bindProgram();
-            }
-            break;
-            
-        case GST_FRAGMENT:
-            if (_currFragShader != shader)
-            {
-                _currFragShader = shader;
-                _currFragShader->bindProgram();
-            }
-            break;
-            
-        default:
-            break;
+        _currVertShader = verShader;
+        GLProgramManager::getSingleton().setActiveVertexShader(verShader);
     }
 }
 
-void GLRenderSystem::render(RenderOperation &op, Pass* pass)
+void GLRenderSystem::bindGeometryShader(GLShader *geoShader)
+{
+    if (_currGeoShader != geoShader)
+    {
+        _currGeoShader = geoShader;
+        GLProgramManager::getSingleton().setActiveGeometryShader(geoShader);
+    }
+}
+
+void GLRenderSystem::bindFragmentShader(GLShader *fragShader)
+{
+    if (_currFragShader != fragShader)
+    {
+        _currFragShader = fragShader;
+        GLProgramManager::getSingleton().setActiveFragmentShader(fragShader);
+    }
+}
+
+void GLRenderSystem:: render(RenderOperation &op, Pass* pass)
 {
     // Get active program.
     GLProgram* activeProgram = GLProgramManager::getSingleton().getActiveProgram();
@@ -80,7 +81,10 @@ void GLRenderSystem::render(RenderOperation &op, Pass* pass)
     {
         setTextureUnitSettings(texUnitStates[i]);
     }
+    
     glDrawElements(op.mDrawType, (GLsizei) op.mIndexNum, GL_UNSIGNED_INT, 0);
+    
+    glBindVertexArray(0);
 }
 
 void GLRenderSystem::_commitVertexData(RenderOperation &op)
@@ -88,9 +92,22 @@ void GLRenderSystem::_commitVertexData(RenderOperation &op)
     SimUInt64 vaoKey = op.mVertexData->getBuffer()->getBufferId();
     vaoKey += static_cast<SimUInt64> (op.mIndexData->getBuffer()->getBufferId()) << 32;
     op.mVao = VertexArrayManager::getSingleton().getVao(vaoKey);
+    
+    if (op.mVao == 0)
+    {
+        LogManager::getSingleton().error("Vertex array id can't be 0 !");
+    }
+    
     glBindVertexArray(op.mVao);
+    // Here, binding the buffer is the most important.
+    glBindBuffer(GL_ARRAY_BUFFER, op.mVertexData->getBuffer()->getBufferId());
     
     // Bind Vertex
+    if (op.mVertexData->isBinded())
+    {
+        return;
+    }
+    
     const VertexDataDeclare* declare = op.mVertexData->getVertexDataDeclare();
     const VertexDataDeclare::VertexElements& ves = declare->getVertexElements();
     for (unsigned int num=0; num<declare->getNumber(); ++num)
@@ -104,6 +121,8 @@ void GLRenderSystem::_commitVertexData(RenderOperation &op)
         glVertexAttribPointer(num, (int) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()), GL_FLOAT, GL_FALSE, (GLsizei)declare->getStride(), (void *) offset);
         glEnableVertexAttribArray(num);
     }
+    
+    op.mVertexData->markBinded();
 }
 
 void GLRenderSystem::updateProgramParameters(Pass* pass)
@@ -138,23 +157,33 @@ void GLRenderSystem::setTextureUnitSettings(TextureUnitState* texState)
     
     GLenum target = texPtr->getTextureTarget();
     
-    // Mipmaps.
-    int numMipmaps = texState->getNumMipmaps();
-    if (numMipmaps != 0)
+    // Not mipmap.
+    if (texState->getTextureFiltering(FT_MIP) == FO_NONE)
     {
-        // Set mipmap levels。
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, numMipmaps);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
         
-        glGenerateMipmap(target);
-        
+        _setTextureUnitFiltering(target, FT_MIN, texState->getTextureFiltering(FT_MIN));
+        _setTextureUnitFiltering(target, FT_MAG, texState->getTextureFiltering(FT_MAG));
+    }
+    // Mipmap
+    else
+    {
+        int numMipmaps = texState->getNumMipmaps();
+        if (numMipmaps != 0)
+        {
+            // Set mipmap levels
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, numMipmaps);
+        }
         // Set filters。
         _setTextureUnitFiltering(target, FT_MIP, texState->getTextureFiltering(FT_MIP));
+        
+        glGenerateMipmap(target);
+
     }
     
-    _setTextureUnitFiltering(target, FT_MIN, texState->getTextureFiltering(FT_MIN));
-    _setTextureUnitFiltering(target, FT_MAG, texState->getTextureFiltering(FT_MAG));
-    
+    // Wrapping.
     const UVWWrapMode& uvw = texState->getTextureWrapMode();
     _setTextureWrapMode(target, uvw);
     

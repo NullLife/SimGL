@@ -15,6 +15,7 @@ template<> GLProgramManager *Singleton<GLProgramManager>::mSingleton = nullptr;
 GLProgramManager::GLProgramManager() :
     _activeProgram(nullptr),
     _verShader(nullptr),
+    _geoShader(nullptr),
     _fragShader(nullptr)
 {
 }
@@ -37,7 +38,16 @@ void GLProgramManager::setActiveVertexShader(GLShader *verShader)
         _activeProgram = nullptr;
         glUseProgram(0);
     }
+}
 
+void GLProgramManager::setActiveGeometryShader(GLShader *geoShader)
+{
+    if (_geoShader != geoShader)
+    {
+        _geoShader = geoShader;
+        _activeProgram = nullptr;
+        glUseProgram(0);
+    }
 }
 
 void GLProgramManager::setActiveFragmentShader(GLShader *fragShader)
@@ -48,7 +58,6 @@ void GLProgramManager::setActiveFragmentShader(GLShader *fragShader)
         _activeProgram = nullptr;
         glUseProgram(0);
     }
-
 }
 
 GLProgram* GLProgramManager::getActiveProgram()
@@ -59,10 +68,16 @@ GLProgram* GLProgramManager::getActiveProgram()
     }
     
     SimUInt64 activeKey = 0;
-    if (_activeProgram)
+    if (_verShader)
     {
         _verShader->_compile();
         activeKey = static_cast<SimUInt64>(_verShader->getId()) << 32;
+    }
+    
+    if (_geoShader)
+    {
+        _geoShader->_compile();
+        activeKey += static_cast<SimUInt64>(_geoShader->getId()) << 16;
     }
     
     if (_fragShader)
@@ -81,8 +96,10 @@ GLProgram* GLProgramManager::getActiveProgram()
         else
         {
             _activeProgram = new GLProgram();
-            _activeProgram->attach(_verShader);
-            _activeProgram->attach(_fragShader);
+            _activeProgram->attachVertexShader(_verShader);
+            _activeProgram->attachGeometryShader(_geoShader);
+            _activeProgram->attachFragmentShader(_fragShader);
+            
             _cache[activeKey] = _activeProgram;
         }
     }

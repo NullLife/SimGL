@@ -1,0 +1,27 @@
+# This is script for material of floor
+# This file for study lexical analysis
+
+material billboardGLSL
+{
+	technique GLSL   # a technique to implement render
+	{
+		pass    # pass for min unit to render
+		{
+			vertex_shader billboard_vs.glsl GLSL v410
+			{
+                param_named mvp_matrix matrix4
+			}
+
+            geometry_shader billboard_gs.glsl GLSL v410
+            {
+                param_named triangles in
+                param_named time float
+            }
+
+			fragment_shader billboard_fs.glsl GLSL v410
+			{
+#param_named tex_sampler sampler2d 0    # name, type, texture unit
+			}
+		}
+	}
+}

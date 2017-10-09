@@ -28,11 +28,13 @@ private:
     
     String _verShaderName;
     String _fragShaderName;
+    String _geoShaderName;
     
     String _shaderAttrs;
     String _shaderUniforms;
 
     GLShader* _verShader;
+    GLShader* _geoShader;
     GLShader* _fragShader;
     
     bool _lightEnable;
@@ -60,6 +62,9 @@ public:
     void setVertexShaderName(const String& shaderName);
     const String& getVertexShaderName() { return _verShaderName; }
     
+    void setGeometryShaderName(const String& shaderName);
+    const String& getGeometryShaderName() { return _geoShaderName; }
+    
     void setFragmentShaderName(const String& shaderName);
     const String& getFragmentShaderName() { return _fragShaderName; }
     
@@ -75,6 +80,7 @@ public:
 
     // FixMe: should use reference in here!!!
     GLShader* getVertexShader();
+    GLShader* getGeometryShader();
     GLShader* getFragmentShader();
     
     // Update parameters of shaders.

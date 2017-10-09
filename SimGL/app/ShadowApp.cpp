@@ -37,13 +37,6 @@ ShadowApp::ShadowApp(const String& name, int width, int height) :
 }
 
 ShadowApp::~ShadowApp() {
-    mWindow->registerKeyEvent(nullptr);
-    mWindow->registerMouseEvent(nullptr);
-    
-    if (mWindow) {
-        delete mWindow;
-        mWindow = nullptr;
-    }
 }
 
 

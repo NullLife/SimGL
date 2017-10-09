@@ -13,7 +13,8 @@ class RenderQueue;
 class Model;
 class Mesh;
 
-class SceneNode : public Node {
+class SceneNode : public Node
+{
 public:
     typedef Vector<Model*> ModelList;
 

@@ -11,6 +11,7 @@
 GLProgram::GLProgram() :
     _program(0),
     _verShader(nullptr),
+    _geoShader(nullptr),
     _fragShader(nullptr),
     _linked(false),
     _uniformRefsBuilt(false)
@@ -19,6 +20,10 @@ GLProgram::GLProgram() :
 
 GLProgram::~GLProgram()
 {
+    LogManager::getSingleton().debug("delete program: " + StringUtils::toString((int) _program));
+    _uniformRefs.clear();
+    _uniformRefs.shrink_to_fit();
+    
     if (_program > 0)
     {
         glDeleteProgram(_program);
@@ -26,28 +31,21 @@ GLProgram::~GLProgram()
     }
 }
 
-void GLProgram::attach(GLShader* shader)
+void GLProgram::attachVertexShader(GLShader *verShader)
 {
-    if (shader == nullptr)
-        return;
-    
-    switch (shader->getType())
-    {
-        case GST_VERTEX:
-            _verShader = shader;
-            break;
-        
-        case GST_FRAGMENT:
-            _fragShader = shader;
-            break;
-            
-        default:
-            break;
-    }
-    
-    _linked = false;
-    _uniformRefsBuilt = false;
+    _verShader = verShader;
 }
+
+void GLProgram::attachGeometryShader(GLShader *geoShader)
+{
+    _geoShader = geoShader;
+}
+
+void GLProgram::attachFragmentShader(GLShader *fragShader)
+{
+    _fragShader = fragShader;
+}
+
 
 void GLProgram::active()
 {
@@ -56,12 +54,14 @@ void GLProgram::active()
         _compileAndLink();
     }
     // The program was already active, return.
+    // There will be all false...
     if (isActive())
     {
         return;
     }
     
     glUseProgram(_program);
+//    LogManager::getSingleton().debug("program: " + StringUtils::toString((int)_program));
 }
 
 bool GLProgram::isActive()
@@ -71,14 +71,15 @@ bool GLProgram::isActive()
         return false;
     }
     
-    GLint currentProgram = 0;
+    GLint currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    
     return currentProgram == _program;
 }
 
 void GLProgram::_compileAndLink()
 {
-    // Create the program object
+    // Create the program object.
     _program = glCreateProgram();
     if (_program == 0)
         LogManager::getSingletonPtr()->error("GLProgram::_link", "create program failed.");
@@ -87,18 +88,24 @@ void GLProgram::_compileAndLink()
     if (!_verShader || !_fragShader)
         LogManager::getSingletonPtr()->error("GLProgram::_link", "Must hava vertex shader and fragment shader.");
     
+    // Attach shaders.
     if (_verShader->_compile())
        glAttachShader(_program, _verShader->getId());
     
     if (_fragShader->_compile())
         glAttachShader(_program, _fragShader->getId());
     
-    // Link the shaders together
+    if (_geoShader && _geoShader->_compile())
+        glAttachShader(_program, _geoShader->getId());
+
+    // Link the shaders together.
     glLinkProgram(_program);
 
     // Detach all the shaders
     glDetachShader(_program, _verShader->getId());
     glDetachShader(_program, _fragShader->getId());
+    if (_geoShader)
+        glDetachShader(_program, _geoShader->getId());
 
     // Throw exception if linking failed
     GLint status = -1;
@@ -132,20 +139,25 @@ void GLProgram::bindUniforms()
 {
     if (!_uniformRefsBuilt)
     {
-        _extractUniforms(&_verShader->getParameters()->getNamedConstants()->_defMap,
-                         &_fragShader->getParameters()->getNamedConstants()->_defMap);
+        _extractUniforms();
         
         _uniformRefsBuilt = true;
     }
 }
 
-void GLProgram::_extractUniforms(const ShaderConstantDefinitionMap* verConstantDefs,
-                                 const ShaderConstantDefinitionMap* fragConstantDefs)
+void GLProgram::_extractUniforms()
 {
     if (!_linked || _program == 0)
     {
         return;
     }
+    
+    ShaderConstantDefinitionMap& verConstantDefs = _verShader->getParameters()->getNamedConstants()->_defMap;
+    ShaderConstantDefinitionMap& fragConstantDefs = _fragShader->getParameters()->getNamedConstants()->_defMap;
+    
+    ShaderConstantDefinitionMap* geoConstantDefs = nullptr;
+    if (_geoShader)
+        geoConstantDefs = &_geoShader->getParameters()->getNamedConstants()->_defMap;
     
     GLint uniformCount = 0;
     #define BUF_SIZE 200
@@ -173,8 +185,8 @@ void GLProgram::_extractUniforms(const ShaderConstantDefinitionMap* verConstantD
             std::string name(uniformName);
             
             // Found out if it in vertex constants.
-            iter = verConstantDefs->find(name);
-            if (iter != verConstantDefs->end())
+            iter = verConstantDefs.find(name);
+            if (iter != verConstantDefs.end())
             {
                 newUniformRef._location = location;
                 newUniformRef._uniformName = name;
@@ -188,8 +200,8 @@ void GLProgram::_extractUniforms(const ShaderConstantDefinitionMap* verConstantD
             }
             
             // Found out if it in fragment constants.
-            iter = fragConstantDefs->find(name);
-            if (iter != fragConstantDefs->end())
+            iter = fragConstantDefs.find(name);
+            if (iter != fragConstantDefs.end())
             {
                 newUniformRef._location = location;
                 newUniformRef._uniformName = name;
@@ -199,8 +211,25 @@ void GLProgram::_extractUniforms(const ShaderConstantDefinitionMap* verConstantD
                 
                 _uniformRefs.push_back(newUniformRef);
             }
+            
+            
+            if (!geoConstantDefs)
+                continue;
+            
+            // If there is geometry shader.
+            // Found out if it in geometry constants.
+            iter = geoConstantDefs->find(name);
+            if (iter != geoConstantDefs->end())
+            {
+                newUniformRef._location = location;
+                newUniformRef._uniformName = name;
+                newUniformRef._constantDef = &(iter->second);
+                
+                newUniformRef._shaderType = GLShaderType::GST_GEOMETRY;
+                
+                _uniformRefs.push_back(newUniformRef);
+            }
         }
-        
     }
 }
 
@@ -214,12 +243,16 @@ void GLProgram::updateUniforms()
         // If the matrix need to transpose. colum major is false.
         bool transpose = GL_FALSE;
         
-        GLShaderParams* params;
+        GLShaderParams* params = nullptr;
         if (currentUniform->_shaderType == GST_VERTEX)
         {
             params = _verShader->getParameters().get();
         }
-        else
+        else if (currentUniform->_shaderType == GST_GEOMETRY)
+        {
+            params = _geoShader->getParameters().get();
+        }
+        else if (currentUniform->_shaderType == GST_FRAGMENT)
         {
             params = _fragShader->getParameters().get();
         }

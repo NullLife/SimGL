@@ -30,7 +30,6 @@ HardwareIndexBuffer::HardwareIndexBuffer(IndexType itype, size_t numIndices, Usa
     _indexSize = HardwareIndexBuffer::calculateIndexSize(itype);
     _sizeInBytes =  _indexSize* _numIndices;
     
-    _bufferId = 0;
     createBuffer();
 }
 
@@ -74,35 +73,13 @@ void HardwareIndexBuffer::destroyBuffer()
     }
 }
 
-void HardwareIndexBuffer::writeData(size_t start, size_t length, const void* source)
-{
-    if ((start + length) > _sizeInBytes)
-    {
-        LogManager::getSingleton().error("FMKHardwareIndexBuffer::writeData", "write request out of bounds.");
-    }
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bufferId);
-    
-    if (start ==0 && length == _sizeInBytes)
-    {
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, _sizeInBytes, source);
-    }
-    else
-    {
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, start, length, source);
-    }
-}
-
-
 void* HardwareIndexBuffer::_lockImpl(size_t start, size_t length)
 {
-    unsigned char* buffer;
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bufferId);
     
-    buffer = static_cast<unsigned char *>(glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, start, _sizeInBytes, GL_MAP_WRITE_BIT));
-    
     _isLocked = true;
-    return static_cast<void *>(buffer);
+    
+    return glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, start, _sizeInBytes, GL_MAP_WRITE_BIT);
 }
 
 void HardwareIndexBuffer::_unlockImpl()

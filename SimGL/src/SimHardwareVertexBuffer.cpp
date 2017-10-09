@@ -16,7 +16,6 @@ HardwareVertexBuffer::HardwareVertexBuffer(size_t vertexSize, size_t numVertices
 {
     _sizeInBytes = vertexSize * numVertices;
     
-    _bufferId = 0;
     createBuffer();
 }
 
@@ -55,35 +54,13 @@ size_t HardwareVertexBuffer::getNumVertices() const
     return _numVertices;
 }
 
-void HardwareVertexBuffer::writeData(size_t start, size_t length, const void* source)
-{
-    if ((start + length) > _sizeInBytes)
-    {
-        LogManager::getSingleton().error("FMKHardwareVertexBuffer::writeData", "write request out of bounds.");
-    }
-    glBindBuffer(GL_ARRAY_BUFFER, _bufferId);
-    
-    if (start ==0 && length == _sizeInBytes)
-    {
-        glBufferSubData(GL_ARRAY_BUFFER, 0, _sizeInBytes, source);
-    }
-    
-    else
-    {
-        glBufferSubData(GL_ARRAY_BUFFER, start, length, source);
-    }
-}
-
-
 void* HardwareVertexBuffer::_lockImpl(size_t start, size_t length)
 {
-    unsigned char* buffer;
     glBindBuffer(GL_ARRAY_BUFFER, _bufferId);
     
-    buffer = static_cast<unsigned char *>(glMapBufferRange(GL_ARRAY_BUFFER, start, _sizeInBytes, GL_MAP_WRITE_BIT));
-    
     _isLocked = true;
-    return static_cast<void *>(buffer);
+    
+    return glMapBufferRange(GL_ARRAY_BUFFER, start, _sizeInBytes, GL_MAP_WRITE_BIT);
 }
 
 void HardwareVertexBuffer::_unlockImpl()

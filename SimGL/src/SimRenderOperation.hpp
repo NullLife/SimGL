@@ -12,12 +12,14 @@
 class Transform;
 class Renderable;
 
-enum BufferType {
+enum BufferType
+{
     BT_VERTEX = 0,
     BT_INDEX
 };
 
-enum DrawType {
+enum DrawType
+{
     DT_POINTS = GL_POINTS,  // 0x0000
     DT_LINES,
     DT_LINE_STRIP,
@@ -30,7 +32,8 @@ enum DrawType {
     DT_POLYGON
 };
 
-class RenderOperation {
+class RenderOperation
+{
 public:
     RenderOperation();
     ~RenderOperation();

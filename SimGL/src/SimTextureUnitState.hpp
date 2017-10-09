@@ -20,6 +20,7 @@ enum FilterType
 };
 enum FilterOptions
 {
+    FO_NONE,
     FO_NEAR,
     FO_LINEAR
 };
@@ -42,6 +43,7 @@ public:
     Pass* getParent();
     
     bool is2DTexture() const;
+    bool isCubicTexture() const;
     
     void setTexture(const String& name, const Texture::TextureType type);
     void setTexture(const TexturePtr& tex);

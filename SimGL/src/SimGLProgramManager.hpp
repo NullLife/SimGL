@@ -15,7 +15,8 @@
 class GLProgram;
 class GLShader;
 
-class GLProgramManager : public Singleton<GLProgramManager> {
+class GLProgramManager : public Singleton<GLProgramManager>
+{
 private:
     typedef HashMap<SimUInt64, GLProgram*> GLProgramCache;
 public:
@@ -26,6 +27,7 @@ private:
     GLProgramCache _cache;
     
     GLShader* _verShader;
+    GLShader* _geoShader;
     GLShader* _fragShader;
     
     GLProgram* _activeProgram;
@@ -33,7 +35,7 @@ private:
 public:
     
     void setActiveVertexShader(GLShader *verShader);
-    
+    void setActiveGeometryShader(GLShader *geoShader);
     void setActiveFragmentShader(GLShader *fragShader);
     
     GLProgram* getActiveProgram();

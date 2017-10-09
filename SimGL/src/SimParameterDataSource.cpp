@@ -50,6 +50,11 @@ void ParameterDataSource::setCurrentPass(Pass* pass)
     _currPass = pass;
 }
 
+void ParameterDataSource::setTime(float time)
+{
+    _time = time;
+}
+
 const Mat4& ParameterDataSource::getModelMatrix()
 {
     return _modelMatrix;
@@ -154,6 +159,12 @@ const Vec4& ParameterDataSource::getSurfaceEmission()
 const float ParameterDataSource::getSurfaceShininess()
 {
     return _currPass->getShininess();
+}
+
+// =============== Other =============== //
+const float ParameterDataSource::getTime()
+{
+    return _time;
 }
 
 

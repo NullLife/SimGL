@@ -7,12 +7,14 @@
 #include "SimTransform.hpp"
 
 Node::Node(const String &name) :
-        mName(name),
-        mParent(nullptr) {
+    mName(name),
+    mParent(nullptr)
+{
     mTrans = new Transform();
 }
 
-Node::~Node() {
+Node::~Node()
+{
     LogManager::getSingleton().debug("delete Node");
     
     delete mTrans;
@@ -21,30 +23,37 @@ Node::~Node() {
     mChildren.clear();
 }
 
-const String &Node::getName() {
+const String &Node::getName()
+{
     return mName;
 }
 
-void Node::setParent(Node *parent) {
+void Node::setParent(Node *parent)
+{
     mParent = parent;
 }
 
-Node *Node::getParent() {
+Node *Node::getParent()
+{
     return mParent;
 }
 
-Transform *Node::getTransform() {
+Transform *Node::getTransform()
+{
     return mTrans;
 }
 
-Node *Node::addChild(const String &childName) {
+Node *Node::addChild(const String &childName)
+{
     return createChild(childName);
 }
 
-Node *Node::getChild(const String &childName) {
+Node *Node::getChild(const String &childName)
+{
     return nullptr;
 }
 
-Node::NodeList &Node::getChildren() {
+const Node::NodeList &Node::getChildren()
+{
     return mChildren;
 }

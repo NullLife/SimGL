@@ -11,7 +11,8 @@
 
 #include "SimHardwareBuffer.hpp"
 
-class HardwareIndexBuffer : public HardwareBuffer {
+class HardwareIndexBuffer : public HardwareBuffer
+{
 public:
     enum IndexType
     {
@@ -35,8 +36,6 @@ public:
     size_t getIndexSize() const;
     
     const GLuint getBufferId() const { return _bufferId; }
-    
-    void writeData(size_t start, size_t length, const void* source);
     
 private:
     void createBuffer();

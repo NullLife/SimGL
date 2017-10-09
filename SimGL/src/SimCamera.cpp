@@ -12,8 +12,8 @@ Camera::Camera(const std::string& name) :
     Frustum(),
     _name(name),
     _needUpdateView(false),
-    _minDist(1.0f),
-    _maxDist(20.0f),
+    _minDist(6.0f),
+    _maxDist(64.0f),
     _camPos(Vec3(0.0f, 3.0f, 1.0f)),
     _camTarget(Vec3(0.0f, 0.0f, 0.0f)),
     _camUp(Vec3(0.0f, 1.0f, 0.0f)),
@@ -163,6 +163,11 @@ void Camera::translate(float dx, float dy, float dz)
     _camPos += (x+y+z);
     _camTarget += (x+y+z);
     
+    _camLook = _camTarget - _camPos;
+    _curDist = glm::length(_camLook);
+    _camLook /= _curDist;
+    _curDist = std::fmax(_minDist, std::fmin(_curDist, _maxDist));
+    
     _needUpdateView = true;
 }
 
@@ -205,7 +210,7 @@ void Camera::_updateView()
     _camUp = rotM * _camUp;
     _camUp = glm::normalize(_camUp);
     
-    _camRight = glm::cross(_camUp, _camLook);
+    _camRight = glm::cross(_camLook, _camUp);
     _camRight = glm::normalize(_camRight);
     
     _viewMatrix = glm::lookAt(_camPos, _camPos + _camLook, _camUp);
@@ -218,11 +223,11 @@ void Camera::_updateView()
     
     LogManager::getSingleton().debug("Camera", "pos-->" + toString(_camPos));
     LogManager::getSingleton().debug("Camera", "target-->" + toString(_camTarget));
-    LogManager::getSingleton().debug("Camera", "look-->" + toString(_camLook));
-    LogManager::getSingleton().debug("Camera", "right-->" + toString(_camRight));
-    LogManager::getSingleton().debug("Camera", "up-->" + toString(_camUp));
+//    LogManager::getSingleton().debug("Camera", "look-->" + toString(_camLook));
+//    LogManager::getSingleton().debug("Camera", "right-->" + toString(_camRight));
+//    LogManager::getSingleton().debug("Camera", "up-->" + toString(_camUp));
     
-    LogManager::getSingleton().debug("Camera", "dist-->" + std::to_string(_curDist));
+//    LogManager::getSingleton().debug("Camera", "dist-->" + std::to_string(_curDist));
     
 //    LogManager::getSingleton().debug("Camera", "orien-->" + toString(Vec3f(RadiansToDegrees(_pitch),
 //                                                                              RadiansToDegrees(_yaw),
@@ -241,7 +246,4 @@ std::string Camera::toString(const Vec3& val)
 {
     return "x: "+std::to_string(val.x) + ",y: "+std::to_string(val.y) + ",z: " + std::to_string(val.z);
 }
-
-
-
 

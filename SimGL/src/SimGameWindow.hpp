@@ -17,7 +17,8 @@ class MouseEvent;
 
 class SceneManager;
 
-class GameWindow {
+class GameWindow
+{
 public:
     GameWindow(const String &name, const int &width = 800, const int &height = 600);
 

@@ -35,14 +35,14 @@ public:
     Node* getParent();
 
     // Transform
-    Transform* getTransform();
+    virtual Transform* getTransform();
 
     // Struct operation
     virtual Node* addChild(const String& childName);
 
     virtual Node* getChild(const String& childName);
 
-    NodeList& getChildren();
+    const NodeList& getChildren();
 
     virtual void clear() = 0;
 

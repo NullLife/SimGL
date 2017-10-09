@@ -17,8 +17,10 @@ Pass::Pass() :
     _tag(""),
     _lightEnable(false),
     _verShaderName(""),
+    _geoShaderName(""),
     _fragShaderName(""),
     _verShader(nullptr),
+    _geoShader(nullptr),
     _fragShader(nullptr)
 {
 }
@@ -29,8 +31,10 @@ Pass::Pass(const String &name) :
     _tag(""),
     _lightEnable(false),
     _verShaderName(""),
+    _geoShaderName(""),
     _fragShaderName(""),
     _verShader(nullptr),
+    _geoShader(nullptr),
     _fragShader(nullptr)
 {
 }
@@ -52,6 +56,11 @@ Pass::~Pass()
 void Pass::setVertexShaderName(const String& shaderName)
 {
     _verShaderName = shaderName;
+}
+
+void Pass::setGeometryShaderName(const String& shaderName)
+{
+    _geoShaderName = shaderName;
 }
 
 void Pass::setFragmentShaderName(const String& shaderName)
@@ -82,7 +91,8 @@ void Pass::addTextureUnitStates(TextureUnitState** texStates, int texStateNum)
     }
 }
 
-GLShader* Pass::getVertexShader() {
+GLShader* Pass::getVertexShader()
+{
     if (_verShader)
         return _verShader;
     
@@ -96,6 +106,23 @@ GLShader* Pass::getVertexShader() {
     _verShader = shader.get();
     
     return _verShader;
+}
+
+GLShader* Pass::getGeometryShader()
+{
+    if (_geoShader)
+        return _geoShader;
+    
+    if (_geoShaderName == "")
+        return nullptr;
+    
+    GLShaderPtr shader = ShaderManager::getSingleton().getShader(_geoShaderName);
+    if (shader == nullptr)
+        return nullptr;
+    
+    _geoShader = shader.get();
+    
+    return _geoShader;
 }
 
 GLShader* Pass::getFragmentShader()
@@ -120,6 +147,11 @@ void Pass::updateParameters(ParameterDataSource* dataSource)
     if (_verShader)
     {
         _verShader->getParameters()->_updateParameters(dataSource);
+    }
+    
+    if (_geoShader)
+    {
+        _geoShader->getParameters()->_updateParameters(dataSource);
     }
     
     if (_fragShader)

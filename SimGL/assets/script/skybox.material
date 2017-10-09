@@ -1,0 +1,32 @@
+# This is script for material of floor
+# This file for study lexical analysis
+
+material skyboxGLSL
+{
+	technique GLSL   # a technique to implement render
+	{
+		pass    # pass for min unit to render
+		{
+			vertex_shader skybox_vs.glsl GLSL v410
+			{
+                param_named mvp_matrix matrix4
+			}
+
+			fragment_shader skybox_fs.glsl GLSL v410
+			{
+                param_named texSampler samplerCubic 0    # name, type, texture unit
+			}
+    
+			texture_unit   # texture information
+			{
+                # type, pictures
+                # POSITIVE_X, NEGATIVE_X, POSITIVE_Y, NEGATIVE_Y, POSITIVE_Z, NEGATIVE_Z
+# texture cubic skybox/stevecube_rt.jpg skybox/stevecube_lf.jpg skybox/stevecube_up.jpg skybox/stevecube_dn.jpg skybox/stevecube_bk.jpg skybox/stevecube_fr.jpg
+
+                texture cubic pisa/px.png pisa/nx.png pisa/py.png pisa/ny.png pisa/pz.png pisa/nz.png
+                sampler 0
+                filtering linear linear none
+			}
+		}
+	}
+}

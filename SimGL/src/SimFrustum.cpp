@@ -12,8 +12,8 @@ Frustum::Frustum() :
     _projType(PT_PERSPECTIVE),
     _aspectRatio(1.0f),
     _fovy(45.0f),
-    _zNear(1.333f),
-    _zFar(50.0f),
+    _zNear(1.0f),
+    _zFar(200.0f),
     _widowWidth(800.0f),
     _widowHeight(600.0f),
     _needUpdateFrustum(true)

@@ -15,63 +15,77 @@
 #include "SimTransform.hpp"
 
 SubModel::SubModel(Model* parent) :
-        Renderable(),
-        mParent(parent),
-        mQueueID(0),
-        mVisible(true),
-        mSubMesh(nullptr),
-        mMtlPtr(nullptr) {
+    Renderable(),
+    mParent(parent),
+    mQueueID(0),
+    mVisible(true),
+    mSubMesh(nullptr),
+    mMtlPtr(nullptr)
+{
 }
 
-SubModel::~SubModel() {
-    
+SubModel::~SubModel()
+{
 }
 
-Model* SubModel::getParent() {
+Model* SubModel::getParent()
+{
     return mParent;
 }
 
-void SubModel::setSubMesh(SubMesh *subMesh) {
+void SubModel::setSubMesh(SubMesh *subMesh)
+{
     mSubMesh = subMesh;
 }
 
-SubMesh *SubModel::getSubMesh() {
+SubMesh *SubModel::getSubMesh()
+{
     return mSubMesh;
 }
 
-void SubModel::setMaterial(const MaterialPtr &mtlPtr) {
+void SubModel::setMaterial(const MaterialPtr &mtlPtr)
+{
     mMtlPtr = mtlPtr;
 }
 
-const MaterialPtr& SubModel::getMaterial() {
+const MaterialPtr& SubModel::getMaterial()
+{
     return mMtlPtr;
 }
 
-Mat4& SubModel::getWorldTransforms() {
-    return mParent->getParentNode()->getTransform()->getMatrix();
+const Mat4& SubModel::getWorldTransforms()
+{
+    return mParent->getParentNode()->getTransform()->getModelMatrix();
 }
 
-void SubModel::setRenderQueueGroup(int queueID) {
+void SubModel::setRenderQueueGroup(int queueID)
+{
     mQueueID = queueID;
 }
 
-const int SubModel::getRenderQueueGroup() {
+const int SubModel::getRenderQueueGroup()
+{
     return mQueueID;
 }
 
 
-void SubModel::setVisible(bool visible) {
+void SubModel::setVisible(bool visible)
+{
     mVisible = visible;
 }
 
-bool SubModel::isVisible() {
+bool SubModel::isVisible()
+{
     return mVisible;
 }
 
-void SubModel::getRenderOperation(RenderOperation& op) {
+void SubModel::getRenderOperation(RenderOperation& op)
+{
     op.mVertexData = mSubMesh->getVertexData();
     op.mVerNum = op.mVertexData->getBuffer()->getNumVertices();
     op.mIndexData = mSubMesh->getIndexData();
     op.mIndexNum = op.mIndexData->getBuffer()->getNumIndices();
     op.mUseIndex = true;
+    
+    op.mDrawType = mParent->getDrawType();
 }

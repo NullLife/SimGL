@@ -13,44 +13,53 @@ SubMesh::SubMesh() :
 }
 
 SubMesh::SubMesh(VertexData *vertexData, IndexData *indexData) :
-        mParent(nullptr),
-        mVertexData(vertexData),
-        mIndexData(indexData) {
-
+    mParent(nullptr),
+    mVertexData(vertexData),
+    mIndexData(indexData)
+{
 }
 
-SubMesh::~SubMesh() {
-    if (mVertexData) {
+SubMesh::~SubMesh()
+{
+    LogManager::getSingleton().debug("Delete SubMesh");
+    if (mVertexData)
+    {
         delete mVertexData;
         mVertexData = nullptr;
     }
-    if (mIndexData) {
+    if (mIndexData)
+    {
         delete mIndexData;
         mIndexData = nullptr;
     }
-    LogManager::getSingleton().debug("Delete SubMesh");
 }
 
-void SubMesh::setVertexData(VertexData *vertexData) {
+void SubMesh::setVertexData(VertexData *vertexData)
+{
     mVertexData = vertexData;
 }
 
-void SubMesh::setIndexData(IndexData *indexData) {
+void SubMesh::setIndexData(IndexData *indexData)
+{
     mIndexData = indexData;
 }
 
-void SubMesh::setParent(Mesh* mesh) {
+void SubMesh::setParent(Mesh* mesh)
+{
     mParent = mesh;
 }
 
-VertexData *SubMesh::getVertexData() {
+VertexData *SubMesh::getVertexData()
+{
     return mVertexData;
 }
 
-IndexData *SubMesh::getIndexData() {
+IndexData *SubMesh::getIndexData()
+{
     return mIndexData;
 }
 
-Mesh* SubMesh::getParent() {
+Mesh* SubMesh::getParent()
+{
     return mParent;
 }

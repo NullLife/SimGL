@@ -31,6 +31,8 @@ private:
     mutable bool _mvMatrixDirty;
     mutable bool _mvpMatrixDirty;
     
+    mutable float _time;
+    
     Camera* _currCamera;
     LightList _lights;
     Pass* _currPass;
@@ -48,6 +50,8 @@ public:
     void setLights(const LightList& lights);
     
     void setCurrentPass(Pass* pass);
+    
+    void setTime(float time);
     
     // ---------------------------------------//
     
@@ -83,6 +87,8 @@ public:
     const Vec4& getSurfaceEmission();
     const float getSurfaceShininess();
     
+    // ============= Other ============== //
+    const float getTime();
 };
 
 #endif /* SimParameterDataSource_hpp */

@@ -21,7 +21,11 @@ public:
 
 public:
     void setSceneManager(SceneManager* sm);
-    void bindShader(GLShader *shader);
+    
+    void bindVertexShader(GLShader* verShader);
+    void bindGeometryShader(GLShader* geoShader);
+    void bindFragmentShader(GLShader* fragShader);
+    
     void updateProgramParameters(Pass* pass);
     void setTextureUnitSettings(TextureUnitState* texState);
     
@@ -38,6 +42,7 @@ private:
     void activeTextureUnit(int unit);
 
     GLShader *_currVertShader;
+    GLShader *_currGeoShader;
     GLShader *_currFragShader;
     
     SceneManager* _sceneManager;

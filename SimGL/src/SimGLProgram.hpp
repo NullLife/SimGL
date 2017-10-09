@@ -37,7 +37,9 @@ public:
     GLProgram();
     ~GLProgram();
     
-    void attach(GLShader* shader);
+    void attachVertexShader(GLShader* verShader);
+    void attachGeometryShader(GLShader* geoShader);
+    void attachFragmentShader(GLShader* fragShader);
     
     GLuint getProgram() { return _program; }
     
@@ -49,14 +51,14 @@ public:
     void updateUniforms();
     
 private:
-    void _extractUniforms(const ShaderConstantDefinitionMap* verConstantDefs,
-                          const ShaderConstantDefinitionMap* fragConstantDefs);
+    void _extractUniforms();
 
     void _compileAndLink();
     
 private:
     GLuint _program;
     GLShader* _verShader;
+    GLShader* _geoShader;
     GLShader* _fragShader;
     
     bool _linked;

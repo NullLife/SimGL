@@ -11,111 +11,122 @@
 #include "SimMouseEvent.hpp"
 #include "SimSceneManager.hpp"
 
-static void keyCallback(GLFWwindow *window,
-                        int key,
-                        int scanCode,
-                        int action,
-                        int mods) {
+static void keyCallback(GLFWwindow *window, int key, int scanCode, int action, int mods)
+{
     GameWindow *game  = reinterpret_cast<GameWindow *>(glfwGetWindowUserPointer(window));
     KeyEvent   *event = game->getKeyEvent();
-    if (event) {
+    if (event)
+    {
         event->keyCallback(key, scanCode, action, mods);
     }
 }
 
-static void mouseCallback(GLFWwindow *window,
-                              double x, double y) {
+static void mouseCallback(GLFWwindow *window, double x, double y)
+{
     GameWindow *game  = reinterpret_cast<GameWindow *>(glfwGetWindowUserPointer(window));
     MouseEvent *event = game->getMouseEvent();
-    if (event) {
+    if (event)
+    {
         event->mouseCallback(x, y);
     }
 }
 
 
 GameWindow::GameWindow(const String &name, const int &width, const int &height) :
-        mWindow(nullptr), mName(name),
-        mWidth(width), mHeight(height),
-        mBufferWidth(0), mBufferHeight(0),
-        mKeyEvent(nullptr), mMouseEvent(nullptr),
-        mClearColor(Vec4(0.0)), mClearDepth(1.0), mDeltaTime(0) {
-
+    mWindow(nullptr), mName(name),
+    mWidth(width), mHeight(height),
+    mBufferWidth(0), mBufferHeight(0),
+    mKeyEvent(nullptr), mMouseEvent(nullptr),
+    mClearColor(Vec4(0.0)), mClearDepth(1.0), mDeltaTime(0)
+{
     initSystem();
 }
 
-GameWindow::~GameWindow() {
+GameWindow::~GameWindow()
+{
     LogManager::getSingleton().debug("delete GameWindow");
-    if (mSceneManager) {
-        delete mSceneManager;
-        mSceneManager = nullptr;
-    }
 }
 
-void GameWindow::setClearColor(const Vec4 &color) {
+void GameWindow::setClearColor(const Vec4 &color)
+{
     mClearColor = color;
     
-    if (mSceneManager) {
-        
+    if (mSceneManager)
+    {
     }
 }
 
-const Vec4 &GameWindow::getClearColor() {
+const Vec4 &GameWindow::getClearColor()
+{
     return mClearColor;
 }
 
-void GameWindow::setClearDepth(const float &depth) {
+void GameWindow::setClearDepth(const float &depth)
+{
     mClearDepth = depth;
     
-    if (mSceneManager) {
-        
+    if (mSceneManager)
+    {
     }
 }
 
-const float &GameWindow::getClearDepth() {
+const float &GameWindow::getClearDepth()
+{
     return mClearDepth;
 }
 
-const int &GameWindow::getWidth() {
+const int &GameWindow::getWidth()
+{
     return mWidth;
 }
 
-const int &GameWindow::getHeight() {
+const int &GameWindow::getHeight()
+{
     return mHeight;
 }
 
-const int &GameWindow::getFramebufferWidth() {
+const int &GameWindow::getFramebufferWidth()
+{
     return mBufferWidth;
 }
 
-const int &GameWindow::getFramebufferHeight() {
+const int &GameWindow::getFramebufferHeight()
+{
     return mBufferHeight;
 }
 
-void GameWindow::registerKeyEvent(KeyEvent *event) {
+void GameWindow::registerKeyEvent(KeyEvent *event)
+{
     mKeyEvent = event;
 }
 
-KeyEvent *GameWindow::getKeyEvent() {
+KeyEvent *GameWindow::getKeyEvent()
+{
     return mKeyEvent;
 }
 
-void GameWindow::registerMouseEvent(MouseEvent *event) {
+void GameWindow::registerMouseEvent(MouseEvent *event)
+{
     mMouseEvent = event;
 }
 
-MouseEvent *GameWindow::getMouseEvent() {
+MouseEvent *GameWindow::getMouseEvent()
+{
     return mMouseEvent;
 }
 
-void GameWindow::setSceneManager(SceneManager * sceneManager) {
+void GameWindow::setSceneManager(SceneManager * sceneManager)
+{
     mSceneManager = sceneManager;
 }
 
-SceneManager* GameWindow::getSceneManager() {
+SceneManager* GameWindow::getSceneManager()
+{
     return mSceneManager;
 }
 
-void GameWindow::initSystem() {
+void GameWindow::initSystem()
+{
     // Initialize GLFW
     glfwInit();
     // OpenGL Version
@@ -133,7 +144,8 @@ void GameWindow::initSystem() {
 
     // Create window
     mWindow = glfwCreateWindow(mWidth, mHeight, mName.c_str(), NULL, NULL);
-    if (!mWindow) {
+    if (!mWindow)
+    {
         LogManager::getSingletonPtr()->debug("GameWindow#initSystem", "Failed to create window");
         glfwTerminate();
         return;
@@ -143,13 +155,17 @@ void GameWindow::initSystem() {
     glfwMakeContextCurrent(mWindow);
 
     glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK) {
+    if (glewInit() != GLEW_OK)
+    {
         LogManager::getSingletonPtr()->debug("GameWindow#initSystem", "Failed to initialize GLEW");
     }
 
-    if (glewIsSupported("GL_VERSION_4_1")) {
+    if (glewIsSupported("GL_VERSION_4_1"))
+    {
         LogManager::getSingletonPtr()->debug("GameWindow#initSystem", "Ready for OpenGL 4.1");
-    } else {
+    }
+    else
+    {
         LogManager::getSingletonPtr()->debug("GameWindow#initSystem", "OpenGL 4.1 not supported");
     }
 
@@ -166,11 +182,13 @@ void GameWindow::initSystem() {
     glViewport(0, 0, mBufferWidth, mBufferHeight);
 }
 
-void GameWindow::running() {
+void GameWindow::running()
+{
 
     processInput();
 
-    while (!glfwWindowShouldClose(mWindow)) {
+    while (!glfwWindowShouldClose(mWindow))
+    {
         double currentTime = glfwGetTime();
 
         // poll for and process events
@@ -185,22 +203,24 @@ void GameWindow::running() {
     }
 }
 
-void GameWindow::processInput() {
+void GameWindow::processInput()
+{
     glfwSetKeyCallback(mWindow, keyCallback);
     glfwSetCursorPosCallback(mWindow, mouseCallback);
 }
 
-void GameWindow::drawScene() {
+void GameWindow::drawScene()
+{
     glClearBufferfv(GL_COLOR, 0, &mClearColor[0]);
     glClearBufferfv(GL_DEPTH, 0, &mClearDepth);
 
+    glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_DEPTH_TEST);
 //    glEnable(GL_CULL_FACE);
 
     // update
-    if (!mSceneManager) {
+    if (!mSceneManager)
         return;
-    }
 
     mSceneManager->updateScene();
 }

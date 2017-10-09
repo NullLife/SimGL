@@ -6,40 +6,46 @@
 #include "SimMesh.hpp"
 
 Mesh::Mesh(const String& name) :
-        mName(name) {
+    mName(name)
+{
 }
 
-
-Mesh::~Mesh() {
-    for (auto iter=mSubMeshList.begin(); iter!=mSubMeshList.end(); ++iter) {
+Mesh::~Mesh()
+{
+    LogManager::getSingleton().debug("Delete Mesh", "name:"+ mName +" submesh number: " + std::to_string(mSubMeshList.size()));
+    for (auto iter=mSubMeshList.begin(); iter!=mSubMeshList.end(); ++iter)
+    {
         delete (*iter);
     }
     mSubMeshList.clear();
     mSubMeshList.shrink_to_fit();
-    
-    LogManager::getSingleton().debug("Delete Mesh", "name:"+ mName +" submesh number: " + std::to_string(mSubMeshList.size()));
 }
 
-const String &Mesh::getName() {
+const String &Mesh::getName()
+{
     return mName;
 }
 
-const int Mesh::addSubMesh(VertexData *vertexData, IndexData *indexData) {
+const int Mesh::addSubMesh(VertexData *vertexData, IndexData *indexData)
+{
     return addSubMesh(new SubMesh(vertexData, indexData));
 }
 
-const int Mesh::addSubMesh(SubMesh *subMesh) {
+const int Mesh::addSubMesh(SubMesh *subMesh)
+{
     const unsigned int index = static_cast<const unsigned int>(mSubMeshList.size());
     subMesh->setParent(this);
     mSubMeshList.push_back(subMesh);
     return index;
 }
 
-const SubMesh *Mesh::getSubMesh(const int index) {
+const SubMesh *Mesh::getSubMesh(const int index)
+{
     return mSubMeshList[index];
 }
 
-const Mesh::SubMeshList &Mesh::getSubMeshList() {
+const Mesh::SubMeshList &Mesh::getSubMeshList()
+{
     return mSubMeshList;
 }
 
