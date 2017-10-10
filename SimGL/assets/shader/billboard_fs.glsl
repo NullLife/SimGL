@@ -1,9 +1,12 @@
 #version 410 core
 
-in vec4 fColor;
+uniform sampler2D tex_sampler;
+
+in vec2 vTexCoord;
+
 out vec4 color;
 
 void main()
 {
-    color = fColor;
+    color = texture(tex_sampler, vTexCoord);
 }

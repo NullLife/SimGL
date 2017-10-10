@@ -4,7 +4,7 @@
 //
 
 #include "SimSceneNode.hpp"
-#include "SimSceneManager.hpp"
+
 #include "SimRenderQueueGroup.hpp"
 #include "SimModel.hpp"
 
@@ -16,8 +16,18 @@ SceneNode::SceneNode(SceneManager* sm, const String &name) :
 
 SceneNode::~SceneNode()
 {
-    LogManager::getSingleton().debug("delete SceneNode: child node num: " + StringUtils::toString((int)mChildren.size()) +
+    LogManager::getSingleton().debug("delete SceneNode: " + mName +
+                                     ", child node num: " + StringUtils::toString((int)mChildren.size()) +
                                      ", model num: " + StringUtils::toString((int) mModels.size()));
+    
+    // Delete the models attached to node.
+    ModelList::iterator iter = mModels.begin();
+    for (; iter != mModels.end(); ++iter)
+    {
+        delete *iter;
+    }
+    mModels.clear();
+    mModels.shrink_to_fit();
 }
 
 SceneManager* SceneNode::getSceneManager()
@@ -45,22 +55,6 @@ Model* SceneNode::getModel(const unsigned int index)
     return mModels[index];
 }
 
-void SceneNode::clear()
-{
-    // Clear models which were attached in this node.
-    for (Model* m : mModels)
-    {
-        delete m;
-    }
-    mModels.clear();
-    mModels.shrink_to_fit();
-
-    for (Node* n: mChildren)
-    {
-        n->clear();
-    }
-}
-
 SceneNode *SceneNode::createChild(const String &childName)
 {
     SceneNode* node = mSceneManager->createNode(childName);
@@ -72,17 +66,27 @@ SceneNode *SceneNode::createChild(const String &childName)
     return node;
 }
 
+void SceneNode::deleteNode()
+{
+    deleteNode(this);
+}
+
 void SceneNode::deleteNode(Node *node)
 {
-//    for (Node* n: mChildren) {
-//        SceneNode* sn = static_cast<SceneNode*>(n);
-//        deleteNode(sn);
-//
-//    }
-//    node->mChildren.clear();
-//    node->mChildren.shrink_to_fit();
-//    delete sn;
-//    sn = nullptr;
+    // Delete all children.
+    NodeList::iterator iter = mChildren.begin();
+    NodeList::const_iterator endIter = mChildren.end();
+    while (iter != endIter)
+    {
+        deleteNode(*iter);
+        ++iter;
+    }
+    
+    // Remove the node in the global map.
+    mSceneManager->mNodeMap.erase(node->getName());
+    
+    delete node;
+    node = nullptr;
 }
 
 void SceneNode::updateRenderQueue(RenderQueue *queue)

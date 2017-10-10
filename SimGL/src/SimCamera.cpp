@@ -119,8 +119,12 @@ float Camera::getRoll()
 
 void Camera::rotate(Quat quat)
 {
-    _orientation = quat * _orientation;
-    _orientation = glm::normalize(_orientation);
+    Vec3 axis = glm::axis(quat);
+    axis = glm::normalize(axis);
+    
+    float rad = glm::angle(quat);
+    
+    _orientation = glm::rotate(_orientation, rad, axis);
     
     _needUpdateView = true;
 }
@@ -129,27 +133,29 @@ void Camera::rotate(Quat quat)
 void Camera::rotate(Vec3 axis, float rad)
 {
     axis = glm::normalize(axis);
-    Quat q(rad, axis);
-    q = glm::normalize(q);
-    rotate(q);
+    _orientation = glm::rotate(_orientation, -rad, axis);
+    _needUpdateView = true;
 }
 
 void Camera::pitch(float rad)
 {
     // x
-    rotate(X_AXIS, -rad);
+    _orientation = glm::rotate(_orientation, -rad, X_AXIS);
+    _needUpdateView = true;
 }
 
 void Camera::yaw(float rad)
 {
     // y
-    rotate(Y_AXIS, -rad);
+    _orientation = glm::rotate(_orientation, -rad, Y_AXIS);
+    _needUpdateView = true;
 }
 
 void Camera::roll(float rad)
 {
     // z
-    rotate(Z_AXIS, -rad);
+    _orientation = glm::rotate(_orientation, -rad, Z_AXIS);
+    _needUpdateView = true;
 }
 
 void Camera::translate(float dx, float dy, float dz)
@@ -216,10 +222,9 @@ void Camera::_updateView()
     _viewMatrix = glm::lookAt(_camPos, _camPos + _camLook, _camUp);
     
     // Returns euler angles, yitch as x, yaw as y, roll as z.
-    Vec3 euler = glm::eulerAngles(_orientation);
-    _pitch = euler.x;
-    _yaw = euler.y;
-    _roll = euler.z;
+    _pitch = glm::pitch(_orientation);
+    _yaw = glm::yaw(_orientation);
+    _roll = glm::roll(_orientation);
     
     LogManager::getSingleton().debug("Camera", "pos-->" + toString(_camPos));
     LogManager::getSingleton().debug("Camera", "target-->" + toString(_camTarget));

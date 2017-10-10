@@ -97,20 +97,14 @@ SceneManager::~SceneManager()
     // Delete SkyBox
     if (mSkyBoxNode)
     {
-        delete mSkyBoxNode;
+        mSkyBoxNode->deleteNode();
     }
     
     // Delete nodes
     if (mRootNode)
     {
-        mRootNode->clear();
-    
-        auto nb = mNodeMap.begin();
-        while (nb!=mNodeMap.end())
-        {
-            delete nb->second;
-            ++nb;
-        }
+        delete mRootNode;
+        mRootNode = nullptr;
     }
     
     if (_paramDataSource)
@@ -219,6 +213,11 @@ SceneNode *SceneManager::createNode(const String &name)
     
     mNodeMap.insert(NodeMap::value_type(name, node));
     return node;
+}
+
+void SceneManager::deleteNode(SceneNode* node)
+{
+    node->deleteNode();
 }
 
 Model *SceneManager::createModel(const String &name)

@@ -106,7 +106,6 @@
 		6C636AEB1F7E003000707367 /* px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = px.png; sourceTree = "<group>"; };
 		6C636AEC1F7E003000707367 /* py.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = py.png; sourceTree = "<group>"; };
 		6C636AED1F7E003000707367 /* pz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pz.png; sourceTree = "<group>"; };
-		6C636B061F7E2AEA00707367 /* tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tree.png; sourceTree = "<group>"; };
 		6C652E301F7A002600FE1D79 /* SkyBoxApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SkyBoxApp.cpp; sourceTree = "<group>"; };
 		6C652E311F7A002600FE1D79 /* SkyBoxApp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SkyBoxApp.hpp; sourceTree = "<group>"; };
 		6C652E331F7A078200FE1D79 /* skybox.material */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox.material; sourceTree = "<group>"; };
@@ -570,7 +569,6 @@
 		6CD5B0C31F5E760800DF8F87 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		6CD5B0C51F5E761400DF8F87 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6CD5B0C71F5E761C00DF8F87 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		6CF763BA1F89200300C12415 /* billboard_gs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = billboard_gs.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -706,7 +704,6 @@
 		6CD5AEA71F5E75DF00DF8F87 /* shader */ = {
 			isa = PBXGroup;
 			children = (
-				6CF763BA1F89200300C12415 /* billboard_gs.glsl */,
 				6C636ADE1F7CA48500707367 /* billboard_fs.glsl */,
 				6C636ADF1F7CA48500707367 /* billboard_vs.glsl */,
 				6CD5AEA81F5E75DF00DF8F87 /* base_fs.glsl */,
@@ -732,7 +729,6 @@
 		6CD5AEB81F5E75DF00DF8F87 /* texture */ = {
 			isa = PBXGroup;
 			children = (
-				6C636B061F7E2AEA00707367 /* tree.png */,
 				6C652E341F7A09DE00FE1D79 /* skybox */,
 				6CD5AEB91F5E75DF00DF8F87 /* bricks.jpg */,
 				6CD5AEBA1F5E75DF00DF8F87 /* bricks2.jpg */,

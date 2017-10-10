@@ -9,8 +9,10 @@
 #include "SimCommon.hpp"
 
 class Transform;
+class SceneManager;
 
-class Node {
+class Node
+{
 public:
     typedef Vector<Node*> NodeList;
 
@@ -33,22 +35,19 @@ public:
     void setParent(Node* parent);
 
     Node* getParent();
+    
+    const NodeList& getChildren();
+    
+    virtual Node* addChild(const String& childName);
+    
+    virtual Node* getChild(const String& childName);
 
     // Transform
     virtual Transform* getTransform();
 
-    // Struct operation
-    virtual Node* addChild(const String& childName);
-
-    virtual Node* getChild(const String& childName);
-
-    const NodeList& getChildren();
-
-    virtual void clear() = 0;
-
 protected:
     virtual Node* createChild(const String& childName) = 0;
-
+    
     virtual void deleteNode(Node* node) = 0;
 };
 

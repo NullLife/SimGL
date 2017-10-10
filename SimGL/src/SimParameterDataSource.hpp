@@ -14,7 +14,8 @@
 class Camera;
 class Pass;
 
-class ParameterDataSource {
+class ParameterDataSource
+{
 private:
     mutable Mat4 _modelMatrix;
     mutable Mat4 _viewMatrix;

@@ -9,7 +9,7 @@ Transform::Transform() :
     _needUpdateMatrix(true),
     _pos(Vec3(0.0f)),
     _scale(Vec3(1.0f)),
-    _orientation(0, 0, 0, 1),
+    _orientation(1.0f, 0.0f, 0.0f, 0.0f),
     _pitch(0), _yaw(0), _roll(0),
     _trans(Vec3(0, 0, 0)),
     _modelMatrix(Mat4(1.0f))
@@ -24,6 +24,7 @@ Transform::~Transform()
 void Transform::setPosition(const Vec3& pos)
 {
     _pos = pos;
+    _trans =_pos;
     _needUpdateMatrix = true;
 }
 
@@ -42,34 +43,38 @@ void Transform::translate(float dx, float dy, float dz)
 
 void Transform::pitch(float rad)
 {
-    rotate(X_AXIS, rad);
+    _orientation = glm::rotate(_orientation, rad, X_AXIS);
+    _needUpdateMatrix = true;
 }
 
 void Transform::yaw(float rad)
 {
-    rotate(Y_AXIS, rad);
+    _orientation = glm::rotate(_orientation, rad, Y_AXIS);
+    _needUpdateMatrix = true;
 }
 
 void Transform::roll(float rad)
 {
-    rotate(Z_AXIS, rad);
+    _orientation = glm::rotate(_orientation, rad, Z_AXIS);
+    _needUpdateMatrix = true;
 }
 
 void Transform::rotate (Quat quat)
 {
-    _orientation = quat * _orientation;
-    _orientation = glm::normalize(_orientation);
-
-    _needUpdateMatrix = true;
+    Vec3 axis = glm::axis(quat);
+    axis = glm::normalize(axis);
     
+    float rad = glm::angle(quat);
+    
+    _orientation = glm::rotate(_orientation, rad, axis);
+    _needUpdateMatrix = true;
 }
 
 void Transform::rotate(Vec3 axis, float rad)
 {
     axis = glm::normalize(axis);
-    Quat q(rad, axis);
-    q = glm::normalize(q);
-    rotate(q);
+    _orientation = glm::rotate(_orientation, rad, axis);
+    _needUpdateMatrix = true;
 }
 
 void Transform::scale(const Vec3& scaleF)
@@ -90,19 +95,17 @@ void Transform::update()
         return;
 
     // Translate
-    Mat4 tranM = glm::translate(_modelMatrix, _trans);
+    _modelMatrix = glm::translate(_modelMatrix, _trans);
     
     // Rotate
-    Mat4 rotM = glm::mat4_cast(_orientation);
+    _modelMatrix *= glm::mat4_cast(_orientation);
     
     // Scale
-    Mat4 scaleM = glm::scale(_modelMatrix, _scale);
-    
-    _modelMatrix = tranM * rotM * scaleM;
+    _modelMatrix = glm::scale(_modelMatrix, _scale);
 
     // Reset
     _scale = Vec3(1.0f);
-    _orientation = Quat(0, 0, 0, 1);
+    _orientation = Quat(1, 0, 0, 0);
     _trans = Vec3(0.0f);
     
     _needUpdateMatrix = false;

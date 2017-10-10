@@ -26,7 +26,8 @@ class ParameterDataSource;
 typedef HashMap<String, Node *> NodeMap;
 typedef Vector<Texture*> ShadowTextureList;
 
-class SceneManager {
+class SceneManager
+{
 public:
     friend class SceneNode;
     
@@ -58,6 +59,8 @@ public:
     SceneNode *getRootNode();
 
     SceneNode *createNode(const String &name);
+    
+    void deleteNode(SceneNode* node);
     
     Model *createModel(const String &name);
 

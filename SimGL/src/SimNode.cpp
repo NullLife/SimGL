@@ -15,12 +15,13 @@ Node::Node(const String &name) :
 
 Node::~Node()
 {
-    LogManager::getSingleton().debug("delete Node");
+    LogManager::getSingleton().debug("delete Node: " + mName);
+    
+    mChildren.clear();
+    mChildren.shrink_to_fit();
     
     delete mTrans;
     mTrans = nullptr;
-    
-    mChildren.clear();
 }
 
 const String &Node::getName()

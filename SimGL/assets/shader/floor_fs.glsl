@@ -6,6 +6,7 @@ in vec2 vTexCoord;
 
 out vec4 color;
 
-void main() {
+void main()
+{
     color = texture(tex_sampler, vTexCoord);
 }

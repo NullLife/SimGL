@@ -35,14 +35,13 @@ public:
 
     Model* getModel(const unsigned int index);
 
-    void clear();
-
     void updateRenderQueue(RenderQueue *queue);
-
-private:
-    SceneNode* createChild(const String& childName);
-
+    
+    void deleteNode();
+    
     void deleteNode(Node* node);
+
+    SceneNode* createChild(const String& childName);
 };
 
 #endif //SIMGL_SCENENODE_HPP
