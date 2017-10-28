@@ -22,7 +22,8 @@ class SubMesh;
 class Material;
 class Texture;
 
-class MeshManager : public Singleton<MeshManager> {
+class MeshManager : public Singleton<MeshManager>
+{
 public:
     typedef SharedPtr<Mesh> MeshPtr;
     typedef HashMap<String, MeshPtr> MeshCache;

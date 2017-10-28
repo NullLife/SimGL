@@ -16,8 +16,8 @@ class HardwareIndexBuffer : public HardwareBuffer
 public:
     enum IndexType
     {
-        IT_UShort,
-        IT_UInt
+        IT_UShort = GL_UNSIGNED_SHORT,
+        IT_UInt = GL_UNSIGNED_INT
     };
     
     static size_t calculateIndexSize(IndexType type);
@@ -41,7 +41,7 @@ private:
     void createBuffer();
     void destroyBuffer();
     
-    void* _lockImpl(size_t start, size_t length);
+    void* _lockImpl(size_t start, size_t length, char writeBit = 1);
     void _unlockImpl();
     
 private:

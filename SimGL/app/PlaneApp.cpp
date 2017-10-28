@@ -16,11 +16,11 @@ PlaneApp::PlaneApp(const String& name, int width, int height) :
     mWindow->registerMouseEvent(this);
             
     // Scene manager
-    mSceneManager = new SceneManager("Simple");
-    setSceneManager(mSceneManager);
+    _sceneManager = new SceneManager("Simple");
+    setSceneManager(_sceneManager);
             
     // Set camera
-    Camera* camera = mSceneManager->createCamera("DefualtCamera");
+    Camera* camera = _sceneManager->createCamera("DefualtCamera");
     camera->setPosition(Vec3(0, 1, 5));
     camera->setNearClipDistance(0.1f);
     camera->setFarClipDistance(1000.0f);
@@ -31,30 +31,34 @@ PlaneApp::PlaneApp(const String& name, int width, int height) :
 
 PlaneApp::~PlaneApp()
 {
-    if (mSceneManager)
+    if (_sceneManager)
     {
-        delete mSceneManager;
-        mSceneManager = nullptr;
+        delete _sceneManager;
+        _sceneManager = nullptr;
     }
 }
 
 void PlaneApp::initScene()
 {
     // plane
-    SceneNode* root = mSceneManager->getRootNode();
-    Model* planeModel = mSceneManager->createModel("plane.obj", "floor.material");
-    root->attach(planeModel);
-    root->getTransform()->scale(Vec3(5.0f));
+    SceneNode* root = _sceneManager->getRootNode();
+//    Model* planeModel = _sceneManager->createModel("plane.obj", "floor.material");
+//    root->attach(planeModel);
+//    root->getTransform()->scale(Vec3(5.0f));
     
     // Billboard
-//    SceneNode* node = (SceneNode *) root->addChild("billboard");
-//    Model* billboardModel = mSceneManager->createModel("cube.obj", "billboard.material");
-//    billboardModel->setDrawType(DT_TRIANGLES);
-//    billboardModel->setPolygonMode(Model::PolygonMode::PM_FILL);
-//    node->attach(billboardModel);
-//
-//    node->getTransform()->setPosition(Vec3(0, 1, 0));
-//    node->getTransform()->roll(1);
+    SceneNode* node = (SceneNode *) root->addChild("billboard");
+    Model* billboardModel = _sceneManager->createModel("cube.obj", "billboard.material");
+    
+    billboardModel->setDrawType(DT_TRIANGLES);
+    billboardModel->setPolygonMode(PM_FILL);
+    
+    billboardModel->getBoundingBox();
+
+    node->attach(billboardModel);
+    
+//    node->getTransform()->pitch(glm::radians(45.0f));
+//    node->getTransform()->setPosition(Vec3(-1, 1, -1));
 }
 
 void PlaneApp::running()
@@ -71,21 +75,33 @@ void PlaneApp::keyCallback(int key, int scanCode, int action, int mods)
         case GLFW_REPEAT:
         {
             if (key == GLFW_KEY_W)
-                mSceneManager->getCamera()->translate(0.0f, 0.0f, -step);
+                _sceneManager->getCamera()->translate(0.0f, 0.0f, -step);
             else if (key == GLFW_KEY_S)
-                mSceneManager->getCamera()->translate(0.0f, 0.0f, step);
+                _sceneManager->getCamera()->translate(0.0f, 0.0f, step);
             else if (key == GLFW_KEY_A)
-                mSceneManager->getCamera()->translate(-step, 0.0f, 0.0f);
+                _sceneManager->getCamera()->translate(-step, 0.0f, 0.0f);
             else if (key == GLFW_KEY_D)
-                mSceneManager->getCamera()->translate(step, 0.0f, 0.0f);
+                _sceneManager->getCamera()->translate(step, 0.0f, 0.0f);
             else if (key == GLFW_KEY_Q)
-                mSceneManager->getCamera()->translate(0.0f, step, 0.0f);
+                _sceneManager->getCamera()->translate(0.0f, step, 0.0f);
             else if (key == GLFW_KEY_Z)
-                mSceneManager->getCamera()->translate(0.0f, -step, 0.0f);
+                _sceneManager->getCamera()->translate(0.0f, -step, 0.0f);
             else if (key == GLFW_KEY_LEFT)
-                mSceneManager->getCamera()->yaw(glm::radians(0.1f));
+                _sceneManager->getCamera()->yaw(glm::radians(1.0f));
             else if (key == GLFW_KEY_RIGHT)
-                mSceneManager->getCamera()->yaw(-glm::radians(0.1f));
+                _sceneManager->getCamera()->yaw(-glm::radians(1.0f));
+            else if (key == GLFW_KEY_UP)
+                _sceneManager->getCamera()->pitch(glm::radians(1.0f));
+            else if (key == GLFW_KEY_DOWN)
+                _sceneManager->getCamera()->pitch(-glm::radians(1.0f));
+            
+            else if (key == GLFW_KEY_N)
+                _sceneManager->getRootNode()->getChild("billboard")->getTransform()->pitch(glm::radians(1.0f));
+            else if (key == GLFW_KEY_J)
+                _sceneManager->getRootNode()->getChild("billboard")->getTransform()->roll(glm::radians(1.0f));
+
+
+            
         }
             break;
         default:break;

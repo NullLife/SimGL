@@ -20,7 +20,10 @@ enum VertexElementSemantic
     VES_TANGENT,
     VES_BITANGENT,
     VES_TEXCOORD,
-    VES_DIFFUSECOLOR
+    VES_DIFFUSECOLOR,
+    
+    VES_VELOCITY,
+    VES_LIFETIME
 };
 
 /** Data types for a member in vertex.
@@ -71,6 +74,7 @@ private:
 
 public:
     const VertexElements & getVertexElements() const;
+    void addElement(VertexElementSemantic semantic, VertexElementType type);
     void addElement(VertexElement* ele);
     const size_t& getNumber() const;
 
@@ -91,20 +95,23 @@ private:
     
     HardwareVertexBuffer* mVerBuffer;
     
+    size_t _numVertices;
+    
     bool _isBinded;
 
 public:
     const VertexDataDeclare* getVertexDataDeclare() { return mDeclaration; }
     
     // Initilise gpu buffer.
-    void initBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage);
+    HardwareVertexBuffer* createBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage);
     
     HardwareVertexBuffer* getBuffer() { return mVerBuffer; }
     
-    // Marking binded.
-    void markBinded() { _isBinded = true; }
-    
+    const size_t getNumVertices() const { return _numVertices; }
+        
     const bool isBinded() const { return _isBinded; }
+    
+    void bind();
 };
 
 /** Vertex index collection.
@@ -116,13 +123,18 @@ public:
     ~IndexData();
 
 private:
+    size_t _numIndices;
     HardwareIndexBuffer* mIdxBuffer;
     
 public:
     // Initilise gpu buffer.
-    void initBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndices, HardwareBuffer::Usage usage);
+    HardwareIndexBuffer* createBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndices, HardwareBuffer::Usage usage);
     
     HardwareIndexBuffer* getBuffer() { return mIdxBuffer; }
+    
+    
+    
+    const size_t getNumIndices() const { return _numIndices; }
 };
 
 

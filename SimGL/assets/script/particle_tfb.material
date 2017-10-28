@@ -1,0 +1,21 @@
+# This is script for material of floor
+# This file for study lexical analysis
+
+material particleGLSL
+{
+	technique GLSL   # a technique to implement render
+	{
+		pass    # pass for min unit to render
+		{
+			vertex_shader particle/ps_tbf_vs.glsl GLSL v410
+			{
+                param_named mvp_matrix matrix4
+			}
+
+			fragment_shader particle/ps_tbf_fs.glsl GLSL v410
+			{
+                param_named tex_sampler sampler2d 0    # name, type, texture unit
+			}
+		}
+	}
+}

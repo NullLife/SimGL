@@ -8,4 +8,17 @@
 
 #include "SimBillboard.hpp"
 
+Billboard::Billboard(const Vec3& pos) :
+    _position(pos),
+    _offset(Vec3(1))
+{
+}
 
+Billboard::~Billboard()
+{
+}
+
+void Billboard::setOffset(const Vec3& offset)
+{
+    _offset = offset;
+}

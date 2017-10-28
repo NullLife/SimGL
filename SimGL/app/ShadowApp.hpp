@@ -11,7 +11,8 @@
 
 #include "SimApp.hpp"
 
-class ShadowApp : public App {
+class ShadowApp : public App
+{
 public:
     ShadowApp(const String& name, int width = 800, int height = 600);
     ~ShadowApp();

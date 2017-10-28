@@ -82,47 +82,31 @@ void GLRenderSystem:: render(RenderOperation &op, Pass* pass)
         setTextureUnitSettings(texUnitStates[i]);
     }
     
-    glDrawElements(op.mDrawType, (GLsizei) op.mIndexNum, GL_UNSIGNED_INT, 0);
-    
-    glBindVertexArray(0);
+    if (op._useIndex)
+        glDrawElements(op._drawType, (GLsizei) op._count, op._indexData->getBuffer()->getIndexType(), 0);
+    else
+        glDrawArrays(op._drawType, (GLsizei) op._start, (GLsizei) op._count);
 }
 
 void GLRenderSystem::_commitVertexData(RenderOperation &op)
 {
-    SimUInt64 vaoKey = op.mVertexData->getBuffer()->getBufferId();
-    vaoKey += static_cast<SimUInt64> (op.mIndexData->getBuffer()->getBufferId()) << 32;
-    op.mVao = VertexArrayManager::getSingleton().getVao(vaoKey);
+    SimUInt64 vaoKey = 0;
     
-    if (op.mVao == 0)
-    {
+    if (op._vertexData)
+        vaoKey = op._vertexData->getBuffer()->getBufferId();
+    
+    if (op._indexData)
+        vaoKey += static_cast<SimUInt64> (op._indexData->getBuffer()->getBufferId()) << 32;
+    
+    op._vao = VertexArrayManager::getSingleton().getVao(vaoKey);
+    
+    if (op._vao == 0)
         LogManager::getSingleton().error("Vertex array id can't be 0 !");
-    }
     
-    glBindVertexArray(op.mVao);
-    // Here, binding the buffer is the most important.
-    glBindBuffer(GL_ARRAY_BUFFER, op.mVertexData->getBuffer()->getBufferId());
+    glBindVertexArray(op._vao);
     
-    // Bind Vertex
-    if (op.mVertexData->isBinded())
-    {
-        return;
-    }
-    
-    const VertexDataDeclare* declare = op.mVertexData->getVertexDataDeclare();
-    const VertexDataDeclare::VertexElements& ves = declare->getVertexElements();
-    for (unsigned int num=0; num<declare->getNumber(); ++num)
-    {
-        VertexElement* ve = ves[num];
-        size_t offset = 0;
-        for (int j=num-1; j>=0; --j)
-        {
-            offset += VertexElement::getVertexElementOffset(ves[j]->getVertexElementType());
-        }
-        glVertexAttribPointer(num, (int) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()), GL_FLOAT, GL_FALSE, (GLsizei)declare->getStride(), (void *) offset);
-        glEnableVertexAttribArray(num);
-    }
-    
-    op.mVertexData->markBinded();
+    if (op._vertexData)
+        op._vertexData->bind();
 }
 
 void GLRenderSystem::updateProgramParameters(Pass* pass)
@@ -156,12 +140,13 @@ void GLRenderSystem::setTextureUnitSettings(TextureUnitState* texState)
     }
     
     GLenum target = texPtr->getTextureTarget();
+    glBindTexture(target, texPtr->getId());
     
     // Not mipmap.
     if (texState->getTextureFiltering(FT_MIP) == FO_NONE)
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+        glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
+        glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, 0);
         
         _setTextureUnitFiltering(target, FT_MIN, texState->getTextureFiltering(FT_MIN));
         _setTextureUnitFiltering(target, FT_MAG, texState->getTextureFiltering(FT_MAG));
@@ -173,14 +158,13 @@ void GLRenderSystem::setTextureUnitSettings(TextureUnitState* texState)
         if (numMipmaps != 0)
         {
             // Set mipmap levels
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, numMipmaps);
+            glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
+            glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, numMipmaps-1);
         }
         // Set filters。
         _setTextureUnitFiltering(target, FT_MIP, texState->getTextureFiltering(FT_MIP));
         
         glGenerateMipmap(target);
-
     }
     
     // Wrapping.

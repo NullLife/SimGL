@@ -11,9 +11,11 @@
 
 #include "SimCommon.hpp"
 
-class HardwareBuffer {
+class HardwareBuffer
+{
 public:
-    enum Usage {
+    enum Usage
+    {
         HBU_STATIC,
         HBU_DYNAMIC,
         HBU_WRITE_ONLY,
@@ -31,14 +33,22 @@ public:
     
     virtual bool isLocked() const;
     
-    virtual void* lock(size_t start, size_t length);
+    virtual void* lock(char writeBit = 1);
+    virtual void* lock(size_t start, size_t length, char writeBit = 1);
     virtual void unlock();
     
     virtual const GLuint getBufferId() const = 0;
+    
+    virtual void writeData(const void* source);
+    
     virtual void writeData(size_t start, size_t length, const void* source);
     
+    virtual void readData(size_t start, size_t length,
+                          size_t stride, size_t offset, size_t readLen,
+                          void* result);
+    
 protected:
-    virtual void* _lockImpl(size_t start, size_t length) = 0;
+    virtual void* _lockImpl(size_t start, size_t length, char writeBit = 1) = 0;
     virtual void _unlockImpl() = 0;
 
 protected:

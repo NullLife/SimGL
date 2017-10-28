@@ -11,7 +11,12 @@
 		6C46B9181F76B9C2003EE183 /* SimTextureUnitState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C46B9131F76B9C1003EE183 /* SimTextureUnitState.cpp */; };
 		6C46B9191F76B9C2003EE183 /* SimTextureManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C46B9151F76B9C2003EE183 /* SimTextureManager.cpp */; };
 		6C46B91A1F76B9C2003EE183 /* SimTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C46B9171F76B9C2003EE183 /* SimTexture.cpp */; };
+		6C5740231FA19B8D00532B71 /* MannueApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C5740211FA19B8D00532B71 /* MannueApp.cpp */; };
 		6C652E321F7A002600FE1D79 /* SkyBoxApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C652E301F7A002600FE1D79 /* SkyBoxApp.cpp */; };
+		6CA15D391F94968E003C6A01 /* SimParticleSystemRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CA15D371F94968E003C6A01 /* SimParticleSystemRenderer.cpp */; };
+		6CA15D691F970E5F003C6A01 /* SimInstanceBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CA15D671F970E5F003C6A01 /* SimInstanceBatch.cpp */; };
+		6CA15D6C1F970F11003C6A01 /* SimInstancedModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CA15D6A1F970F11003C6A01 /* SimInstancedModel.cpp */; };
+		6CA15D711F987B4F003C6A01 /* SimOrientedBoundingBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CA15D701F987B4F003C6A01 /* SimOrientedBoundingBox.cpp */; };
 		6CAD48881F80BFC50054624D /* SimBillboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CAD48861F80BFC50054624D /* SimBillboard.cpp */; };
 		6CD5AE921F5E75A800DF8F87 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CD5AE911F5E75A800DF8F87 /* main.cpp */; };
 		6CD5B0811F5E75DF00DF8F87 /* PlaneApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CD5AE991F5E75DF00DF8F87 /* PlaneApp.cpp */; };
@@ -67,6 +72,10 @@
 		6CD5B0C41F5E760800DF8F87 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CD5B0C31F5E760800DF8F87 /* CoreVideo.framework */; };
 		6CD5B0C61F5E761400DF8F87 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CD5B0C51F5E761400DF8F87 /* Cocoa.framework */; };
 		6CD5B0C81F5E761C00DF8F87 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CD5B0C71F5E761C00DF8F87 /* IOKit.framework */; };
+		6CD65F461F8E1BDF0069D662 /* SimBillboardSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CD65F441F8E1BDF0069D662 /* SimBillboardSet.cpp */; };
+		6CEC4C4B1F94590600319B95 /* ParticleApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CEC4C491F94590600319B95 /* ParticleApp.cpp */; };
+		6CEC4C4E1F94627D00319B95 /* SimParticle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CEC4C4C1F94627D00319B95 /* SimParticle.cpp */; };
+		6CEC4C511F9464D100319B95 /* SimParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CEC4C4F1F9464D100319B95 /* SimParticleSystem.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -91,9 +100,9 @@
 		6C46B9151F76B9C2003EE183 /* SimTextureManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimTextureManager.cpp; sourceTree = "<group>"; };
 		6C46B9161F76B9C2003EE183 /* SimTextureManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimTextureManager.hpp; sourceTree = "<group>"; };
 		6C46B9171F76B9C2003EE183 /* SimTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimTexture.cpp; sourceTree = "<group>"; };
+		6C5740211FA19B8D00532B71 /* MannueApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MannueApp.cpp; sourceTree = "<group>"; };
+		6C5740221FA19B8D00532B71 /* MannueApp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MannueApp.hpp; sourceTree = "<group>"; };
 		6C636ADD1F7CA3D200707367 /* billboard.material */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = billboard.material; sourceTree = "<group>"; };
-		6C636ADE1F7CA48500707367 /* billboard_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = billboard_fs.glsl; sourceTree = "<group>"; };
-		6C636ADF1F7CA48500707367 /* billboard_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = billboard_vs.glsl; sourceTree = "<group>"; };
 		6C636AE11F7E003000707367 /* nx.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nx.png; sourceTree = "<group>"; };
 		6C636AE21F7E003000707367 /* ny.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ny.png; sourceTree = "<group>"; };
 		6C636AE31F7E003000707367 /* nz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nz.png; sourceTree = "<group>"; };
@@ -109,6 +118,49 @@
 		6C652E301F7A002600FE1D79 /* SkyBoxApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SkyBoxApp.cpp; sourceTree = "<group>"; };
 		6C652E311F7A002600FE1D79 /* SkyBoxApp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SkyBoxApp.hpp; sourceTree = "<group>"; };
 		6C652E331F7A078200FE1D79 /* skybox.material */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox.material; sourceTree = "<group>"; };
+		6CA15D371F94968E003C6A01 /* SimParticleSystemRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimParticleSystemRenderer.cpp; sourceTree = "<group>"; };
+		6CA15D381F94968E003C6A01 /* SimParticleSystemRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimParticleSystemRenderer.hpp; sourceTree = "<group>"; };
+		6CA15D3B1F95D2AC003C6A01 /* particle_tfb.material */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle_tfb.material; sourceTree = "<group>"; };
+		6CA15D3D1F95D3DE003C6A01 /* base_light_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = base_light_fs.glsl; sourceTree = "<group>"; };
+		6CA15D3E1F95D3DE003C6A01 /* base_light_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = base_light_vs.glsl; sourceTree = "<group>"; };
+		6CA15D401F95D3DE003C6A01 /* skybox_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_fs.glsl; sourceTree = "<group>"; };
+		6CA15D411F95D3DE003C6A01 /* skybox_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_vs.glsl; sourceTree = "<group>"; };
+		6CA15D431F95D3DE003C6A01 /* ps_tbf_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ps_tbf_fs.glsl; sourceTree = "<group>"; };
+		6CA15D441F95D3DE003C6A01 /* ps_tbf_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ps_tbf_vs.glsl; sourceTree = "<group>"; };
+		6CA15D461F95D3DE003C6A01 /* box_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = box_fs.glsl; sourceTree = "<group>"; };
+		6CA15D471F95D3DE003C6A01 /* box_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = box_vs.glsl; sourceTree = "<group>"; };
+		6CA15D481F95D3DE003C6A01 /* floor_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = floor_fs.glsl; sourceTree = "<group>"; };
+		6CA15D491F95D3DE003C6A01 /* floor_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = floor_vs.glsl; sourceTree = "<group>"; };
+		6CA15D4B1F95D3DE003C6A01 /* parallax_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = parallax_fs.glsl; sourceTree = "<group>"; };
+		6CA15D4C1F95D3DE003C6A01 /* parallax_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = parallax_vs.glsl; sourceTree = "<group>"; };
+		6CA15D4E1F95D3DF003C6A01 /* depth_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = depth_fs.glsl; sourceTree = "<group>"; };
+		6CA15D4F1F95D3DF003C6A01 /* depth_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = depth_vs.glsl; sourceTree = "<group>"; };
+		6CA15D501F95D3DF003C6A01 /* shadow_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shadow_fs.glsl; sourceTree = "<group>"; };
+		6CA15D511F95D3DF003C6A01 /* shadow_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shadow_vs.glsl; sourceTree = "<group>"; };
+		6CA15D521F95D3DF003C6A01 /* test_shadow_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test_shadow_fs.glsl; sourceTree = "<group>"; };
+		6CA15D531F95D3DF003C6A01 /* test_shadow_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test_shadow_vs.glsl; sourceTree = "<group>"; };
+		6CA15D551F95D3DF003C6A01 /* billboard_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = billboard_fs.glsl; sourceTree = "<group>"; };
+		6CA15D561F95D3DF003C6A01 /* billboard_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = billboard_vs.glsl; sourceTree = "<group>"; };
+		6CA15D581F95D43B003C6A01 /* bricks.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks.jpg; sourceTree = "<group>"; };
+		6CA15D591F95D43B003C6A01 /* bricks2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks2.jpg; sourceTree = "<group>"; };
+		6CA15D5A1F95D43B003C6A01 /* bricks2_disp.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks2_disp.jpg; sourceTree = "<group>"; };
+		6CA15D5B1F95D43B003C6A01 /* bricks2_normal.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks2_normal.jpg; sourceTree = "<group>"; };
+		6CA15D5C1F95D43B003C6A01 /* bricks_disp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bricks_disp.png; sourceTree = "<group>"; };
+		6CA15D5D1F95D43B003C6A01 /* bricks_normal.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks_normal.jpg; sourceTree = "<group>"; };
+		6CA15D5F1F95D43B003C6A01 /* defaultTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = defaultTexture.png; sourceTree = "<group>"; };
+		6CA15D601F95D43B003C6A01 /* wood.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wood.png; sourceTree = "<group>"; };
+		6CA15D621F95D43B003C6A01 /* drkwood2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = drkwood2.jpg; sourceTree = "<group>"; };
+		6CA15D631F95D43B003C6A01 /* engineflare1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = engineflare1.jpg; sourceTree = "<group>"; };
+		6CA15D641F95D43B003C6A01 /* SpiderTex.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SpiderTex.jpg; sourceTree = "<group>"; };
+		6CA15D651F95D43B003C6A01 /* wal67ar_small.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wal67ar_small.jpg; sourceTree = "<group>"; };
+		6CA15D661F95D43B003C6A01 /* wal69ar_small.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wal69ar_small.jpg; sourceTree = "<group>"; };
+		6CA15D671F970E5F003C6A01 /* SimInstanceBatch.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimInstanceBatch.cpp; sourceTree = "<group>"; };
+		6CA15D681F970E5F003C6A01 /* SimInstanceBatch.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimInstanceBatch.hpp; sourceTree = "<group>"; };
+		6CA15D6A1F970F11003C6A01 /* SimInstancedModel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimInstancedModel.cpp; sourceTree = "<group>"; };
+		6CA15D6B1F970F11003C6A01 /* SimInstancedModel.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimInstancedModel.hpp; sourceTree = "<group>"; };
+		6CA15D6E1F975F59003C6A01 /* SimOrientedBoundingBox.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimOrientedBoundingBox.hpp; sourceTree = "<group>"; };
+		6CA15D701F987B4F003C6A01 /* SimOrientedBoundingBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimOrientedBoundingBox.cpp; sourceTree = "<group>"; };
+		6CA15D721F98A37C003C6A01 /* box.material */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = box.material; sourceTree = "<group>"; };
 		6CAD48861F80BFC50054624D /* SimBillboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimBillboard.cpp; sourceTree = "<group>"; };
 		6CAD48871F80BFC50054624D /* SimBillboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimBillboard.hpp; sourceTree = "<group>"; };
 		6CD5AE8E1F5E75A800DF8F87 /* SimGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SimGL; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,35 +175,6 @@
 		6CD5AEA21F5E75DF00DF8F87 /* sphere.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sphere.obj; sourceTree = "<group>"; };
 		6CD5AEA31F5E75DF00DF8F87 /* spider.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = spider.mtl; sourceTree = "<group>"; };
 		6CD5AEA41F5E75DF00DF8F87 /* spider.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = spider.obj; sourceTree = "<group>"; };
-		6CD5AEA81F5E75DF00DF8F87 /* base_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = base_fs.glsl; sourceTree = "<group>"; };
-		6CD5AEA91F5E75DF00DF8F87 /* base_light_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = base_light_fs.glsl; sourceTree = "<group>"; };
-		6CD5AEAA1F5E75DF00DF8F87 /* base_light_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = base_light_vs.glsl; sourceTree = "<group>"; };
-		6CD5AEAB1F5E75DF00DF8F87 /* base_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = base_vs.glsl; sourceTree = "<group>"; };
-		6CD5AEAC1F5E75DF00DF8F87 /* depth_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = depth_fs.glsl; sourceTree = "<group>"; };
-		6CD5AEAD1F5E75DF00DF8F87 /* depth_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = depth_vs.glsl; sourceTree = "<group>"; };
-		6CD5AEAE1F5E75DF00DF8F87 /* floor_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = floor_fs.glsl; sourceTree = "<group>"; };
-		6CD5AEAF1F5E75DF00DF8F87 /* floor_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = floor_vs.glsl; sourceTree = "<group>"; };
-		6CD5AEB01F5E75DF00DF8F87 /* parallax_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = parallax_fs.glsl; sourceTree = "<group>"; };
-		6CD5AEB11F5E75DF00DF8F87 /* parallax_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = parallax_vs.glsl; sourceTree = "<group>"; };
-		6CD5AEB21F5E75DF00DF8F87 /* shadow_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shadow_fs.glsl; sourceTree = "<group>"; };
-		6CD5AEB31F5E75DF00DF8F87 /* shadow_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shadow_vs.glsl; sourceTree = "<group>"; };
-		6CD5AEB41F5E75DF00DF8F87 /* skybox_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_fs.glsl; sourceTree = "<group>"; };
-		6CD5AEB51F5E75DF00DF8F87 /* skybox_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = skybox_vs.glsl; sourceTree = "<group>"; };
-		6CD5AEB61F5E75DF00DF8F87 /* test_shadow_fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test_shadow_fs.glsl; sourceTree = "<group>"; };
-		6CD5AEB71F5E75DF00DF8F87 /* test_shadow_vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test_shadow_vs.glsl; sourceTree = "<group>"; };
-		6CD5AEB91F5E75DF00DF8F87 /* bricks.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks.jpg; sourceTree = "<group>"; };
-		6CD5AEBA1F5E75DF00DF8F87 /* bricks2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks2.jpg; sourceTree = "<group>"; };
-		6CD5AEBB1F5E75DF00DF8F87 /* bricks2_disp.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks2_disp.jpg; sourceTree = "<group>"; };
-		6CD5AEBC1F5E75DF00DF8F87 /* bricks2_normal.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks2_normal.jpg; sourceTree = "<group>"; };
-		6CD5AEBD1F5E75DF00DF8F87 /* bricks_disp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bricks_disp.png; sourceTree = "<group>"; };
-		6CD5AEBE1F5E75DF00DF8F87 /* bricks_normal.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bricks_normal.jpg; sourceTree = "<group>"; };
-		6CD5AEBF1F5E75DF00DF8F87 /* defaultTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = defaultTexture.png; sourceTree = "<group>"; };
-		6CD5AEC01F5E75DF00DF8F87 /* drkwood2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = drkwood2.jpg; sourceTree = "<group>"; };
-		6CD5AEC11F5E75DF00DF8F87 /* engineflare1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = engineflare1.jpg; sourceTree = "<group>"; };
-		6CD5AEC21F5E75DF00DF8F87 /* SpiderTex.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SpiderTex.jpg; sourceTree = "<group>"; };
-		6CD5AEC31F5E75DF00DF8F87 /* wal67ar_small.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wal67ar_small.jpg; sourceTree = "<group>"; };
-		6CD5AEC41F5E75DF00DF8F87 /* wal69ar_small.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wal69ar_small.jpg; sourceTree = "<group>"; };
-		6CD5AEC51F5E75DF00DF8F87 /* wood.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wood.png; sourceTree = "<group>"; };
 		6CD5AEC91F5E75DF00DF8F87 /* .editorconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .editorconfig; sourceTree = "<group>"; };
 		6CD5AECA1F5E75DF00DF8F87 /* ai_assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ai_assert.h; sourceTree = "<group>"; };
 		6CD5AECB1F5E75DF00DF8F87 /* anim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = anim.h; sourceTree = "<group>"; };
@@ -569,6 +592,15 @@
 		6CD5B0C31F5E760800DF8F87 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		6CD5B0C51F5E761400DF8F87 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6CD5B0C71F5E761C00DF8F87 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		6CD65F421F8DF0250069D662 /* SimBoundingBox.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimBoundingBox.hpp; sourceTree = "<group>"; };
+		6CD65F441F8E1BDF0069D662 /* SimBillboardSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimBillboardSet.cpp; sourceTree = "<group>"; };
+		6CD65F451F8E1BDF0069D662 /* SimBillboardSet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimBillboardSet.hpp; sourceTree = "<group>"; };
+		6CEC4C491F94590600319B95 /* ParticleApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleApp.cpp; sourceTree = "<group>"; };
+		6CEC4C4A1F94590600319B95 /* ParticleApp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ParticleApp.hpp; sourceTree = "<group>"; };
+		6CEC4C4C1F94627D00319B95 /* SimParticle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimParticle.cpp; sourceTree = "<group>"; };
+		6CEC4C4D1F94627D00319B95 /* SimParticle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimParticle.hpp; sourceTree = "<group>"; };
+		6CEC4C4F1F9464D100319B95 /* SimParticleSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimParticleSystem.cpp; sourceTree = "<group>"; };
+		6CEC4C501F9464D100319B95 /* SimParticleSystem.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimParticleSystem.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -625,6 +657,109 @@
 			path = skybox;
 			sourceTree = "<group>";
 		};
+		6CA15D3C1F95D3DE003C6A01 /* lighting */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D3D1F95D3DE003C6A01 /* base_light_fs.glsl */,
+				6CA15D3E1F95D3DE003C6A01 /* base_light_vs.glsl */,
+			);
+			path = lighting;
+			sourceTree = "<group>";
+		};
+		6CA15D3F1F95D3DE003C6A01 /* skybox */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D401F95D3DE003C6A01 /* skybox_fs.glsl */,
+				6CA15D411F95D3DE003C6A01 /* skybox_vs.glsl */,
+			);
+			path = skybox;
+			sourceTree = "<group>";
+		};
+		6CA15D421F95D3DE003C6A01 /* particle */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D431F95D3DE003C6A01 /* ps_tbf_fs.glsl */,
+				6CA15D441F95D3DE003C6A01 /* ps_tbf_vs.glsl */,
+			);
+			path = particle;
+			sourceTree = "<group>";
+		};
+		6CA15D451F95D3DE003C6A01 /* base */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D461F95D3DE003C6A01 /* box_fs.glsl */,
+				6CA15D471F95D3DE003C6A01 /* box_vs.glsl */,
+				6CA15D481F95D3DE003C6A01 /* floor_fs.glsl */,
+				6CA15D491F95D3DE003C6A01 /* floor_vs.glsl */,
+			);
+			path = base;
+			sourceTree = "<group>";
+		};
+		6CA15D4A1F95D3DE003C6A01 /* mapping */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D4B1F95D3DE003C6A01 /* parallax_fs.glsl */,
+				6CA15D4C1F95D3DE003C6A01 /* parallax_vs.glsl */,
+			);
+			path = mapping;
+			sourceTree = "<group>";
+		};
+		6CA15D4D1F95D3DF003C6A01 /* shadow */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D4E1F95D3DF003C6A01 /* depth_fs.glsl */,
+				6CA15D4F1F95D3DF003C6A01 /* depth_vs.glsl */,
+				6CA15D501F95D3DF003C6A01 /* shadow_fs.glsl */,
+				6CA15D511F95D3DF003C6A01 /* shadow_vs.glsl */,
+				6CA15D521F95D3DF003C6A01 /* test_shadow_fs.glsl */,
+				6CA15D531F95D3DF003C6A01 /* test_shadow_vs.glsl */,
+			);
+			path = shadow;
+			sourceTree = "<group>";
+		};
+		6CA15D541F95D3DF003C6A01 /* billboard */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D551F95D3DF003C6A01 /* billboard_fs.glsl */,
+				6CA15D561F95D3DF003C6A01 /* billboard_vs.glsl */,
+			);
+			path = billboard;
+			sourceTree = "<group>";
+		};
+		6CA15D571F95D43B003C6A01 /* bricks */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D581F95D43B003C6A01 /* bricks.jpg */,
+				6CA15D591F95D43B003C6A01 /* bricks2.jpg */,
+				6CA15D5A1F95D43B003C6A01 /* bricks2_disp.jpg */,
+				6CA15D5B1F95D43B003C6A01 /* bricks2_normal.jpg */,
+				6CA15D5C1F95D43B003C6A01 /* bricks_disp.png */,
+				6CA15D5D1F95D43B003C6A01 /* bricks_normal.jpg */,
+			);
+			path = bricks;
+			sourceTree = "<group>";
+		};
+		6CA15D5E1F95D43B003C6A01 /* example */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D5F1F95D43B003C6A01 /* defaultTexture.png */,
+				6CA15D601F95D43B003C6A01 /* wood.png */,
+			);
+			path = example;
+			sourceTree = "<group>";
+		};
+		6CA15D611F95D43B003C6A01 /* spider */ = {
+			isa = PBXGroup;
+			children = (
+				6CA15D621F95D43B003C6A01 /* drkwood2.jpg */,
+				6CA15D631F95D43B003C6A01 /* engineflare1.jpg */,
+				6CA15D641F95D43B003C6A01 /* SpiderTex.jpg */,
+				6CA15D651F95D43B003C6A01 /* wal67ar_small.jpg */,
+				6CA15D661F95D43B003C6A01 /* wal69ar_small.jpg */,
+			);
+			path = spider;
+			sourceTree = "<group>";
+		};
 		6CD5AE851F5E75A800DF8F87 = {
 			isa = PBXGroup;
 			children = (
@@ -657,12 +792,16 @@
 		6CD5AE981F5E75DF00DF8F87 /* app */ = {
 			isa = PBXGroup;
 			children = (
+				6C5740211FA19B8D00532B71 /* MannueApp.cpp */,
+				6C5740221FA19B8D00532B71 /* MannueApp.hpp */,
 				6CD5AE991F5E75DF00DF8F87 /* PlaneApp.cpp */,
 				6CD5AE9A1F5E75DF00DF8F87 /* PlaneApp.hpp */,
 				6CD5AE9B1F5E75DF00DF8F87 /* ShadowApp.cpp */,
 				6CD5AE9C1F5E75DF00DF8F87 /* ShadowApp.hpp */,
 				6C652E301F7A002600FE1D79 /* SkyBoxApp.cpp */,
 				6C652E311F7A002600FE1D79 /* SkyBoxApp.hpp */,
+				6CEC4C491F94590600319B95 /* ParticleApp.cpp */,
+				6CEC4C4A1F94590600319B95 /* ParticleApp.hpp */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -694,6 +833,8 @@
 		6CD5AEA51F5E75DF00DF8F87 /* script */ = {
 			isa = PBXGroup;
 			children = (
+				6CA15D721F98A37C003C6A01 /* box.material */,
+				6CA15D3B1F95D2AC003C6A01 /* particle_tfb.material */,
 				6C636ADD1F7CA3D200707367 /* billboard.material */,
 				6C652E331F7A078200FE1D79 /* skybox.material */,
 				6C46B90E1F7602B5003EE183 /* floor.material */,
@@ -704,24 +845,13 @@
 		6CD5AEA71F5E75DF00DF8F87 /* shader */ = {
 			isa = PBXGroup;
 			children = (
-				6C636ADE1F7CA48500707367 /* billboard_fs.glsl */,
-				6C636ADF1F7CA48500707367 /* billboard_vs.glsl */,
-				6CD5AEA81F5E75DF00DF8F87 /* base_fs.glsl */,
-				6CD5AEA91F5E75DF00DF8F87 /* base_light_fs.glsl */,
-				6CD5AEAA1F5E75DF00DF8F87 /* base_light_vs.glsl */,
-				6CD5AEAB1F5E75DF00DF8F87 /* base_vs.glsl */,
-				6CD5AEAC1F5E75DF00DF8F87 /* depth_fs.glsl */,
-				6CD5AEAD1F5E75DF00DF8F87 /* depth_vs.glsl */,
-				6CD5AEAE1F5E75DF00DF8F87 /* floor_fs.glsl */,
-				6CD5AEAF1F5E75DF00DF8F87 /* floor_vs.glsl */,
-				6CD5AEB01F5E75DF00DF8F87 /* parallax_fs.glsl */,
-				6CD5AEB11F5E75DF00DF8F87 /* parallax_vs.glsl */,
-				6CD5AEB21F5E75DF00DF8F87 /* shadow_fs.glsl */,
-				6CD5AEB31F5E75DF00DF8F87 /* shadow_vs.glsl */,
-				6CD5AEB41F5E75DF00DF8F87 /* skybox_fs.glsl */,
-				6CD5AEB51F5E75DF00DF8F87 /* skybox_vs.glsl */,
-				6CD5AEB61F5E75DF00DF8F87 /* test_shadow_fs.glsl */,
-				6CD5AEB71F5E75DF00DF8F87 /* test_shadow_vs.glsl */,
+				6CA15D451F95D3DE003C6A01 /* base */,
+				6CA15D541F95D3DF003C6A01 /* billboard */,
+				6CA15D3C1F95D3DE003C6A01 /* lighting */,
+				6CA15D4A1F95D3DE003C6A01 /* mapping */,
+				6CA15D421F95D3DE003C6A01 /* particle */,
+				6CA15D4D1F95D3DF003C6A01 /* shadow */,
+				6CA15D3F1F95D3DE003C6A01 /* skybox */,
 			);
 			path = shader;
 			sourceTree = "<group>";
@@ -729,20 +859,10 @@
 		6CD5AEB81F5E75DF00DF8F87 /* texture */ = {
 			isa = PBXGroup;
 			children = (
+				6CA15D571F95D43B003C6A01 /* bricks */,
+				6CA15D5E1F95D43B003C6A01 /* example */,
+				6CA15D611F95D43B003C6A01 /* spider */,
 				6C652E341F7A09DE00FE1D79 /* skybox */,
-				6CD5AEB91F5E75DF00DF8F87 /* bricks.jpg */,
-				6CD5AEBA1F5E75DF00DF8F87 /* bricks2.jpg */,
-				6CD5AEBB1F5E75DF00DF8F87 /* bricks2_disp.jpg */,
-				6CD5AEBC1F5E75DF00DF8F87 /* bricks2_normal.jpg */,
-				6CD5AEBD1F5E75DF00DF8F87 /* bricks_disp.png */,
-				6CD5AEBE1F5E75DF00DF8F87 /* bricks_normal.jpg */,
-				6CD5AEBF1F5E75DF00DF8F87 /* defaultTexture.png */,
-				6CD5AEC01F5E75DF00DF8F87 /* drkwood2.jpg */,
-				6CD5AEC11F5E75DF00DF8F87 /* engineflare1.jpg */,
-				6CD5AEC21F5E75DF00DF8F87 /* SpiderTex.jpg */,
-				6CD5AEC31F5E75DF00DF8F87 /* wal67ar_small.jpg */,
-				6CD5AEC41F5E75DF00DF8F87 /* wal69ar_small.jpg */,
-				6CD5AEC51F5E75DF00DF8F87 /* wood.png */,
 			);
 			path = texture;
 			sourceTree = "<group>";
@@ -1308,6 +1428,21 @@
 				6CD5B0801F5E75DF00DF8F87 /* SimVertexIndexData.hpp */,
 				6CAD48861F80BFC50054624D /* SimBillboard.cpp */,
 				6CAD48871F80BFC50054624D /* SimBillboard.hpp */,
+				6CD65F421F8DF0250069D662 /* SimBoundingBox.hpp */,
+				6CD65F441F8E1BDF0069D662 /* SimBillboardSet.cpp */,
+				6CD65F451F8E1BDF0069D662 /* SimBillboardSet.hpp */,
+				6CEC4C4C1F94627D00319B95 /* SimParticle.cpp */,
+				6CEC4C4D1F94627D00319B95 /* SimParticle.hpp */,
+				6CEC4C4F1F9464D100319B95 /* SimParticleSystem.cpp */,
+				6CEC4C501F9464D100319B95 /* SimParticleSystem.hpp */,
+				6CA15D371F94968E003C6A01 /* SimParticleSystemRenderer.cpp */,
+				6CA15D381F94968E003C6A01 /* SimParticleSystemRenderer.hpp */,
+				6CA15D671F970E5F003C6A01 /* SimInstanceBatch.cpp */,
+				6CA15D681F970E5F003C6A01 /* SimInstanceBatch.hpp */,
+				6CA15D6A1F970F11003C6A01 /* SimInstancedModel.cpp */,
+				6CA15D6B1F970F11003C6A01 /* SimInstancedModel.hpp */,
+				6CA15D701F987B4F003C6A01 /* SimOrientedBoundingBox.cpp */,
+				6CA15D6E1F975F59003C6A01 /* SimOrientedBoundingBox.hpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -1381,15 +1516,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				6CD5B0A81F5E75DF00DF8F87 /* SimRenderable.cpp in Sources */,
+				6CEC4C4B1F94590600319B95 /* ParticleApp.cpp in Sources */,
 				6CD5B0BD1F5E75DF00DF8F87 /* SimTransform.cpp in Sources */,
 				6CD5B0811F5E75DF00DF8F87 /* PlaneApp.cpp in Sources */,
 				6CD5B0B81F5E75DF00DF8F87 /* SimSubModel.cpp in Sources */,
 				6CD5B0AB1F5E75DF00DF8F87 /* SimRenderQueueGroup.cpp in Sources */,
 				6CD5B0A01F5E75DF00DF8F87 /* SimMaterialManager.cpp in Sources */,
 				6CD5B0B11F5E75DF00DF8F87 /* SimScriptParser.cpp in Sources */,
+				6CA15D391F94968E003C6A01 /* SimParticleSystemRenderer.cpp in Sources */,
+				6CEC4C511F9464D100319B95 /* SimParticleSystem.cpp in Sources */,
 				6CD5B09D1F5E75DF00DF8F87 /* SimLight.cpp in Sources */,
 				6CD5B0A51F5E75DF00DF8F87 /* SimNode.cpp in Sources */,
 				6CD5B0821F5E75DF00DF8F87 /* ShadowApp.cpp in Sources */,
+				6CA15D6C1F970F11003C6A01 /* SimInstancedModel.cpp in Sources */,
 				6CD5B0A11F5E75DF00DF8F87 /* SimMesh.cpp in Sources */,
 				6CD5B0AD1F5E75DF00DF8F87 /* SimSceneManager.cpp in Sources */,
 				6CD5B0AF1F5E75DF00DF8F87 /* SimScriptCompiler.cpp in Sources */,
@@ -1401,6 +1540,7 @@
 				6CD5B0A91F5E75DF00DF8F87 /* SimRenderOperation.cpp in Sources */,
 				6CD5B0B71F5E75DF00DF8F87 /* SimSubMesh.cpp in Sources */,
 				6CD5B0AE1F5E75DF00DF8F87 /* SimSceneNode.cpp in Sources */,
+				6CA15D711F987B4F003C6A01 /* SimOrientedBoundingBox.cpp in Sources */,
 				6CD5B0981F5E75DF00DF8F87 /* SimGLShader.cpp in Sources */,
 				6CD5B0921F5E75DF00DF8F87 /* SimFrustum.cpp in Sources */,
 				6C09E1931F690018003BF63C /* SimParameterDataSource.cpp in Sources */,
@@ -1408,11 +1548,13 @@
 				6CD5B09E1F5E75DF00DF8F87 /* SimLogManager.cpp in Sources */,
 				6CD5B0B21F5E75DF00DF8F87 /* SimScriptTranslator.cpp in Sources */,
 				6CD5B0A21F5E75DF00DF8F87 /* SimMeshManager.cpp in Sources */,
+				6CD65F461F8E1BDF0069D662 /* SimBillboardSet.cpp in Sources */,
 				6C46B91A1F76B9C2003EE183 /* SimTexture.cpp in Sources */,
 				6CAD48881F80BFC50054624D /* SimBillboard.cpp in Sources */,
 				6CD5B0A61F5E75DF00DF8F87 /* SimPass.cpp in Sources */,
 				6CD5B0AC1F5E75DF00DF8F87 /* SimResourceManager.cpp in Sources */,
 				6CD5B09F1F5E75DF00DF8F87 /* SimMaterial.cpp in Sources */,
+				6CA15D691F970E5F003C6A01 /* SimInstanceBatch.cpp in Sources */,
 				6CD5B09A1F5E75DF00DF8F87 /* SimHardwareBuffer.cpp in Sources */,
 				6CD5B0971F5E75DF00DF8F87 /* SimGLRenderSystem.cpp in Sources */,
 				6CD5B08F1F5E75DF00DF8F87 /* SimApp.cpp in Sources */,
@@ -1423,6 +1565,8 @@
 				6CD5B0A31F5E75DF00DF8F87 /* SimModel.cpp in Sources */,
 				6CD5B0991F5E75DF00DF8F87 /* SimGLShaderParams.cpp in Sources */,
 				6CD5B0911F5E75DF00DF8F87 /* SimFramebuffer.cpp in Sources */,
+				6CEC4C4E1F94627D00319B95 /* SimParticle.cpp in Sources */,
+				6C5740231FA19B8D00532B71 /* MannueApp.cpp in Sources */,
 				6CD5B0B01F5E75DF00DF8F87 /* SimScriptLexer.cpp in Sources */,
 				6CD5B0931F5E75DF00DF8F87 /* SimGameWindow.cpp in Sources */,
 				6CD5B0901F5E75DF00DF8F87 /* SimCamera.cpp in Sources */,

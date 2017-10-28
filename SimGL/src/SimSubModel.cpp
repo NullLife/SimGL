@@ -81,11 +81,22 @@ bool SubModel::isVisible()
 
 void SubModel::getRenderOperation(RenderOperation& op)
 {
-    op.mVertexData = mSubMesh->getVertexData();
-    op.mVerNum = op.mVertexData->getBuffer()->getNumVertices();
-    op.mIndexData = mSubMesh->getIndexData();
-    op.mIndexNum = op.mIndexData->getBuffer()->getNumIndices();
-    op.mUseIndex = true;
+    op._drawType = mParent->getDrawType();
+    op._polyMode = mParent->getPolygonMode();
     
-    op.mDrawType = mParent->getDrawType();
+    op._vertexData = mSubMesh->getVertexData();
+    op._indexData = mSubMesh->getIndexData();
+    
+    op._start = 0;
+    
+    if (op._indexData)
+    {
+        op._useIndex = true;
+        op._count = op._indexData->getNumIndices();
+    }
+    else
+    {
+        op._useIndex = false;
+        op._count = op._vertexData->getNumVertices();
+    }
 }

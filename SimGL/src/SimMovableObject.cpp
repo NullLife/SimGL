@@ -16,12 +16,10 @@ MovableObject::MovableObject(const String& name) :
     mParent(nullptr),
     mQueueID(RQT_NORMAL),
     mVisible(true)
-{
-}
+{}
 
 MovableObject::~MovableObject()
-{
-}
+{}
 
 const String& MovableObject::getName()
 {
@@ -41,6 +39,14 @@ Node* MovableObject::getParentNode()
 SceneNode* MovableObject::getParentSceneNode()
 {
     return static_cast<SceneNode*>(mParent);
+}
+
+const BoundingBox& MovableObject::getBoundingBox()
+{
+    if (!_bb.valid())
+        calcBoundingBox();
+    
+    return _bb;
 }
 
 void MovableObject::setRenderQueueGroup(const int queueID)

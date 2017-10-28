@@ -15,6 +15,7 @@
 class GLRenderSystem;
 class RenderQueue;
 class Renderable;
+class Model;
 class SubModel;
 class Mesh;
 class Pass;
@@ -22,6 +23,9 @@ class Material;
 class Camera;
 class Framebuffer;
 class ParameterDataSource;
+
+class ParticleSystem;
+class InstanceBatch;
 
 typedef HashMap<String, Node *> NodeMap;
 typedef Vector<Texture*> ShadowTextureList;
@@ -43,15 +47,12 @@ public:
     void setClearDepth(const float depth);
     
     void setEnableShadow(const bool enableShadow);
-    
     const bool isEnableShadow() const;
     
     void addLight(Light* light);
-    
     const LightList& getLights();
 
     Camera *createCamera(const String& name);
-
     Camera *getCamera();
     
     ParameterDataSource* getParameterDataSource();
@@ -59,14 +60,16 @@ public:
     SceneNode *getRootNode();
 
     SceneNode *createNode(const String &name);
-    
+    SceneNode *getNode(const String &name);
     void deleteNode(SceneNode* node);
     
     Model *createModel(const String &name);
-
     Model *createModel(const String &name, const String& material);
-
     Model *createModel(Mesh* mesh);
+    
+    InstanceBatch* createInstanceBatch(const String& name, const String& mesh, const String& material);
+    
+    ParticleSystem* createParticleSystem(const String& name, size_t poolSize);
 
     void updateScene();
 
@@ -76,6 +79,8 @@ private:
     void _clearRenderQueue();
     void _renderScene();
     void _renderSingleObject(Renderable *rend, Pass* pass);
+    
+    void _renderBox(Renderable *rend);
     
     void _updateBillboard(Node* billboard, Camera* camera);
     

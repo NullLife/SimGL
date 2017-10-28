@@ -15,7 +15,8 @@ class Material;
 class Pass;
 
 
-class Technique {
+class Technique
+{
 public:
     typedef Vector<Pass*> PassList;
     

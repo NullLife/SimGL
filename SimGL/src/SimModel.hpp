@@ -19,31 +19,18 @@ class Model : public MovableObject
 public:
     typedef Vector<SubModel*> SubModelList;
     
-    enum PolygonMode
-    {
-        PM_POINT = 0x1B00,
-        PM_LINE,
-        PM_FILL
-    };
-    
 public:
     Model(const String &name);
     Model(Mesh* mesh);
-
     ~Model();
 
-private:
-    MeshPtr mMeshPtr;
-    SubModelList mSubModelList;
-    PolygonMode _polyMode;
-    DrawType _drawType;
-
-public:
     const String& getName() { return mName; }
     
     const MeshPtr& getMesh();
-
-    void setParent(SceneNode* node);
+    
+    void calcBoundingBox();
+    void createBoundingBoxBuffer();
+    void renderBoundingBox(GLRenderSystem* rs);
     
     void setMaterial(const MaterialPtr& mtlPtr);
     void setMaterial(const String& material);
@@ -64,6 +51,17 @@ private:
     MeshPtr _loadMesh(const String& name);
     
     void _buildSubModelList(const MeshPtr& meshPtr);
+    
+    MeshPtr _meshPtr;
+    SubModelList _smList;
+    PolygonMode _polyMode;
+    DrawType _drawType;
+    
+    VertexData* _bbVertexData;
+    IndexData* _bbIndexData;
+    MaterialPtr _bbMaterial;
+    GLuint _bbVao;
+    bool _needUpdateBBBufer;
 };
 
 

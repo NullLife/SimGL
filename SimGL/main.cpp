@@ -9,7 +9,7 @@
 #include "PlaneApp.hpp"
 
 int main(int argc, const char * argv[]) {
-    PlaneApp app("PlaneApp");
+    PlaneApp app("MannueApp");
     app.running();
     return 0;
 }

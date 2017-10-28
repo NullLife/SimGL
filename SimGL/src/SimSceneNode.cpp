@@ -18,16 +18,16 @@ SceneNode::~SceneNode()
 {
     LogManager::getSingleton().debug("delete SceneNode: " + mName +
                                      ", child node num: " + StringUtils::toString((int)mChildren.size()) +
-                                     ", model num: " + StringUtils::toString((int) mModels.size()));
+                                     ", model num: " + StringUtils::toString((int) _movableObjList.size()));
     
     // Delete the models attached to node.
-    ModelList::iterator iter = mModels.begin();
-    for (; iter != mModels.end(); ++iter)
+    MovableObjectList::iterator iter = _movableObjList.begin();
+    for (; iter != _movableObjList.end(); ++iter)
     {
         delete *iter;
     }
-    mModels.clear();
-    mModels.shrink_to_fit();
+    _movableObjList.clear();
+    _movableObjList.shrink_to_fit();
 }
 
 SceneManager* SceneNode::getSceneManager()
@@ -35,24 +35,16 @@ SceneManager* SceneNode::getSceneManager()
     return mSceneManager;
 }
 
-SceneNode::ModelList &SceneNode::getModelList()
+const unsigned int SceneNode::attach(MovableObject *object)
 {
-    return mModels;
+    object->setParent(this);
+    _movableObjList.push_back(object);
+    return (unsigned int)(_movableObjList.size()-1);
 }
 
-const unsigned int SceneNode::attach(Model *model)
+MovableObject* SceneNode::getMovableObject(const unsigned int index)
 {
-    mModels.push_back(model);
-
-    // Set parent
-    model->setParent(this);
-
-    return (unsigned int)(mModels.size()-1);
-}
-
-Model* SceneNode::getModel(const unsigned int index)
-{
-    return mModels[index];
+    return _movableObjList[index];
 }
 
 SceneNode *SceneNode::createChild(const String &childName)
@@ -64,6 +56,11 @@ SceneNode *SceneNode::createChild(const String &childName)
         mChildren.push_back(node);
     }
     return node;
+}
+
+SceneNode* SceneNode::getChild(const String& childName)
+{
+    return mSceneManager->getNode(childName);
 }
 
 void SceneNode::deleteNode()
@@ -94,8 +91,8 @@ void SceneNode::updateRenderQueue(RenderQueue *queue)
     // Find visible
 
     // Add models in this node
-    ModelList::iterator modelIter;
-    for (modelIter=mModels.begin(); modelIter!=mModels.end(); ++modelIter)
+    MovableObjectList::iterator modelIter;
+    for (modelIter=_movableObjList.begin(); modelIter!=_movableObjList.end(); ++modelIter)
     {
         (*modelIter)->updateRenderQueue(queue);
     }

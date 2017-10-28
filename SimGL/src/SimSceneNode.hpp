@@ -10,30 +10,30 @@
 
 class SceneManager;
 class RenderQueue;
-class Model;
+class MovableObject;
 class Mesh;
 
 class SceneNode : public Node
 {
 public:
-    typedef Vector<Model*> ModelList;
+    typedef Vector<MovableObject*> MovableObjectList;
 
 public:
     SceneNode(SceneManager* sm, const String& name);
     virtual ~SceneNode();
 
 private:
-    ModelList mModels;
+    MovableObjectList _movableObjList;
     SceneManager* mSceneManager;
 
 public:
     SceneManager* getSceneManager();
     
-    ModelList& getModelList();
+    MovableObjectList& getMovableObjectList() { return _movableObjList; }
 
-    const unsigned int attach(Model* model);
+    const unsigned int attach(MovableObject* object);
 
-    Model* getModel(const unsigned int index);
+    MovableObject* getMovableObject(const unsigned int index);
 
     void updateRenderQueue(RenderQueue *queue);
     
@@ -42,6 +42,8 @@ public:
     void deleteNode(Node* node);
 
     SceneNode* createChild(const String& childName);
+    
+    virtual SceneNode* getChild(const String& childName);
 };
 
 #endif //SIMGL_SCENENODE_HPP

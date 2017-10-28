@@ -13,22 +13,27 @@
 template<> MeshManager *Singleton<MeshManager>::mSingleton = nullptr;
 
 
-MeshManager::MeshManager() {}
+MeshManager::MeshManager()
+{}
 
-MeshManager::~MeshManager() {
+MeshManager::~MeshManager()
+{
     mCache.clear();
 }
 
-MeshManager::MeshPtr MeshManager::getMesh(const String &name) {
+MeshManager::MeshPtr MeshManager::getMesh(const String &name)
+{
     auto it = mCache.find(name);
-    if (it != mCache.end()) {
+    if (it != mCache.end())
+    {
         return it->second;
     }
     
     // Create mesh and load it.
     Mesh* mesh = createMesh(name);
     MeshPtr ptr(mesh);
-    if (!ptr) {
+    if (!ptr)
+    {
         return ptr;
     }
     // Cache it.
@@ -38,7 +43,8 @@ MeshManager::MeshPtr MeshManager::getMesh(const String &name) {
 }
 
 
-Mesh* MeshManager::createMesh(const String& name) {
+Mesh* MeshManager::createMesh(const String& name)
+{
     Assimp::Importer import;
     const aiScene *ai_scene = import.ReadFile(MODEL_RESOURCE_DIR + name,
                                               aiProcess_Triangulate |
@@ -46,7 +52,8 @@ Mesh* MeshManager::createMesh(const String& name) {
                                               aiProcess_FlipUVs |
                                               aiProcess_CalcTangentSpace);
     
-    if (!ai_scene || ai_scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode) {
+    if (!ai_scene || ai_scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode)
+    {
         LogManager::getSingleton().debug("MeshManager::load", import.GetErrorString());
         return nullptr;
     }
@@ -57,20 +64,25 @@ Mesh* MeshManager::createMesh(const String& name) {
     return mesh;
 }
 
-void MeshManager::processAiNode(const aiScene* ai_scene, aiNode* ai_node, Mesh* mesh) {
+void MeshManager::processAiNode(const aiScene* ai_scene, aiNode* ai_node, Mesh* mesh)
+{
     // Process meshes of current node.
-    for (unsigned int i = 0; i < ai_node->mNumMeshes; i++) {
+    for (unsigned int i = 0; i < ai_node->mNumMeshes; i++)
+    {
         aiMesh *ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
         processAiMesh(ai_scene, ai_mesh, mesh);
     }
     // Process node recursively.
-    for (unsigned int i = 0; i < ai_node->mNumChildren; i++) {
+    for (unsigned int i = 0; i < ai_node->mNumChildren; i++)
+    {
         processAiNode(ai_scene, ai_node->mChildren[i], mesh);
     }
 }
 
-void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* mesh) {
-    if (ai_mesh->mNumVertices <= 0) {
+void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* mesh)
+{
+    if (ai_mesh->mNumVertices <= 0)
+    {
         return;
     }
     // Vertex data declare. [position, normal, tangent, texcoord]
@@ -89,8 +101,7 @@ void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* 
     // Vertex data.
     VertexData* vertexData = new VertexData(vertexDD);
     // Initializing vertex gpu buffer.
-    vertexData->initBuffer(vertexDD->getStride(), ai_mesh->mNumVertices, HardwareBuffer::Usage::HBU_STATIC);
-    HardwareVertexBuffer* hvb = vertexData->getBuffer();
+    HardwareVertexBuffer* hvb = vertexData->createBuffer(vertexDD->getStride(), ai_mesh->mNumVertices, HardwareBuffer::Usage::HBU_STATIC);
     
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
     Vector<float> vertices;
@@ -118,16 +129,18 @@ void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* 
     // Index data.
     IndexData* indexData = new IndexData();
     std::vector<unsigned int> indices;
-    for (unsigned int i = 0; i < ai_mesh->mNumFaces; ++i) {
+    for (unsigned int i = 0; i < ai_mesh->mNumFaces; ++i)
+    {
         aiFace ai_face = ai_mesh->mFaces[i];
-        for (unsigned int j = 0; j < ai_face.mNumIndices; ++j) {
+        for (unsigned int j = 0; j < ai_face.mNumIndices; ++j)
+        {
             indices.push_back(ai_face.mIndices[j]);
         }
     }
     
     // Initializing vertex index gpu buffer.
-    indexData->initBuffer(HardwareIndexBuffer::IndexType::IT_UInt, indices.size(), HardwareBuffer::Usage::HBU_STATIC);
-    HardwareIndexBuffer* hib = indexData->getBuffer();
+    HardwareIndexBuffer* hib = indexData->createBuffer(HardwareIndexBuffer::IndexType::IT_UInt, indices.size(), HardwareBuffer::Usage::HBU_STATIC);
+
     hib->writeData(0, hib->getSize(), &indices[0]);
     
     // Release.
@@ -147,7 +160,8 @@ void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* 
     mesh->addSubMesh(subMesh);
     
     // Texture data.
-    if (ai_mesh->mMaterialIndex > 0) {
+    if (ai_mesh->mMaterialIndex > 0)
+    {
         aiMaterial *mtl = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
         processAiMaterial(mtl, aiTextureType_AMBIENT, "texture_ambient", subMesh);
         processAiMaterial(mtl, aiTextureType_DIFFUSE, "texture_diffuse", subMesh);
@@ -156,11 +170,14 @@ void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* 
     }
 }
 
-void MeshManager::processAiMaterial(aiMaterial *mtl, const aiTextureType type, const String &typeName, SubMesh* subMesh) {
+void MeshManager::processAiMaterial(aiMaterial *mtl, const aiTextureType type, const String &typeName, SubMesh* subMesh)
+{
     int count = mtl->GetTextureCount(type);
     aiString filename;
-    for (unsigned int i = 0; i < count; i++) {
-        if (mtl->GetTexture(type, i, &filename) != AI_SUCCESS) {
+    for (unsigned int i = 0; i < count; i++)
+    {
+        if (mtl->GetTexture(type, i, &filename) != AI_SUCCESS)
+        {
             continue;
         }
         const String name     = filename.data;

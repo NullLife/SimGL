@@ -12,7 +12,8 @@
 #include "SimSingleton.hpp"
 #include "SimCommon.hpp"
 
-class VertexArrayManager : public Singleton<VertexArrayManager> {
+class VertexArrayManager : public Singleton<VertexArrayManager>
+{
 public:
     typedef HashMap<SimUInt64, GLuint> VaoHashMap;
     

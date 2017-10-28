@@ -26,7 +26,7 @@ public:
     const GLuint getBufferId() const { return _bufferId; }
     
 private:
-    void* _lockImpl(size_t start, size_t length);
+    void* _lockImpl(size_t start, size_t length, char writeBit = 1);
     void _unlockImpl();
     
     void createBuffer();

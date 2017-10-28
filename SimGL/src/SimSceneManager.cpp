@@ -26,6 +26,9 @@
 #include "SimTransform.hpp"
 #include "SimParameterDataSource.hpp"
 
+#include "SimParticleSystem.hpp"
+#include "SimInstanceBatch.hpp"
+
 SceneManager::SceneManager(const String &name) :
     mName(name),
     mClearColor(Vec4(0.0f, 0.0f, 0.0f, 1.0f)),
@@ -215,6 +218,16 @@ SceneNode *SceneManager::createNode(const String &name)
     return node;
 }
 
+SceneNode *SceneManager::getNode(const String &name)
+{
+    auto it = mNodeMap.find(name);
+    if (it == mNodeMap.end())
+    {
+        return nullptr;
+    }
+    return dynamic_cast<SceneNode*>(it->second);
+}
+
 void SceneManager::deleteNode(SceneNode* node)
 {
     node->deleteNode();
@@ -238,6 +251,15 @@ Model *SceneManager::createModel(Mesh* mesh)
     return new Model(mesh);
 }
 
+InstanceBatch* SceneManager::createInstanceBatch(const String& name, const String& mesh, const String& material)
+{
+    return new InstanceBatch(name, mesh, material);
+}
+
+ParticleSystem* SceneManager::createParticleSystem(const String& name, size_t poolSize)
+{
+    return new ParticleSystem(name, poolSize);
+}
 
 void SceneManager::_processRenderQueue()
 {
@@ -303,7 +325,7 @@ void SceneManager::_renderScene()
         }
     }
 }
-static int t=0;
+
 void SceneManager::_renderSingleObject(Renderable *rend, Pass* pass)
 {
     // Vertex shader.
@@ -319,14 +341,17 @@ void SceneManager::_renderSingleObject(Renderable *rend, Pass* pass)
     mRenderSystem->bindFragmentShader(fragShader);
     
     RenderOperation ro;
-    ro.mSrcRend = rend;
+    ro._obj = rend;
     rend->getRenderOperation(ro);
     
     Mat4 modelMatrix = rend->getWorldTransforms();
     
-    SubModel* subModel = dynamic_cast<SubModel*>(rend);
-    glPolygonMode(GL_FRONT_AND_BACK, subModel->getParent()->getPolygonMode());
-    
+//    SubModel* subModel = dynamic_cast<SubModel*>(rend);
+//    if (subModel==nullptr)
+//        return;
+//    
+    glPolygonMode(GL_FRONT_AND_BACK, ro._polyMode);
+//
 //    if (subModel && subModel->getParent()->getParentNode()->getName() == "billboard")
 //    {
 //        mCamera->setProjectionType(PT_ORTHOGRAPHIC);
@@ -347,6 +372,18 @@ void SceneManager::_renderSingleObject(Renderable *rend, Pass* pass)
         glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
         
     mRenderSystem->render(ro, pass);
+    
+    _renderBox(rend);
+}
+
+void SceneManager::_renderBox(Renderable *rend)
+{
+    SubModel* sub = dynamic_cast<SubModel*>(rend);
+    if (!sub)
+        return;
+    Model* model = sub->getParent();
+    model->createBoundingBoxBuffer();
+    model->renderBoundingBox(mRenderSystem);
 }
 
 static float oldAngle = 0;
@@ -364,10 +401,11 @@ void SceneManager::_updateBillboard(Node* billboard, Camera* camera)
     if (glm::abs(changed) > 0.001f)
     {
         mBillboardMatrix = glm::rotate(mBillboardMatrix, -changed, Z_AXIS);
+//        billboard->getParent()->getTransform()->yaw(changed);
     }
     oldAngle = angle;
 
-//    // Then we will calculate the right vector.
+    // Then we will calculate the right vector.
 //    Vec3 right = glm::cross(camera->getUp(), facing);
 //    right = glm::normalize(right);
 //

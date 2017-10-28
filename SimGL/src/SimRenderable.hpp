@@ -32,8 +32,6 @@ public:
     virtual const Mat4& getWorldTransforms() = 0;
     
     virtual const Technique* getTechnique();
-    
-    
 };
 
 #endif /* SimRenderable_hpp */

@@ -14,13 +14,15 @@ class Pass;
 class GLSLShader;
 class RenderOperation;
 
-class GLRenderSystem {
+class GLRenderSystem
+{
 public:
     GLRenderSystem();
     ~GLRenderSystem();
 
 public:
     void setSceneManager(SceneManager* sm);
+    SceneManager* getSceneManager() { return _sceneManager; }
     
     void bindVertexShader(GLShader* verShader);
     void bindGeometryShader(GLShader* geoShader);

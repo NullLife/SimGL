@@ -9,13 +9,19 @@
 #include "SimCommon.hpp"
 #include "SimVertexIndexData.hpp"
 
-class Transform;
 class Renderable;
 
 enum BufferType
 {
     BT_VERTEX = 0,
     BT_INDEX
+};
+
+enum PolygonMode
+{
+    PM_POINT = 0x1B00,
+    PM_LINE,
+    PM_FILL
 };
 
 enum DrawType
@@ -39,21 +45,21 @@ public:
     ~RenderOperation();
 
 public:
-    GLuint mVao;
+    Renderable* _obj;
+    DrawType _drawType;
     
-    VertexData* mVertexData;
-    IndexData* mIndexData;
-    bool mUseIndex;
+    PolygonMode _polyMode;
     
-    Renderable* mSrcRend;
+    GLuint _vao;
+    VertexData* _vertexData;
+    IndexData* _indexData;
+    bool _useIndex;
 
-    DrawType mDrawType;
-
-    size_t mVerNum;
-    size_t mIndexStart;
-    size_t mIndexNum;
+    size_t _start;
+    size_t _count;
     
-    Transform* mTrans;
+    size_t _numOfInstances;
+    bool _hasInstancesData;
 };
 
 

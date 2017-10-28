@@ -95,6 +95,11 @@ const VertexDataDeclare::VertexElements & VertexDataDeclare::getVertexElements()
     return mEles;
 }
 
+void VertexDataDeclare::addElement(VertexElementSemantic semantic, VertexElementType type)
+{
+    addElement(new VertexElement(semantic, type));
+}
+
 void VertexDataDeclare::addElement(VertexElement* ele)
 {
     auto it = mEles.begin();
@@ -132,6 +137,7 @@ const int VertexDataDeclare::getComponentCount() const
 
 VertexData::VertexData(VertexDataDeclare* dataDeclaration) :
     mDeclaration(dataDeclaration),
+    _numVertices(0),
     mVerBuffer(nullptr),
     _isBinded(false)
 {
@@ -153,9 +159,34 @@ VertexData::~VertexData()
     }
 }
 
-void VertexData::initBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage)
+HardwareVertexBuffer* VertexData::createBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage)
 {
-    mVerBuffer = new HardwareVertexBuffer(vertexSize, numVertices, usage);
+    _numVertices = numVertices;
+    return mVerBuffer = new HardwareVertexBuffer(vertexSize, numVertices, usage);
+}
+
+void VertexData::bind()
+{
+    // First, bind the buffer.
+    glBindBuffer(GL_ARRAY_BUFFER, mVerBuffer->getBufferId());
+    
+    if (_isBinded)
+        return;
+    
+    const VertexDataDeclare::VertexElements& ves = mDeclaration->getVertexElements();
+    for (unsigned int num=0; num<mDeclaration->getNumber(); ++num)
+    {
+        VertexElement* ve = ves[num];
+        size_t offset = 0;
+        for (int j=num-1; j>=0; --j)
+        {
+            offset += VertexElement::getVertexElementOffset(ves[j]->getVertexElementType());
+        }
+        glVertexAttribPointer(num, (int) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()), GL_FLOAT, GL_FALSE, (GLsizei)mDeclaration->getStride(), (void *) offset);
+        glEnableVertexAttribArray(num);
+    }
+    
+    _isBinded = true;
 }
 
 ///////////////////////////////////////////////
@@ -175,7 +206,8 @@ IndexData::~IndexData()
     }
 }
 
-void IndexData::initBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndices, HardwareBuffer::Usage usage)
+HardwareIndexBuffer* IndexData::createBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndices, HardwareBuffer::Usage usage)
 {
-    mIdxBuffer = new HardwareIndexBuffer(itype, numIndices, usage);
+    _numIndices = numIndices;
+    return mIdxBuffer = new HardwareIndexBuffer(itype, numIndices, usage);
 }

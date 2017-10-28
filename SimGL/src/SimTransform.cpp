@@ -107,6 +107,6 @@ void Transform::update()
     _scale = Vec3(1.0f);
     _orientation = Quat(1, 0, 0, 0);
     _trans = Vec3(0.0f);
-    
+     
     _needUpdateMatrix = false;
 }

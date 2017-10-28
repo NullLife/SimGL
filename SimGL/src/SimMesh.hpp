@@ -9,7 +9,8 @@
 #include "SimCommon.hpp"
 #include "SimSubMesh.hpp"
 
-class Mesh {
+class Mesh
+{
 public:
     typedef Vector<SubMesh*> SubMeshList;
 public:

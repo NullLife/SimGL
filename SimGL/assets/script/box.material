@@ -1,0 +1,20 @@
+# This is script for material of floor
+# This file for study lexical analysis
+
+material boxGLSL
+{
+	technique GLSL   # a technique to implement render
+	{
+		pass    # pass for min unit to render
+		{
+			vertex_shader base/box_vs.glsl GLSL v410
+			{
+                param_named mvp_matrix matrix4
+			}
+
+			fragment_shader base/box_fs.glsl GLSL v410
+			{
+			}
+		}
+	}
+}

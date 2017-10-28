@@ -6,6 +6,10 @@
 //  Copyright © 2017年 yangbin. All rights reserved.
 //
 
+/**
+ * Implemente fuction: Skybox, Cube map.
+ */
+
 #ifndef SkyBoxApp_hpp
 #define SkyBoxApp_hpp
 

@@ -18,6 +18,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <unordered_map>
 #include <map>
 
@@ -26,6 +27,10 @@
 
 #ifndef String
 #define String std::string
+#endif
+
+#ifndef List
+#define List std::list
 #endif
 
 #ifndef Vector
@@ -77,6 +82,8 @@
 
 ///////////////////////
 
+#define GL_BUFFER_OFFSET(i) ((char *)NULL + (i))
+
 #ifndef RESOURCE_DIR
 #define RESOURCE_DIR "/poject/gitpj/SimGL/SimGL/assets/"
 #endif
@@ -103,7 +110,6 @@
 static const Vec3 X_AXIS = Vec3(1.0f, 0.0f, 0.0f);
 static const Vec3 Y_AXIS = Vec3(0.0f, 1.0f, 0.0f);
 static const Vec3 Z_AXIS = Vec3(0.0f, 0.0f, 1.0f);
-
 
 class Texture;
 class Material;

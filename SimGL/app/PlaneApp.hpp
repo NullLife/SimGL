@@ -10,7 +10,6 @@
  * 1. Mipmap
  * 2. Geometry shader
  * 3. Billboard
- * 4. Particle System
  */
 
 #ifndef PlaneApp_hpp
@@ -31,7 +30,7 @@ public:
 private:
     void initScene();
     
-    SceneManager* mSceneManager;
+    SceneManager* _sceneManager;
 };
 
 

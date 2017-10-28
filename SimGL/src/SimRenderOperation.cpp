@@ -6,17 +6,19 @@
 #include "SimRenderOperation.hpp"
 
 RenderOperation::RenderOperation() :
-        mVao(0),
-        mVertexData(nullptr),
-        mIndexData(nullptr),
-        mSrcRend(nullptr),
-        mDrawType(DT_TRIANGLES),
-        mUseIndex(true),
-        mVerNum(0),
-        mIndexNum(0),
-        mIndexStart(0),
-        mTrans(nullptr) {
+    _vao(0),
+    _vertexData(nullptr),
+    _indexData(nullptr),
+    _obj(nullptr),
+    _drawType(DT_TRIANGLES),
+    _polyMode(PM_FILL),
+    _useIndex(true),
+    _start(0),
+    _hasInstancesData(false),
+    _numOfInstances(0)
+{
 }
 
-RenderOperation::~RenderOperation() {
+RenderOperation::~RenderOperation()
+{
 }

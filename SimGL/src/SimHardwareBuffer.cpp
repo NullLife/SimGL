@@ -35,11 +35,35 @@ HardwareBuffer::~HardwareBuffer()
 {
 }
 
+void HardwareBuffer::writeData(const void *source)
+{
+    unsigned char *dst = static_cast<unsigned char *>(lock(1));
+    std::memcpy(dst, source, _sizeInBytes);
+    unlock();
+}
+
 void HardwareBuffer::writeData(size_t start, size_t length, const void *source)
 {
-    unsigned char *dst = static_cast<unsigned char *>(lock(start, length));
+    unsigned char *dst = static_cast<unsigned char *>(lock(start, length, 1));
     dst += start;
     std::memcpy(dst, source, length);
+    unlock();
+}
+
+void HardwareBuffer::readData(size_t start, size_t length, size_t stride, size_t offset,  size_t readLen, void* result)
+{
+    unsigned char *dst = static_cast<unsigned char *>(lock(start, length, 0));
+    size_t pos = start + offset;
+    size_t limit = length - 1;
+    unsigned char *r = static_cast<unsigned char *>(result);
+    size_t index = 0;
+    while (pos <= limit)
+    {
+        std::memcpy(r, dst + pos, readLen);
+        r += readLen;
+        ++index;
+        pos = (index*stride + offset);
+    }
     unlock();
 }
 
@@ -48,7 +72,12 @@ bool HardwareBuffer::isLocked() const
     return _isLocked;
 }
 
-void* HardwareBuffer::lock(size_t start, size_t length)
+void* HardwareBuffer::lock(char writeBit)
+{
+    return lock(0, _sizeInBytes, writeBit);
+}
+
+void* HardwareBuffer::lock(size_t start, size_t length, char writeBit)
 {
     if (_isLocked)
     {
@@ -61,7 +90,7 @@ void* HardwareBuffer::lock(size_t start, size_t length)
         LogManager::getSingleton().error( "HardwareBuffer::lock", "Lock request out of bounds.");
     }
     
-    ret = _lockImpl(start, length);
+    ret = _lockImpl(start, length, writeBit);
     
     _isLocked = true;
 

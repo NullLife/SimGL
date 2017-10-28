@@ -7,12 +7,12 @@ material skyboxGLSL
 	{
 		pass    # pass for min unit to render
 		{
-			vertex_shader skybox_vs.glsl GLSL v410
+			vertex_shader skybox/skybox_vs.glsl GLSL v410
 			{
                 param_named mvp_matrix matrix4
 			}
 
-			fragment_shader skybox_fs.glsl GLSL v410
+			fragment_shader skybox/skybox_fs.glsl GLSL v410
 			{
                 param_named texSampler samplerCubic 0    # name, type, texture unit
 			}
@@ -23,7 +23,7 @@ material skyboxGLSL
                 # POSITIVE_X, NEGATIVE_X, POSITIVE_Y, NEGATIVE_Y, POSITIVE_Z, NEGATIVE_Z
 # texture cubic skybox/stevecube_rt.jpg skybox/stevecube_lf.jpg skybox/stevecube_up.jpg skybox/stevecube_dn.jpg skybox/stevecube_bk.jpg skybox/stevecube_fr.jpg
 
-                texture cubic pisa/px.png pisa/nx.png pisa/py.png pisa/ny.png pisa/pz.png pisa/nz.png
+                texture cubic skybox/pisa/px.png skybox/pisa/nx.png skybox/pisa/py.png skybox/pisa/ny.png skybox/pisa/pz.png skybox/pisa/nz.png
                 sampler 0
                 filtering linear linear none
 			}

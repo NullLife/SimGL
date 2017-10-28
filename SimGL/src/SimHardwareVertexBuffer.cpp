@@ -54,13 +54,16 @@ size_t HardwareVertexBuffer::getNumVertices() const
     return _numVertices;
 }
 
-void* HardwareVertexBuffer::_lockImpl(size_t start, size_t length)
+void* HardwareVertexBuffer::_lockImpl(size_t start, size_t length, char writeBit)
 {
     glBindBuffer(GL_ARRAY_BUFFER, _bufferId);
     
     _isLocked = true;
     
-    return glMapBufferRange(GL_ARRAY_BUFFER, start, _sizeInBytes, GL_MAP_WRITE_BIT);
+    if (writeBit == 1)
+        return glMapBufferRange(GL_ARRAY_BUFFER, start, length, GL_MAP_WRITE_BIT);
+    else
+        return glMapBufferRange(GL_ARRAY_BUFFER, start, length, GL_MAP_READ_BIT);
 }
 
 void HardwareVertexBuffer::_unlockImpl()

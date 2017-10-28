@@ -73,13 +73,16 @@ void HardwareIndexBuffer::destroyBuffer()
     }
 }
 
-void* HardwareIndexBuffer::_lockImpl(size_t start, size_t length)
+void* HardwareIndexBuffer::_lockImpl(size_t start, size_t length, char writeBit)
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bufferId);
     
     _isLocked = true;
     
-    return glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, start, _sizeInBytes, GL_MAP_WRITE_BIT);
+    if (writeBit == 1)
+        return glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, start, length, GL_MAP_WRITE_BIT);
+    else
+        return glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, start, length, GL_MAP_READ_BIT);
 }
 
 void HardwareIndexBuffer::_unlockImpl()
