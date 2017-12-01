@@ -1,0 +1,70 @@
+# This is script for material of floor
+# This file for study lexical analysis
+
+material particleTexGLSL
+{
+	technique GLSL   # a technique to implement render
+	{
+		pass update   # pass for min unit to render
+		{
+			vertex_shader particle/billboard/ps_tf_texbb_vs.glsl GLSL v410
+			{
+                param_named model_matrix matrix4
+                param_named view_matrix matrix4
+                param_named projection_matrix matrix4
+                param_named time float1
+
+                param_named render_pass subroutine   # subroutine
+
+                feedback_out_mode separate
+                feedback_out_varying out_instance_position float3
+                feedback_out_varying out_instance_velocity float3
+                feedback_out_varying out_instance_birth float1
+                feedback_out_varying out_instance_liferate float1
+			}
+
+			fragment_shader particle/billboard/ps_tf_texbb_fs.glsl GLSL v410
+			{
+                param_named texSampler sampler2d 0    # name, type, texture unit
+			}
+
+            texture_unit   # texture information
+            {
+                texture 2d example/grass.png
+                sampler 0
+                filtering linear linear
+            }
+		}
+
+        pass render   # pass for min unit to render
+        {
+            vertex_shader particle/billboard/ps_tf_texbb_vs.glsl GLSL v410
+            {
+                param_named model_matrix matrix4
+                param_named view_matrix matrix4
+                param_named projection_matrix matrix4
+                param_named time float1
+
+                param_named render_pass subroutine   # subroutine
+
+                feedback_out_mode separate
+                feedback_out_varying out_instance_position float3
+                feedback_out_varying out_instance_velocity float3
+                feedback_out_varying out_instance_birth float1
+                feedback_out_varying out_instance_liferate float1
+            }
+
+            fragment_shader particle/billboard/ps_tf_texbb_fs.glsl GLSL v410
+            {
+                param_named texSampler sampler2d 0    # name, type, texture unit
+            }
+
+            texture_unit   # texture information
+            {
+                texture 2d example/grass.png
+                sampler 0
+                filtering linear linear
+            }
+        }
+	}
+}

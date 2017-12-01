@@ -19,12 +19,9 @@ class Model : public MovableObject
 public:
     typedef Vector<SubModel*> SubModelList;
     
-public:
     Model(const String &name);
     Model(Mesh* mesh);
     ~Model();
-
-    const String& getName() { return mName; }
     
     const MeshPtr& getMesh();
     

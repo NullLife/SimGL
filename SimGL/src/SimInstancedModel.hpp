@@ -12,6 +12,7 @@
 #include "SimCommon.hpp"
 
 class InstanceBatch;
+class Transform;
 
 class InstancedModel
 {
@@ -21,9 +22,13 @@ public:
     InstancedModel(InstanceBatch* batch, unsigned int instanceId);
     ~InstancedModel();
     
+    Transform* getTransform() { return _transform; }
+    
 private:
     InstanceBatch* _batch;
     unsigned int _instanceId;
+    
+    Transform* _transform;
 };
 
 #endif /* SimInstancedModel_hpp */

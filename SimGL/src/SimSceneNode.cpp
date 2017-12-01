@@ -91,15 +91,15 @@ void SceneNode::updateRenderQueue(RenderQueue *queue)
     // Find visible
 
     // Add models in this node
-    MovableObjectList::iterator modelIter;
-    for (modelIter=_movableObjList.begin(); modelIter!=_movableObjList.end(); ++modelIter)
+    MovableObjectList::iterator modelIter = _movableObjList.begin();
+    for (; modelIter!=_movableObjList.end(); ++modelIter)
     {
         (*modelIter)->updateRenderQueue(queue);
     }
 
     // Dealing its children recursively.
-    NodeList::iterator childrenIter;
-    for (childrenIter=mChildren.begin(); childrenIter!=mChildren.end(); ++childrenIter)
+    NodeList::iterator childrenIter = mChildren.begin();
+    for (; childrenIter!=mChildren.end(); ++childrenIter)
     {
         SceneNode *node = static_cast<SceneNode *>(*childrenIter);
         node->updateRenderQueue(queue);

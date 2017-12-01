@@ -29,6 +29,8 @@
 #include "SimParticleSystem.hpp"
 #include "SimInstanceBatch.hpp"
 
+#include "SimGameWindow.hpp"
+
 SceneManager::SceneManager(const String &name) :
     mName(name),
     mClearColor(Vec4(0.0f, 0.0f, 0.0f, 1.0f)),
@@ -267,6 +269,7 @@ void SceneManager::_processRenderQueue()
     if (mSkyBoxNode)
         mSkyBoxNode->updateRenderQueue(mRenderQueue);
     
+    // Dealing root node.
     if (mRootNode)
         mRootNode->updateRenderQueue(mRenderQueue);
 }
@@ -340,32 +343,17 @@ void SceneManager::_renderSingleObject(Renderable *rend, Pass* pass)
     GLShader* fragShader = pass->getFragmentShader();
     mRenderSystem->bindFragmentShader(fragShader);
     
+    // Get render parameters.
     RenderOperation ro;
-    ro._obj = rend;
     rend->getRenderOperation(ro);
     
-    Mat4 modelMatrix = rend->getWorldTransforms();
-    
-//    SubModel* subModel = dynamic_cast<SubModel*>(rend);
-//    if (subModel==nullptr)
-//        return;
-//    
     glPolygonMode(GL_FRONT_AND_BACK, ro._polyMode);
-//
-//    if (subModel && subModel->getParent()->getParentNode()->getName() == "billboard")
-//    {
-//        mCamera->setProjectionType(PT_ORTHOGRAPHIC);
-//        _updateBillboard(subModel->getParent()->getParentNode(), mCamera);
-//        modelMatrix *= mBillboardMatrix;
-//    }
-//    else
-//    {
-//        mCamera->setProjectionType(PT_PERSPECTIVE);
-//    }
     
+    Mat4 modelMatrix = rend->getWorldTransforms();
     _paramDataSource->setModelMatrix(modelMatrix);
     _paramDataSource->setCurrentPass(pass);
     _paramDataSource->setCurrentCamera(mCamera);
+    
     _paramDataSource->setTime((float)glfwGetTime());
     
     if (mSkyBoxNode)
@@ -373,7 +361,7 @@ void SceneManager::_renderSingleObject(Renderable *rend, Pass* pass)
         
     mRenderSystem->render(ro, pass);
     
-    _renderBox(rend);
+//    _renderBox(rend);
 }
 
 void SceneManager::_renderBox(Renderable *rend)

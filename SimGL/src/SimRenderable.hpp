@@ -15,8 +15,11 @@
 #include "SimTechnique.hpp"
 #include "SimRenderOperation.hpp"
 
+class Renderer;
 
-/** This class including base render informations. eg: material, world matrix, light and so on.
+/**
+ * This class including base render informations.
+ * eg: material, world matrix, light and so on.
  */
 class Renderable
 {
@@ -24,7 +27,6 @@ public:
     Renderable();
     virtual ~Renderable();
     
-public:
     virtual const MaterialPtr& getMaterial() = 0;
     
     virtual void getRenderOperation(RenderOperation& op) = 0;
@@ -32,6 +34,13 @@ public:
     virtual const Mat4& getWorldTransforms() = 0;
     
     virtual const Technique* getTechnique();
+    
+    virtual void setRenderer(Renderer* renderer) { _renderer = renderer;}
+    
+    virtual Renderer* getRenderer() { return _renderer; }
+    
+protected:
+    Renderer* _renderer;
 };
 
 #endif /* SimRenderable_hpp */

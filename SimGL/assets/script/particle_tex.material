@@ -1,0 +1,50 @@
+# This is script for material of floor
+# This file for study lexical analysis
+
+material particleTexGLSL
+{
+	technique GLSL   # a technique to implement render
+	{
+		pass update   # pass for min unit to render
+		{
+			vertex_shader particle/texture/ps_tf_tex_vs.glsl GLSL v410
+			{
+                param_named mvp_matrix matrix4
+                param_named time float1
+
+                param_named render_pass subroutine   # subroutine
+
+                feedback_out_mode separate
+                feedback_out_varying out_instance_position float3
+                feedback_out_varying out_instance_velocity float3
+                feedback_out_varying out_instance_birth float1
+                feedback_out_varying out_instance_liferate float1
+			}
+
+			fragment_shader particle/texture/ps_tf_tex_fs.glsl GLSL v410
+			{
+			}
+		}
+
+        pass render   # pass for min unit to render
+        {
+            vertex_shader particle/texture/ps_tf_tex_vs.glsl GLSL v410
+            {
+                param_named mvp_matrix matrix4
+                param_named time float1
+
+                param_named render_pass subroutine   # subroutine
+
+                feedback_out_mode separate
+                feedback_out_varying out_instance_position float3
+                feedback_out_varying out_instance_velocity float3
+                feedback_out_varying out_instance_birth float1
+                feedback_out_varying out_instance_liferate float1
+            }
+
+            fragment_shader particle/texture/ps_tf_tex_fs.glsl GLSL v410
+            {
+            }
+        }
+	}
+}

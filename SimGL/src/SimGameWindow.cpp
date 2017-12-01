@@ -21,23 +21,34 @@ static void keyCallback(GLFWwindow *window, int key, int scanCode, int action, i
     }
 }
 
-static void mouseCallback(GLFWwindow *window, double x, double y)
+static void mousePositionCallback(GLFWwindow *window, double x, double y)
 {
     GameWindow *game  = reinterpret_cast<GameWindow *>(glfwGetWindowUserPointer(window));
     MouseEvent *event = game->getMouseEvent();
     if (event)
     {
-        event->mouseCallback(x, y);
+        event->mousePositionCallback(x, y);
     }
 }
 
+static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
+{
+    GameWindow *game  = reinterpret_cast<GameWindow *>(glfwGetWindowUserPointer(window));
+    MouseEvent *event = game->getMouseEvent();
+    if (event)
+    {
+        event->mouseButtonCallback(button, action, mods);
+    }
+}
+
+double GameWindow::sDeltaTime = 0;
 
 GameWindow::GameWindow(const String &name, const int &width, const int &height) :
     mWindow(nullptr), mName(name),
     mWidth(width), mHeight(height),
     mBufferWidth(0), mBufferHeight(0),
     mKeyEvent(nullptr), mMouseEvent(nullptr),
-    mClearColor(Vec4(0.0)), mClearDepth(1.0), mDeltaTime(0)
+    mClearColor(Vec4(0.0, 0.0, 0.0, 1.0)), mClearDepth(1.0)
 {
     initSystem();
 }
@@ -45,6 +56,7 @@ GameWindow::GameWindow(const String &name, const int &width, const int &height) 
 GameWindow::~GameWindow()
 {
     LogManager::getSingleton().debug("delete GameWindow");
+    sDeltaTime = 0;
 }
 
 void GameWindow::setClearColor(const Vec4 &color)
@@ -128,7 +140,10 @@ SceneManager* GameWindow::getSceneManager()
 void GameWindow::initSystem()
 {
     // Initialize GLFW
-    glfwInit();
+    int r = glfwInit();
+    if (r != GL_TRUE)
+        return;
+
     // OpenGL Version
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -139,6 +154,7 @@ void GameWindow::initSystem()
     // Use core profile
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, false);
+    glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_DEPTH_BITS, 32);
     glfwSwapInterval(1);
 
@@ -150,25 +166,19 @@ void GameWindow::initSystem()
         glfwTerminate();
         return;
     }
-
+    
     // Make the window's context current
     glfwMakeContextCurrent(mWindow);
 
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK)
-    {
-        LogManager::getSingletonPtr()->debug("GameWindow#initSystem", "Failed to initialize GLEW");
-    }
+        LogManager::getSingletonPtr()->debug("GameWindow#initSystem", "Fail to initialize GLEW");
 
     if (glewIsSupported("GL_VERSION_4_1"))
-    {
         LogManager::getSingletonPtr()->debug("GameWindow#initSystem", "Ready for OpenGL 4.1");
-    }
     else
-    {
         LogManager::getSingletonPtr()->debug("GameWindow#initSystem", "OpenGL 4.1 not supported");
-    }
-
+    
     // Share window's pointer
     glfwSetWindowUserPointer(mWindow, (void *) this);
 
@@ -199,14 +209,15 @@ void GameWindow::running()
 
         glfwSwapBuffers(mWindow);
 
-        mDeltaTime = glfwGetTime() - currentTime;
+        sDeltaTime = glfwGetTime() - currentTime;
     }
 }
 
 void GameWindow::processInput()
 {
     glfwSetKeyCallback(mWindow, keyCallback);
-    glfwSetCursorPosCallback(mWindow, mouseCallback);
+    glfwSetCursorPosCallback(mWindow, mousePositionCallback);
+    glfwSetMouseButtonCallback(mWindow, mouseButtonCallback);
 }
 
 void GameWindow::drawScene()
@@ -216,7 +227,12 @@ void GameWindow::drawScene()
 
     glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_DEPTH_TEST);
-//    glEnable(GL_CULL_FACE);
+//    glEnable(GL_ALPHA_TEST);
+    
+    glEnable(GL_CULL_FACE);
+    
+//    glEnable(GL_BLEND);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // update
     if (!mSceneManager)

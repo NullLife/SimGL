@@ -125,5 +125,28 @@ typedef Vector<String> StringVector;
 typedef unsigned long long SimUInt64;
 
 /////////////////////////
+#define SIM_CHECK_GL_ERROR(glFunc) \
+{ \
+glFunc; \
+int e = glGetError(); \
+if (e != 0) \
+{ \
+const char * errorString = ""; \
+switch(e) \
+{ \
+case GL_INVALID_ENUM:       errorString = "GL_INVALID_ENUM";        break; \
+case GL_INVALID_VALUE:      errorString = "GL_INVALID_VALUE";       break; \
+case GL_INVALID_OPERATION:  errorString = "GL_INVALID_OPERATION";   break; \
+case GL_INVALID_FRAMEBUFFER_OPERATION:  errorString = "GL_INVALID_FRAMEBUFFER_OPERATION";   break; \
+case GL_OUT_OF_MEMORY:      errorString = "GL_OUT_OF_MEMORY";       break; \
+default:                                                            break; \
+} \
+char msgBuf[4096]; \
+StringVector tokens; \
+StringUtils::split(tokens, #glFunc, "("); \
+sprintf(msgBuf, "OpenGL error 0x%04X %s in %s at line %i for %s\n", e, errorString, __PRETTY_FUNCTION__, __LINE__, tokens[0].c_str()); \
+LogManager::getSingleton().debug(msgBuf); \
+} \
+}
 
 #endif /* SimCommon_hpp */

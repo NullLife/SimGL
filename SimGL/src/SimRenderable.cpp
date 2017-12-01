@@ -8,11 +8,15 @@
 
 #include "SimRenderable.hpp"
 
-Renderable::Renderable() {}
+Renderable::Renderable() :
+    _renderer(nullptr)
+{}
 
-Renderable::~Renderable() {}
+Renderable::~Renderable()
+{}
 
 
-const Technique* Renderable::getTechnique() {
+const Technique* Renderable::getTechnique()
+{
     return getMaterial()->getBestTechnique();
 }

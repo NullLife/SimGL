@@ -14,8 +14,10 @@ InstancedModel::InstancedModel(InstanceBatch* batch, unsigned int instanceId) :
     _batch(batch),
     _instanceId(instanceId)
 {
+    _transform = new Transform();
 }
 
 InstancedModel::~InstancedModel()
 {
+    delete _transform;
 }

@@ -26,24 +26,11 @@ public:
     MovableObject(const String& name);
     virtual ~MovableObject();
     
-protected:
-    SceneManager* mManager;
-    String mName;
-    Node* mParent;
-    bool mVisible;
-    
-    int mQueueID;
-    
-    BoundingBox _bb;
-    OrientedBoundingBox _obb;
-    
-public:
     virtual const String& getName();
     
     virtual SceneManager* getSceneManager();
     
-    virtual void setParent(Node* node) { mParent = node; }
-    
+    virtual void setParent(Node* node);
     virtual Node* getParentNode();
     virtual SceneNode* getParentSceneNode();
     
@@ -59,6 +46,17 @@ public:
     virtual const bool getVisible();
     
     virtual void updateRenderQueue(RenderQueue* queue) = 0;
+    
+protected:
+    SceneManager* _sceneManager;
+    String _name;
+    Node* _parent;
+    bool _visible;
+
+    int _queueID;
+    
+    BoundingBox _bb;
+    OrientedBoundingBox _obb;
 };
 
 #endif /* SimMovableObject_hpp */

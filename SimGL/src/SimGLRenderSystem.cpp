@@ -17,6 +17,7 @@
 
 #include "SimRenderOperation.hpp"
 #include "SimRenderable.hpp"
+#include "SimRenderer.hpp"
 
 GLRenderSystem::GLRenderSystem() :
     _currVertShader(nullptr),
@@ -62,13 +63,10 @@ void GLRenderSystem::bindFragmentShader(GLShader *fragShader)
     }
 }
 
-void GLRenderSystem:: render(RenderOperation &op, Pass* pass)
+void GLRenderSystem::render(RenderOperation &op, Pass* pass)
 {
     // Get active program.
     GLProgram* activeProgram = GLProgramManager::getSingleton().getActiveProgram();
-    
-    // Commit vertex data to GPU.
-    _commitVertexData(op);
     
     updateProgramParameters(pass);
     
@@ -82,31 +80,43 @@ void GLRenderSystem:: render(RenderOperation &op, Pass* pass)
         setTextureUnitSettings(texUnitStates[i]);
     }
     
+    Renderer* myselfRenderer = op._obj->getRenderer();
+    if (myselfRenderer)
+    {
+        myselfRenderer->setActiveProgram(activeProgram);
+        myselfRenderer->render(this, op, pass);
+        return;
+    }
+    
+    // Commit vertex data to GPU.
+    _commitVertexData(op);
+    
+    glBindVertexArray(op._vao);
+    
+    if (!op._hasInstancesData)
+    {
+        if (op._useIndex)
+            glDrawElements(op._drawType, (GLsizei) op._count, op._indexData->getBuffer()->getIndexType(), 0);
+        else
+            glDrawArrays(op._drawType, (GLsizei) op._start, (GLsizei) op._count);
+        glBindVertexArray(0);
+        return;
+    }
+    
     if (op._useIndex)
-        glDrawElements(op._drawType, (GLsizei) op._count, op._indexData->getBuffer()->getIndexType(), 0);
+        glDrawElementsInstanced(op._drawType, (GLsizei) op._count, op._indexData->getBuffer()->getIndexType(),
+                                0,
+                                (GLsizei) op._numOfInstances);
     else
-        glDrawArrays(op._drawType, (GLsizei) op._start, (GLsizei) op._count);
+        glDrawArraysInstanced(op._drawType, (GLsizei) op._start, (GLsizei) op._count,
+                              (GLsizei) op._numOfInstances);
+    glBindVertexArray(0);
 }
 
 void GLRenderSystem::_commitVertexData(RenderOperation &op)
 {
-    SimUInt64 vaoKey = 0;
-    
     if (op._vertexData)
-        vaoKey = op._vertexData->getBuffer()->getBufferId();
-    
-    if (op._indexData)
-        vaoKey += static_cast<SimUInt64> (op._indexData->getBuffer()->getBufferId()) << 32;
-    
-    op._vao = VertexArrayManager::getSingleton().getVao(vaoKey);
-    
-    if (op._vao == 0)
-        LogManager::getSingleton().error("Vertex array id can't be 0 !");
-    
-    glBindVertexArray(op._vao);
-    
-    if (op._vertexData)
-        op._vertexData->bind();
+        op._vertexData->bind(op._vao, op._hasInstancesData);
 }
 
 void GLRenderSystem::updateProgramParameters(Pass* pass)
@@ -134,8 +144,8 @@ void GLRenderSystem::setTextureUnitSettings(TextureUnitState* texState)
     
     if (!ret)
     {
-        // 纹理加载失败，直接返回。
-        // FixYB: 是否考虑使用一个默认的纹理。。。？
+        // Load texture failure, then return it.
+        // FixYB: Considering using a default texture here...?
         return;
     }
     

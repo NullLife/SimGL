@@ -18,21 +18,25 @@
 //================ AbstractNode ===================//
 
 AbstractNode::AbstractNode(AbstractNode* ptr) :
-        mLineNo(0),
-        mType(ANT_UNKNOWN),
-        mParent(ptr) {
+    mLineNo(0),
+    mFilename(""),
+    mType(ANT_UNKNOWN),
+    mParent(ptr)
+{
 }
 
 
 //================ AtomAbstractNode ===================//
 
 AtomAbstractNode::AtomAbstractNode(AbstractNode* ptr) :
-        AbstractNode(ptr),
-        mId(0) {
+    AbstractNode(ptr),
+    mId(0)
+{
     mType = ANT_ATOM;
 }
 
-AbstractNode* AtomAbstractNode::clone() {
+AbstractNode* AtomAbstractNode::clone()
+{
     AtomAbstractNode *node = new AtomAbstractNode(mParent);
     node->mFilename = mFilename;
     node->mLineNo = mLineNo;
@@ -42,21 +46,27 @@ AbstractNode* AtomAbstractNode::clone() {
     return node;
 }
 
-String AtomAbstractNode::getValue() {
+String AtomAbstractNode::getValue()
+{
     return mValue;
 }
 
-void AtomAbstractNode::_parseNumber() {
+void AtomAbstractNode::_parseNumber()
+{
 }
 
 //================ ObjectAbstractNode ===================//
 
 ObjectAbstractNode::ObjectAbstractNode(AbstractNode* ptr) :
-        AbstractNode(ptr), mId(0), mAbstract(false) {
+    AbstractNode(ptr),
+    mId(0),
+    mAbstract(false)
+{
     mType = ANT_OBJECT;
 }
 
-AbstractNode *ObjectAbstractNode::clone() {
+AbstractNode *ObjectAbstractNode::clone()
+{
     ObjectAbstractNode *node = new ObjectAbstractNode(mParent);
     node->mFilename = mFilename;
     node->mLineNo = mLineNo;
@@ -66,12 +76,14 @@ AbstractNode *ObjectAbstractNode::clone() {
     node->mId = mId;
     node->mAbstract = mAbstract;
     
-    for(AbstractNodeList::const_iterator i = mChildren.begin(); i != mChildren.end(); ++i) {
+    for(AbstractNodeList::const_iterator i = mChildren.begin(); i != mChildren.end(); ++i)
+    {
         AbstractNodePtr newNode = AbstractNodePtr((*i)->clone());
         newNode->mParent = node;
         node->mChildren.push_back(newNode);
     }
-    for(AbstractNodeList::const_iterator i = mValues.begin(); i != mValues.end(); ++i) {
+    for(AbstractNodeList::const_iterator i = mValues.begin(); i != mValues.end(); ++i)
+    {
         AbstractNodePtr newNode = AbstractNodePtr((*i)->clone());
         newNode->mParent = node;
         node->mValues.push_back(newNode);
@@ -80,19 +92,23 @@ AbstractNode *ObjectAbstractNode::clone() {
     return node;
 }
 
-String ObjectAbstractNode::getValue() {
+String ObjectAbstractNode::getValue()
+{
     return mCls;
 }
 
-void ObjectAbstractNode::addVariable(const String &name) {
+void ObjectAbstractNode::addVariable(const String &name)
+{
     mEnv.insert(std::make_pair(name, ""));
 }
 
-void ObjectAbstractNode::setVariable(const String &name, const String &value) {
+void ObjectAbstractNode::setVariable(const String &name, const String &value)
+{
     mEnv[name] = value;
 }
 
-std::pair<bool,String> ObjectAbstractNode::getVariable(const String &name) {
+std::pair<bool,String> ObjectAbstractNode::getVariable(const String &name)
+{
     OrderHashMap<String,String>::const_iterator i = mEnv.find(name);
     if(i != mEnv.end()) {
         return std::make_pair(true, i->second);
@@ -111,7 +127,8 @@ std::pair<bool,String> ObjectAbstractNode::getVariable(const String &name) {
 
 }
 
-const OrderHashMap<String,String> &ObjectAbstractNode::getVariables() {
+const OrderHashMap<String,String> &ObjectAbstractNode::getVariables()
+{
     return mEnv;
 }
 
@@ -130,7 +147,8 @@ AbstractNode *PropertyAbstractNode::clone() {
     node->mName = mName;
     node->mId = mId;
     
-    for(AbstractNodeList::const_iterator i = mValues.begin(); i != mValues.end(); ++i)  {
+    for(AbstractNodeList::const_iterator i = mValues.begin(); i != mValues.end(); ++i)
+    {
         AbstractNodePtr newNode = AbstractNodePtr((*i)->clone());
         newNode->mParent = node;
         node->mValues.push_back(newNode);
@@ -138,21 +156,24 @@ AbstractNode *PropertyAbstractNode::clone() {
     return node;
 }
 
-String PropertyAbstractNode::getValue() {
+String PropertyAbstractNode::getValue()
+{
     return mName;
 }
 
 //================ Script compiler ===================//
 
-ScriptCompiler::ScriptCompiler() {
+ScriptCompiler::ScriptCompiler()
+{
     _initWordMap();
 }
 
-ScriptCompiler::~ScriptCompiler() {
-    
+ScriptCompiler::~ScriptCompiler()
+{
 }
 
-bool ScriptCompiler::compile(const String& scrpitName, String &data) {
+bool ScriptCompiler::compile(const String& scrpitName, String &data)
+{
     ScriptLexer lexer;
     ScriptParser parser;
 //    LogManager::getSingleton().debug(data);
@@ -181,6 +202,9 @@ void ScriptCompiler::_initWordMap()
     // Program ids
     mIds["source"] = ID_SOURCE;
     mIds["param_named"] = ID_PARAM_NAMED;
+    mIds["feedback_out_varying"] = ID_FEEDBACK_OUT_VARYING;
+    mIds["feedback_out_mode"] = ID_FEEDBACK_OUT_MODE;
+    mIds["subroutine"] = ID_SUBROUTINE;
     mIds["light_pos_view"] = ID_LIGHT_POS_VIEW;
     mIds["ambient"] = ID_AMBIENT;
     

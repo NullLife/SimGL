@@ -42,9 +42,9 @@ void PlaneApp::initScene()
 {
     // plane
     SceneNode* root = _sceneManager->getRootNode();
-//    Model* planeModel = _sceneManager->createModel("plane.obj", "floor.material");
-//    root->attach(planeModel);
-//    root->getTransform()->scale(Vec3(5.0f));
+    Model* planeModel = _sceneManager->createModel("plane.obj", "floor.material");
+    root->attach(planeModel);
+    root->getTransform()->scale(Vec3(5.0f));
     
     // Billboard
     SceneNode* node = (SceneNode *) root->addChild("billboard");
@@ -58,7 +58,7 @@ void PlaneApp::initScene()
     node->attach(billboardModel);
     
 //    node->getTransform()->pitch(glm::radians(45.0f));
-//    node->getTransform()->setPosition(Vec3(-1, 1, -1));
+    node->getTransform()->setPosition(Vec3(-1, 1, -1));
 }
 
 void PlaneApp::running()
@@ -108,6 +108,6 @@ void PlaneApp::keyCallback(int key, int scanCode, int action, int mods)
     }
 }
 
-void PlaneApp::mouseCallback(double x, double y)
+void PlaneApp::mousePositionCallback(double x, double y)
 {    
 }

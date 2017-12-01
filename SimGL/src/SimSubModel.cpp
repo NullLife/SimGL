@@ -4,10 +4,15 @@
 //
 
 #include "SimSubModel.hpp"
-#include "SimModel.hpp"
-#include "SimSceneManager.hpp"
-#include "SimSubMesh.hpp"
+
 #include "SimResourceManager.hpp"
+#include "SimSceneManager.hpp"
+#include "SimVertexArrayManager.hpp"
+
+#include "SimModel.hpp"
+
+#include "SimSubMesh.hpp"
+
 #include "SimMaterial.hpp"
 #include "SimPass.hpp"
 #include "SimShader.hpp"
@@ -81,22 +86,28 @@ bool SubModel::isVisible()
 
 void SubModel::getRenderOperation(RenderOperation& op)
 {
+    op._obj = this;
+    
     op._drawType = mParent->getDrawType();
     op._polyMode = mParent->getPolygonMode();
-    
-    op._vertexData = mSubMesh->getVertexData();
-    op._indexData = mSubMesh->getIndexData();
-    
+
+    op._useIndex = false;
     op._start = 0;
     
+    op._vertexData = mSubMesh->getVertexData();
+    op._count = op._vertexData->getNumberVertices();
+    
+    SimUInt64 vaoKey = 0;
+    vaoKey = op._vertexData->getBuffer()->getBufferId();
+    
+    op._indexData = mSubMesh->getIndexData();
     if (op._indexData)
     {
         op._useIndex = true;
-        op._count = op._indexData->getNumIndices();
+        op._count = op._indexData->getNumberIndices();
+        
+        vaoKey += static_cast<SimUInt64> (op._indexData->getBuffer()->getBufferId()) << 32;
     }
-    else
-    {
-        op._useIndex = false;
-        op._count = op._vertexData->getNumVertices();
-    }
+    
+    op._vao = VertexArrayManager::getSingleton().getVao(vaoKey);
 }

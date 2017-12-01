@@ -9,13 +9,10 @@
 #include "SimHardwareVertexBuffer.hpp"
 #include "SimLogManager.hpp"
 
-HardwareVertexBuffer::HardwareVertexBuffer(size_t vertexSize, size_t numVertices, Usage usage) :
-    HardwareBuffer(usage),
-    _numVertices(numVertices),
-    _vertexSize(vertexSize)
+HardwareVertexBuffer::HardwareVertexBuffer(size_t bufSize, Usage usage) :
+    HardwareBuffer(usage)
 {
-    _sizeInBytes = vertexSize * numVertices;
-    
+    _sizeInBytes = bufSize;
     createBuffer();
 }
 
@@ -42,16 +39,6 @@ void HardwareVertexBuffer::destroyBuffer()
         glDeleteBuffers(1, &_bufferId);
         _bufferId = 0;
     }
-}
-
-size_t HardwareVertexBuffer::getVertexSize() const
-{
-    return _vertexSize;
-}
-
-size_t HardwareVertexBuffer::getNumVertices() const
-{
-    return _numVertices;
 }
 
 void* HardwareVertexBuffer::_lockImpl(size_t start, size_t length, char writeBit)

@@ -14,7 +14,8 @@ GLProgram::GLProgram() :
     _geoShader(nullptr),
     _fragShader(nullptr),
     _linked(false),
-    _uniformRefsBuilt(false)
+    _uniformRefsBuilt(false),
+    _subroutineUniformRefsBuilt(false)
 {
 }
 
@@ -50,18 +51,14 @@ void GLProgram::attachFragmentShader(GLShader *fragShader)
 void GLProgram::active()
 {
     if (!_linked)
-    {
         _compileAndLink();
-    }
+    
     // The program was already active, return.
     // There will be all false...
     if (isActive())
-    {
         return;
-    }
     
     glUseProgram(_program);
-//    LogManager::getSingleton().debug("program: " + StringUtils::toString((int)_program));
 }
 
 bool GLProgram::isActive()
@@ -90,14 +87,18 @@ void GLProgram::_compileAndLink()
     
     // Attach shaders.
     if (_verShader->_compile())
-       glAttachShader(_program, _verShader->getId());
+    {
+        glAttachShader(_program, _verShader->getId());
+        
+        _verShader->_setTransformFeedbackVaryings(_program);
+    }
     
     if (_fragShader->_compile())
         glAttachShader(_program, _fragShader->getId());
     
     if (_geoShader && _geoShader->_compile())
         glAttachShader(_program, _geoShader->getId());
-
+    
     // Link the shaders together.
     glLinkProgram(_program);
 
@@ -143,6 +144,12 @@ void GLProgram::bindUniforms()
         
         _uniformRefsBuilt = true;
     }
+    if (!_subroutineUniformRefsBuilt)
+    {
+        _extractSubroutines();
+        
+        _subroutineUniformRefsBuilt = true;
+    }
 }
 
 void GLProgram::_extractUniforms()
@@ -182,7 +189,7 @@ void GLProgram::_extractUniforms()
         if (location >= 0)
         {
             // Record.
-            std::string name(uniformName);
+            String name(uniformName);
             
             // Found out if it in vertex constants.
             iter = verConstantDefs.find(name);
@@ -229,6 +236,86 @@ void GLProgram::_extractUniforms()
                 
                 _uniformRefs.push_back(newUniformRef);
             }
+        }
+    }
+}
+
+void GLProgram::_extractSubroutines()
+{
+    if (!_linked || _program == 0)
+    {
+        return;
+    }
+    
+    GLint uniformCount = 0;
+#define BUF_SIZE 200
+    GLchar uniformName[BUF_SIZE] = "";
+    GLint size;
+    GLint location;
+    
+    // Get actived subroutine's count in program.
+    glGetProgramStageiv(_program,
+                        GL_VERTEX_SHADER,
+                        GL_ACTIVE_SUBROUTINE_UNIFORMS,
+                        &uniformCount);
+    
+    SubroutineUniformRefrence newUniformRef;
+    ShaderConstantDefinitionMap::const_iterator iter;
+    // vertex shader.
+    for (int i=0; i<uniformCount; ++i)
+    {
+        // Get name for uniform subroutine with index uniformSubroutine
+        glGetActiveSubroutineUniformName(_program, GL_VERTEX_SHADER,
+                                         i,
+                                         BUF_SIZE,
+                                         &size,
+                                         uniformName
+                                         );
+        
+        location = glGetSubroutineUniformLocation(_program, GL_VERTEX_SHADER, uniformName);
+        
+        String name(uniformName);
+    
+        if (location < 0)
+        {
+            LogManager::getSingleton().error("_extractSubroutines", "The subroutine uniform: " + name + "is not in shader.");
+        }
+        
+        newUniformRef._uniformName = name;
+        newUniformRef._location = location;
+        newUniformRef._shaderType = GLShaderType::GST_VERTEX;
+        ShaderConstantDefinitionMap& verConstantDefs = _verShader->getParameters()->getNamedConstants()->_defMap;
+        newUniformRef._constantDef = &(verConstantDefs.find(name)->second);
+        
+        
+        // Get subroutine indices.
+        GLint indexCount;
+        GLchar indexName[BUF_SIZE] = "";
+        glGetActiveSubroutineUniformiv(_program,
+                                       GL_VERTEX_SHADER,
+                                       i,
+                                       GL_NUM_COMPATIBLE_SUBROUTINES,
+                                       &indexCount);
+        for (int j=0; j<indexCount; ++j)
+        {
+            glGetActiveSubroutineName(_program,
+                                      GL_VERTEX_SHADER,
+                                      j,
+                                      BUF_SIZE,
+                                      &size,
+                                      indexName
+                                      );
+            
+            GLuint index = glGetSubroutineIndex(_program, GL_VERTEX_SHADER, indexName);
+            
+            String subroutineIndexName(indexName);
+            
+            if (index == GL_INVALID_INDEX)
+            {
+                LogManager::getSingleton().error("_extractSubroutines", "The subroutine index: " + subroutineIndexName + "is not in shader.");
+            }
+            
+            _subroutineIndices.insert(std::pair<String, GLuint>(subroutineIndexName, index));
         }
     }
 }

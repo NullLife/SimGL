@@ -13,44 +13,82 @@
 #include <sstream>
 
 GLShader::GLShader(const String& name) :
-    mType(GST_VERTEX),
-    mName(name),
-    mCompiled(false),
-    mId(0),
-    mLanguage(""),
-    mVerison(""),
-    mShaderParams(nullptr)
+    _type(GST_VERTEX),
+    _name(name),
+    _compiled(false),
+    _id(0),
+    _language(""),
+    _verison(""),
+    _feedbackMode(TFM_SEPARATE),
+    _shaderParams(nullptr)
 {
 }
 
 GLShader::~GLShader()
 {
-    LogManager::getSingleton().debug("delete shader: " + mName);
-    if (mId > 0)
-        glDeleteShader(mId);
+    LogManager::getSingleton().debug("delete shader: " + _name);
+    if (_id > 0)
+        glDeleteShader(_id);
 }
 
 
 const GLShaderParamsPtr& GLShader::getParameters()
 {
-    if (mShaderParams == nullptr)
+    if (_shaderParams == nullptr)
     {
-        mShaderParams = GLShaderParamsPtr(new GLShaderParams());
+        _shaderParams = GLShaderParamsPtr(new GLShaderParams());
     }
-    return mShaderParams;
+    return _shaderParams;
+}
+
+void GLShader::setTransformFeedbackMode(const TransformFeedbackMode mode)
+{
+    _feedbackMode = mode;
+}
+
+void GLShader::addFeedbackVarying(const String varying)
+{
+    auto iter = _feedbackVaryings.begin();
+    for (; iter != _feedbackVaryings.end(); ++iter)
+    {
+        if ((*iter) == varying)
+            return;
+    }
+    
+    _feedbackVaryings.push_back(varying);
+}
+
+void GLShader::_setTransformFeedbackVaryings(GLuint program)
+{
+    if (_feedbackVaryings.empty())
+        return;
+    
+    Vector<const char *> feedbacks;
+    feedbacks.resize(_feedbackVaryings.size());
+    feedbacks.reserve(_feedbackVaryings.size());
+    
+    for (int i =0; i != _feedbackVaryings.size(); ++i)
+        feedbacks[i] = _feedbackVaryings[i].c_str();
+    
+    SIM_CHECK_GL_ERROR( glTransformFeedbackVaryings(program,
+                                                    (GLsizei) _feedbackVaryings.size(),
+                                                    &feedbacks[0],
+                                                    _feedbackMode)
+                       );
+    feedbacks.clear();
 }
 
 bool GLShader::_compile()
 {
-    if (mCompiled)
+    if (_compiled)
         return true;
 
-    String filepath  = SHADER_RESOURCE_DIR + mName;
+    String filepath  = SHADER_RESOURCE_DIR + _name;
 
     LogManager::getSingleton().debug("GLSLShader::_compile", "compiling shader: " + filepath);
     
     GLenum type;
-    switch (mType)
+    switch (_type)
     {
         case GST_VERTEX:
             type = GL_VERTEX_SHADER;
@@ -107,9 +145,9 @@ bool GLShader::_compile()
         LogManager::getSingletonPtr()->error("Shader::compileShader", msg);
     }
     
-    mId = shaderId;
+    _id = shaderId;
     
-    return mCompiled = true;
+    return _compiled = true;
 }
 
 

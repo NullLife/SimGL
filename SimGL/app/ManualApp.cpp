@@ -1,15 +1,15 @@
 //
-//  MannueApp.cpp
+//  ManualApp.cpp
 //  SimGL
 //
 //  Created by yangbin on 2017/7/3.
 //  Copyright © 2017年 yangbin. All rights reserved.
 //
 
-#include "MannueApp.hpp"
+#include "ManualApp.hpp"
 #include "SimVertexArrayManager.hpp"
 
-MannueApp::MannueApp(const String& name, int width, int height) :
+ManualApp::ManualApp(const String& name, int width, int height) :
     App(name, width, height)
 {
     mWindow->registerKeyEvent(this);
@@ -29,7 +29,7 @@ MannueApp::MannueApp(const String& name, int width, int height) :
     initScene();
 }
 
-MannueApp::~MannueApp()
+ManualApp::~ManualApp()
 {
     if (_sceneManager)
     {
@@ -38,30 +38,41 @@ MannueApp::~MannueApp()
     }
 }
 
-void MannueApp::initScene()
+void ManualApp::initScene()
 {
     // plane
     SceneNode* root = _sceneManager->getRootNode();
     
-    std::vector<Vec3> ps;
-    std::vector<unsigned int> ids;
+    Vector<Vec3> ps;
+    Vector<unsigned int> ids;
     
-    ps.push_back(Vec3(-1, -1, 0));
-    ps.push_back(Vec3(-0.9, -1, 0));
-    ps.push_back(Vec3(2, 2, 0));
-    ps.push_back(Vec3(1.9, 2, 0));
+    // position
+    ps.push_back(Vec3(-1, -1, 0));    //ps.push_back(Vec3(0, 0, 0));
+    ps.push_back(Vec3(1, -1, 0));     //ps.push_back(Vec3(0, 1, 0));
+    ps.push_back(Vec3(1, 1, 0));      //ps.push_back(Vec3(1, 1, 0));
+    ps.push_back(Vec3(-1, 1, 0));     //ps.push_back(Vec3(1, 0, 0));
+    // texcoords
+    ps.push_back(Vec3(0, 0, 0));
+    ps.push_back(Vec3(0, 1, 0));
+    ps.push_back(Vec3(1, 1, 0));
+    ps.push_back(Vec3(1, 0, 0));
     
+    // index
     ids.push_back(0);ids.push_back(1);ids.push_back(2);
     ids.push_back(0);ids.push_back(2);ids.push_back(3);
     
     GLuint vao;
-    glGenVertexArrays(1, &vao);
+    SIM_CHECK_GL_ERROR( glGenVertexArrays(1, &vao) );
     glBindVertexArray(vao);
     
-    VertexDataDeclare* vdd = new VertexDataDeclare();
-    vdd->addElement(VertexElementSemantic::VES_POSITION, VertexElementType::VET_FLOAT3);
+    VertexDataDeclare* vdd = new VertexDataDeclare(VEL_ALIGN);
+    vdd->addElement(VertexElementSemantic::VES_POSITION, VertexElementType::VET_FLOAT3, 4);
+    vdd->addElement(VertexElementSemantic::VES_TEXCOORD, VertexElementType::VET_FLOAT3, 4);
+    
     VertexData* vd = new VertexData(vdd);
-    HardwareVertexBuffer* vBuf = vd->createBuffer(vdd->getStride(), ps.size(), HardwareBuffer::Usage::HBU_STATIC);
+    vd->setNumberVertices(4);
+    size_t bufferSize = ps.size() * sizeof(Vec3);
+    HardwareVertexBuffer* vBuf = vd->createBuffer(bufferSize, HardwareBuffer::Usage::HBU_STATIC);
     vBuf->writeData(&ps[0]);
     
     IndexData* idxd = new IndexData();
@@ -78,18 +89,16 @@ void MannueApp::initScene()
     mannue->setMaterial("billboard.material");
     mannue->setDrawType(DT_TRIANGLES);
     mannue->setPolygonMode(PM_FILL);
-    
-    mannue->getBoundingBox();
 
     root->attach(mannue);
 }
 
-void MannueApp::running()
+void ManualApp::running()
 {
     mWindow->running();
 }
 
-void MannueApp::keyCallback(int key, int scanCode, int action, int mods)
+void ManualApp::keyCallback(int key, int scanCode, int action, int mods)
 {
     float step = 0.5f;
     switch(action)
@@ -131,6 +140,6 @@ void MannueApp::keyCallback(int key, int scanCode, int action, int mods)
     }
 }
 
-void MannueApp::mouseCallback(double x, double y)
+void ManualApp::mousePositionCallback(double x, double y)
 {    
 }

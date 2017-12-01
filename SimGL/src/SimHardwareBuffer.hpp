@@ -25,7 +25,7 @@ public:
     
     static GLenum getGLUsage(Usage usage);
     
-public:
+    // ----------------------------------------
     HardwareBuffer(Usage usage);
     virtual ~HardwareBuffer();
     
@@ -43,15 +43,16 @@ public:
     
     virtual void writeData(size_t start, size_t length, const void* source);
     
-    virtual void readData(size_t start, size_t length,
-                          size_t stride, size_t offset, size_t readLen,
-                          void* result);
+    virtual void readData(size_t start, size_t length,                             // start position, buffer length,
+                          size_t stride, size_t offset, size_t readLen,            // a vertex stride，offset size，target data size
+                          void* result); 
     
 protected:
     virtual void* _lockImpl(size_t start, size_t length, char writeBit = 1) = 0;
     virtual void _unlockImpl() = 0;
 
-protected:
+    // ----------------------------------------
+    
     Usage _usage;
     
     size_t _sizeInBytes;

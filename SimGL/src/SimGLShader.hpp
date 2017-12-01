@@ -13,48 +13,64 @@
 
 class GLShaderParams;
 
-enum GLShaderType {
+enum GLShaderType
+{
     GST_VERTEX = 1,
     GST_FRAGMENT,
     GST_GEOMETRY
 };
 
+enum TransformFeedbackMode
+{
+    TFM_SEPARATE = GL_SEPARATE_ATTRIBS,
+    TFM_INTERLEAVED = GL_INTERLEAVED_ATTRIBS
+};
+
 typedef SharedPtr<GLShaderParams> GLShaderParamsPtr;
+typedef Vector<String> TransformFeedbackVaryings;
 
 class GLShader
 {
 public:
     GLShader(const String& name);
     ~GLShader();
-    
-private:
-    GLShaderType mType;
-    String mName;
-    String mLanguage;
-    String mVerison;
-    GLShaderParamsPtr mShaderParams;
-    
-    bool mCompiled;
-    GLuint mId;
-    
-public:
-    const String& getName() { return mName; }
-    void setName(const String& name) { mName = name; }
-    
-    const GLShaderType getType() { return mType; }
-    void setType(GLShaderType type) { mType = type; }
 
-    const String getLanguage() { return mLanguage; }
-    void setLanguage(const String& language) { mLanguage = language; }
+    const String& getName() { return _name; }
+    void setName(const String& name) { _name = name; }
     
-    const String getLanguageVerison() { return mVerison; }
-    void setLanguageVerison(const String& verison) { mVerison = verison; }
+    const GLShaderType getType() { return _type; }
+    void setType(GLShaderType type) { _type = type; }
+
+    const String getLanguage() { return _language; }
+    void setLanguage(const String& language) { _language = language; }
+    
+    const String getLanguageVerison() { return _verison; }
+    void setLanguageVerison(const String& verison) { _verison = verison; }
     
     const GLShaderParamsPtr& getParameters();
     
-    GLuint getId() { return mId; };
+    void setTransformFeedbackMode(const TransformFeedbackMode mode);
+    
+    void addFeedbackVarying(const String varying);
+    
+    void _setTransformFeedbackVaryings(GLuint program);
+    
+    GLuint getId() { return _id; };
     
     bool _compile();
+    
+private:
+    GLShaderType _type;
+    String _name;
+    String _language;
+    String _verison;
+    GLShaderParamsPtr _shaderParams;
+    
+    TransformFeedbackVaryings _feedbackVaryings;
+    TransformFeedbackMode _feedbackMode;
+    
+    bool _compiled;
+    GLuint _id;
 };
 
 #endif /* SimGLShader_hpp */

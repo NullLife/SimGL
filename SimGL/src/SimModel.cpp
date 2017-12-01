@@ -49,7 +49,7 @@ Model::Model(Mesh* mesh) :
 
 Model::~Model()
 {
-    LogManager::getSingleton().debug("Delete Model", "name: " + mName);
+    LogManager::getSingleton().debug("Delete Model", "name: " + _name);
     SubModelList::iterator i = _smList.begin();
     for (; i!=_smList.end(); ++i)
     {
@@ -85,7 +85,7 @@ void Model::calcBoundingBox()
     {
         vd = list[i]->getVertexData();
         HardwareVertexBuffer* buffer = vd->getBuffer();
-        std::vector<Vec3> posData(vd->getNumVertices());
+        std::vector<Vec3> posData(vd->getNumberVertices());
         
         buffer->readData(0, buffer->getSize(),
                          vd->getVertexDataDeclare()->getStride(), 0, VertexElement::getVertexElementOffset(VET_FLOAT3),
@@ -163,7 +163,9 @@ void Model::updateRenderQueue(RenderQueue* queue)
 MeshPtr Model::_loadMesh(const String& name)
 {
     MeshPtr mesh = MeshManager::getSingleton().getMesh(name);
-
+    if (mesh == nullptr)
+        mesh = MeshManager::getSingleton().loadMesh(name);
+    
     _buildSubModelList(mesh);
     
     return mesh;
@@ -176,7 +178,7 @@ void Model::_buildSubModelList(const MeshPtr& mesh)
     
     const Mesh::SubMeshList& subMeshList = mesh->getSubMeshList();
     _smList.resize(subMeshList.size());
-    
+    _smList.reserve(subMeshList.size());
     int index = 0;
     for (SubMesh* subMesh : subMeshList)
     {
@@ -213,8 +215,9 @@ void Model::createBoundingBoxBuffer()
     glBindVertexArray(_bbVao);
     
     _bbVertexData = new VertexData(vdd);
-    HardwareVertexBuffer* vb =  _bbVertexData->createBuffer(vdd->getStride(), vertices.size(), HardwareBuffer::Usage::HBU_STATIC);
+    HardwareVertexBuffer* vb =  _bbVertexData->createBuffer(vdd->getStride()*vertices.size(), HardwareBuffer::Usage::HBU_STATIC);
     vb->writeData(&vertices[0]);
+    _bbVertexData->bind(false);
     
     _bbIndexData = new IndexData();
     HardwareIndexBuffer* ib = _bbIndexData->createBuffer(HardwareIndexBuffer::IndexType::IT_UInt, indices.size(), HardwareBuffer::Usage::HBU_STATIC);
@@ -237,11 +240,7 @@ void Model::renderBoundingBox(GLRenderSystem* rs)
     
     GLProgram* activeProgram = GLProgramManager::getSingleton().getActiveProgram();
     
-    glBindVertexArray(_bbVao);
-    
-    _bbVertexData->bind();
-    
-    Mat4 mm = mParent->getTransform()->getModelMatrix();
+    Mat4 mm = _parent->getTransform()->getModelMatrix();
     rs->getSceneManager()->getParameterDataSource()->setModelMatrix(mm);
     rs->getSceneManager()->getParameterDataSource()->setCurrentPass(pass);
     
@@ -251,7 +250,9 @@ void Model::renderBoundingBox(GLRenderSystem* rs)
     
     glPolygonMode(GL_FRONT_AND_BACK, PolygonMode::PM_LINE);
     
-    glDrawElements(GL_TRIANGLE_FAN, (GLsizei) _bbIndexData->getNumIndices(), _bbIndexData->getBuffer()->getIndexType(), 0);
+    glBindVertexArray(_bbVao);
+    glDrawElements(GL_TRIANGLE_FAN, (GLsizei) _bbIndexData->getNumberIndices(), _bbIndexData->getBuffer()->getIndexType(), 0);
+    glBindVertexArray(0);
     
     glPolygonMode(GL_FRONT_AND_BACK, PolygonMode::PM_FILL);
 }

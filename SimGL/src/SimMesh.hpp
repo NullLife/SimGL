@@ -6,29 +6,37 @@
 #ifndef SIMGL_MESH_HPP
 #define SIMGL_MESH_HPP
 
-#include "SimCommon.hpp"
+#include "SimResource.hpp"
 #include "SimSubMesh.hpp"
 
-class Mesh
+class Mesh : public Resource
 {
 public:
     typedef Vector<SubMesh*> SubMeshList;
-public:
+    
+    Mesh();
     Mesh(const String& name);
     ~Mesh();
+    
+    // Set mesh name.
+    void setName(const String& meshName);
 
-private:
-    String mName;
-    SubMeshList mSubMeshList;
-
-public:
-    const String& getName();
-
+    // Add submesh with data.
     const int addSubMesh(VertexData* vertexData, IndexData* indexData);
     const int addSubMesh(SubMesh* subMesh);
 
     const SubMesh* getSubMesh(const int index);
     const SubMeshList& getSubMeshList();
+    
+    // Load mesh resource.
+    void _load();
+    
+    // Unload mesh resource.
+    void _unload();
+    
+private:
+    
+    SubMeshList _subMeshList;
 };
 
 

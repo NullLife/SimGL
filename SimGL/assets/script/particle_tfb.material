@@ -5,17 +5,46 @@ material particleGLSL
 {
 	technique GLSL   # a technique to implement render
 	{
-		pass    # pass for min unit to render
+		pass update   # pass for min unit to render
 		{
-			vertex_shader particle/ps_tbf_vs.glsl GLSL v410
+			vertex_shader particle/color/ps_tbf_vs.glsl GLSL v410
 			{
                 param_named mvp_matrix matrix4
+                param_named time float1
+
+                param_named render_pass subroutine   # subroutine
+
+                feedback_out_mode separate
+                feedback_out_varying out_instance_position float3
+                feedback_out_varying out_instance_velocity float3
+                feedback_out_varying out_instance_birth float1
+                feedback_out_varying out_instance_liferate float1
 			}
 
-			fragment_shader particle/ps_tbf_fs.glsl GLSL v410
+			fragment_shader particle/color/ps_tbf_fs.glsl GLSL v410
 			{
-                param_named tex_sampler sampler2d 0    # name, type, texture unit
 			}
 		}
+
+        pass render   # pass for min unit to render
+        {
+            vertex_shader particle/color/ps_tbf_vs.glsl GLSL v410
+            {
+                param_named mvp_matrix matrix4
+                param_named time float1
+
+                param_named render_pass subroutine   # subroutine
+
+                feedback_out_mode separate
+                feedback_out_varying out_instance_position float3
+                feedback_out_varying out_instance_velocity float3
+                feedback_out_varying out_instance_birth float1
+                feedback_out_varying out_instance_liferate float1
+            }
+
+            fragment_shader particle/color/ps_tbf_fs.glsl GLSL v410
+            {
+            }
+        }
 	}
 }

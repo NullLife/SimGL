@@ -151,6 +151,9 @@ enum ShaderConstantContent
     SCC_SURFACE_EMISSIVE_COLOR,
     SCC_SURFACE_SHININESS,
     
+    // Subroutine
+    SCC_RENDER_PASS,
+    
     SCC_TIME
 };
 
@@ -187,6 +190,7 @@ struct ShaderConstantDefinition
             case SCT_INT2:
             case SCT_INT3:
             case SCT_INT4:
+            case SCT_SUBROUTINE:
             case SCT_SAMPLER1D:
             case SCT_SAMPLER2D:
             case SCT_SAMPLER2DARRAY:
@@ -219,6 +223,7 @@ struct ShaderConstantDefinition
             case SCT_FLOAT2:
             case SCT_FLOAT3:
             case SCT_FLOAT4:
+            case SCT_SUBROUTINE:
             case SCT_SAMPLER1D:
             case SCT_SAMPLER2D:
             case SCT_SAMPLER2DARRAY:
@@ -262,6 +267,7 @@ struct ShaderConstantDefinition
             case SCT_FLOAT1:
             case SCT_DOUBLE1:
             case SCT_INT1:
+            case SCT_SUBROUTINE:
             case SCT_SAMPLER1D:
             case SCT_SAMPLER2D:
             case SCT_SAMPLER2DARRAY:

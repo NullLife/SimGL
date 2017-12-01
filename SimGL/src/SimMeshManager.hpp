@@ -25,17 +25,23 @@ class Texture;
 class MeshManager : public Singleton<MeshManager>
 {
 public:
-    typedef SharedPtr<Mesh> MeshPtr;
     typedef HashMap<String, MeshPtr> MeshCache;
     
     MeshManager();
     ~MeshManager();
 
 private:
-    MeshCache mCache;
+    MeshCache _cache;
     
 public:
+    // Maybe return null if the cache don't eixt it.
     MeshPtr getMesh(const String& name);
+    
+    // Load new mesh.
+    MeshPtr loadMesh(const String& name);
+    
+    // Remove it from cache.
+    bool removeMesh(String& name);
     
 private:
     Mesh* createMesh(const String& name);

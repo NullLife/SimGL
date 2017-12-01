@@ -8,8 +8,8 @@
 SubMesh::SubMesh() :
         mParent(nullptr),
         mVertexData(nullptr),
-        mIndexData(nullptr) {
-
+        mIndexData(nullptr)
+{
 }
 
 SubMesh::SubMesh(VertexData *vertexData, IndexData *indexData) :

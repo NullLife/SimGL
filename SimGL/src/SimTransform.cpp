@@ -7,11 +7,11 @@
 
 Transform::Transform() :
     _needUpdateMatrix(true),
-    _pos(Vec3(0.0f)),
-    _scale(Vec3(1.0f)),
+    _pos(0.0f),
+    _scale(1.0f),
     _orientation(1.0f, 0.0f, 0.0f, 0.0f),
     _pitch(0), _yaw(0), _roll(0),
-    _trans(Vec3(0, 0, 0)),
+    _trans(0),
     _modelMatrix(Mat4(1.0f))
 {
 }

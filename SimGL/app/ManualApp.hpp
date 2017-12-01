@@ -1,5 +1,5 @@
 //
-//  MannueApp.hpp
+//  ManualApp.hpp
 //  SimGL
 //
 //  Created by yangbin on 2017/7/3.
@@ -10,20 +10,20 @@
  * Custom mesh.
  */
 
-#ifndef MannueApp_hpp
-#define MannueApp_hpp
+#ifndef ManualApp_hpp
+#define ManualApp_hpp
 
 #include "SimApp.hpp"
 
-class MannueApp : public App
+class ManualApp : public App
 {
 public:
-    MannueApp(const String& name, int width = 800, int height = 600);
-    ~MannueApp();
+    ManualApp(const String& name, int width = 800, int height = 600);
+    ~ManualApp();
     
     void running();
     void keyCallback(int key, int scanCode, int action, int mods);
-    void mouseCallback(double x, double y);
+    void mousePositionCallback(double x, double y);
     
 private:
     void initScene();

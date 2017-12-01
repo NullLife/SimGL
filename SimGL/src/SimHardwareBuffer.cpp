@@ -17,6 +17,11 @@ GLenum HardwareBuffer::getGLUsage(Usage usage)
             return GL_STATIC_DRAW;
         case HardwareBuffer::HBU_DYNAMIC:
             return GL_DYNAMIC_DRAW;
+        case HardwareBuffer::HBU_READ_ONLY:
+            return GL_READ_ONLY;
+        case HardwareBuffer::HBU_READ_WRITE:
+            return GL_READ_WRITE;
+
         default:
         return GL_DYNAMIC_DRAW;
     }
@@ -54,10 +59,10 @@ void HardwareBuffer::readData(size_t start, size_t length, size_t stride, size_t
 {
     unsigned char *dst = static_cast<unsigned char *>(lock(start, length, 0));
     size_t pos = start + offset;
-    size_t limit = length - 1;
+    size_t limit = length;
     unsigned char *r = static_cast<unsigned char *>(result);
     size_t index = 0;
-    while (pos <= limit)
+    while (pos < limit)
     {
         std::memcpy(r, dst + pos, readLen);
         r += readLen;

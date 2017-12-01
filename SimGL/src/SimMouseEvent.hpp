@@ -9,7 +9,8 @@
 
 class MouseEvent {
 public:
-    virtual void mouseCallback(double x, double y) = 0;
+    virtual void mousePositionCallback(double x, double y) = 0;
+    virtual void mouseButtonCallback(int button, int action, int mods) = 0;
 };
 
 

@@ -169,6 +169,11 @@ void GLShaderParams::_updateParameters(ParameterDataSource* dataSource)
             case SCC_CAMERAPOSITION_WORLD_SPACE:
                 _writeRawData(def._physicalIndex, &dataSource->getCameraPosition()[0], def._elementComponentSize);
                 break;
+                
+//                // Subroutine
+//            case SCC_RENDER_PASS:
+//                _writeRawData(def._physicalIndex, dataSource->getTime());
+//                break;
               
             // Other
             case SCC_TIME:

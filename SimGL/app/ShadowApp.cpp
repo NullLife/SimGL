@@ -136,6 +136,6 @@ void ShadowApp::running() {
 void ShadowApp::keyCallback(int key, int scanCode, int action, int mods) {
 }
 
-void ShadowApp::mouseCallback(double x, double y) {
+void ShadowApp::mousePositionCallback(double x, double y) {
     
 }

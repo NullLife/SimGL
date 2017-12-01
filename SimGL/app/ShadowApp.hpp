@@ -25,7 +25,7 @@ private:
 public:
     void running();
     void keyCallback(int key, int scanCode, int action, int mods);
-    void mouseCallback(double x, double y);
+    void mousePositionCallback(double x, double y);
 };
 
 #endif /* ShadowApp_hpp */

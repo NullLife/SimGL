@@ -21,35 +21,6 @@ public:
     Pass(const String &name);
     ~Pass();
 
-private:
-    String _name;
-    Technique *_parent;
-    String _tag;
-    
-    String _verShaderName;
-    String _fragShaderName;
-    String _geoShaderName;
-    
-    String _shaderAttrs;
-    String _shaderUniforms;
-
-    GLShader* _verShader;
-    GLShader* _geoShader;
-    GLShader* _fragShader;
-    
-    bool _lightEnable;
-    
-    TextureUnitStateList _texStateList;
-    
-    // Material infos.
-    Vec4 _ambient;
-    Vec4 _diffuse;
-    Vec4 _specular;
-    Vec4 _emission;
-    float _shininess;
-
-
-public:
     const String &getName() { return _name; }
     void setName(const String& name) { _name= name;}
     
@@ -101,6 +72,33 @@ public:
     // Set smooth. its range is 0-128 and 128 is the most smooth.
     void setShininess(float shininess);
     float getShininess() const;
+    
+private:
+    String _name;
+    Technique *_parent;
+    String _tag;
+    
+    String _verShaderName;
+    String _fragShaderName;
+    String _geoShaderName;
+    
+    String _shaderAttrs;
+    String _shaderUniforms;
+    
+    GLShader* _verShader;
+    GLShader* _geoShader;
+    GLShader* _fragShader;
+    
+    bool _lightEnable;
+    
+    TextureUnitStateList _texStateList;
+    
+    // Material infos.
+    Vec4 _ambient;
+    Vec4 _diffuse;
+    Vec4 _specular;
+    Vec4 _emission;
+    float _shininess;
 };
 
 

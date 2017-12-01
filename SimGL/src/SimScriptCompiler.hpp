@@ -19,13 +19,15 @@ typedef SharedPtr<ConcreteNode> ConcreteNodePtr;
 typedef Vector<ConcreteNodePtr> ConcreteNodeList;
 typedef SharedPtr<ConcreteNodeList> ConcreteNodeListPtr;
 
-enum ConcreteNodeType {
+enum ConcreteNodeType
+{
     CNT_WORD = 1,
     CNT_LBRACE,
     CNT_RBRACE
 };
 
-struct ConcreteNode {
+struct ConcreteNode
+{
     String mToken, mFilename;
     int mLineNo;
     ConcreteNodeType mType;
@@ -35,7 +37,8 @@ struct ConcreteNode {
 
 //====================== AbstractNode ======================//
 
-enum AbstractNodeType {
+enum AbstractNodeType
+{
     ANT_UNKNOWN = 0,
     ANT_ATOM,
     ANT_OBJECT,
@@ -46,7 +49,8 @@ typedef SharedPtr<AbstractNode> AbstractNodePtr;
 typedef Vector<AbstractNodePtr> AbstractNodeList;
 typedef SharedPtr<AbstractNodeList> AbstractNodeListPtr;
 
-class AbstractNode {
+class AbstractNode
+{
 public:
     String mFilename;
     int mLineNo;
@@ -64,7 +68,8 @@ public:
 };
 
 /** This is an abstract node which cannot be broken down further */
-class AtomAbstractNode : public AbstractNode {
+class AtomAbstractNode : public AbstractNode
+{
 public:
     String mValue;
     int mId;
@@ -77,7 +82,8 @@ private:
 };
 
 /** This specific abstract node represents a script object */
-class ObjectAbstractNode : public AbstractNode {
+class ObjectAbstractNode : public AbstractNode
+{
 private:
     OrderHashMap<String,String> mEnv;
 public:
@@ -188,6 +194,9 @@ enum {
     // Program ids
     ID_SOURCE = 80,
     ID_PARAM_NAMED,
+    ID_FEEDBACK_OUT_VARYING,
+    ID_FEEDBACK_OUT_MODE,
+    ID_SUBROUTINE,
     ID_LIGHT_POS_VIEW,
     ID_AMBIENT,
     

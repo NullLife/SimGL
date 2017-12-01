@@ -30,7 +30,7 @@ GLShaderPtr ShaderManager::getShader(const String& name)
     auto iter = mCache.find(name);
     if (iter == mCache.end())
     {
-        LogManager::getSingleton().debug("Can't find the shader name", name);
+        //LogManager::getSingleton().debug("ShaderManager::getShader", "Can't find the shader : "+ name + "in cache, please create it!");
         return nullptr;
     }
     return iter->second;

@@ -23,6 +23,8 @@ public:
     GameWindow(const String &name, const int &width = 800, const int &height = 600);
 
     ~GameWindow();
+    
+    static double sDeltaTime;
 
 private:
     GLFWwindow *mWindow;
@@ -34,8 +36,6 @@ private:
 
     Vec4 mClearColor;
     float      mClearDepth;
-
-    double mDeltaTime;
 
     // event
     KeyEvent   *mKeyEvent;

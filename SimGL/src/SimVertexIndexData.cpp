@@ -8,25 +8,21 @@
 #include "SimHardwareVertexBuffer.hpp"
 #include "SimHardwareIndexBuffer.hpp"
 
-VertexElement::VertexElement(const VertexElementSemantic semantic, const VertexElementType type) :
-    mSemantic(semantic),
-    mType(type)
+VertexElement::VertexElement(const VertexElementSemantic semantic, const VertexElementType type, const size_t arraySize) :
+    _semantic(semantic),
+    _type(type),
+    _arraySize(arraySize)
 {
 }
 
 VertexElement::~VertexElement()
 {
-    LogManager::getSingleton().debug("Delete VertexElement", std::to_string((long)this) + " semantic: " + std::to_string(mSemantic));
+    LogManager::getSingleton().debug("Delete VertexElement", std::to_string((long)this) + " semantic: " + std::to_string(_semantic));
 }
 
-const VertexElementSemantic VertexElement::getVertexElementSemantic() const
+VertexElement* VertexElement::clone() const
 {
-    return mSemantic;
-}
-
-VertexElementType VertexElement::getVertexElementType() const
-{
-    return mType;
+    return new VertexElement(this->_semantic, this->_type, this->_arraySize);
 }
 
 size_t VertexElement::getVertexElementOffset(const VertexElementType type)
@@ -70,40 +66,55 @@ size_t VertexElement::getVertexElementComponentCount(const VertexElementType typ
 
 ////////////////////////////////////////////////
 
-VertexDataDeclare::VertexDataDeclare() :
-    mStride(0),
-    mNumber(0),
-    mComponentCount(0)
+VertexDataDeclare::VertexDataDeclare(const VertexElementLayout layout) :
+    _layout(layout),
+    _stride(0),
+    _eleNumber(0),
+    _componentCount(0)
 {
 }
 
 VertexDataDeclare::~VertexDataDeclare()
 {
     LogManager::getSingleton().debug("Delete VertexDataDeclare");
-    VertexElements::iterator iter = mEles.begin();
-    VertexElements::const_iterator enditer = mEles.end();
+    VertexElements::iterator iter = _eles.begin();
+    VertexElements::const_iterator enditer = _eles.end();
     for (; iter != enditer; ++iter)
     {
         delete *iter;
     }
-    mEles.clear();
-    mEles.shrink_to_fit();
+    _eles.clear();
+    _eles.shrink_to_fit();
+}
+
+VertexDataDeclare* VertexDataDeclare::clone() const
+{
+    VertexDataDeclare* newVdd = new VertexDataDeclare(this->_layout);
+    newVdd->_stride = this->_stride;
+    newVdd->_eleNumber = this->_eleNumber;
+    newVdd->_componentCount = this->_componentCount;
+    // clone elements
+    newVdd->_eles.resize(this->_eles.size());
+    newVdd->_eles.reserve(this->_eles.size());
+    for (int i=0; i<this->_eles.size(); ++i)
+        newVdd->_eles[i] = this->_eles[i]->clone();
+    return newVdd;
 }
 
 const VertexDataDeclare::VertexElements & VertexDataDeclare::getVertexElements() const
 {
-    return mEles;
+    return _eles;
 }
 
-void VertexDataDeclare::addElement(VertexElementSemantic semantic, VertexElementType type)
+void VertexDataDeclare::addElement(const VertexElementSemantic semantic, const VertexElementType type,  const size_t num)
 {
-    addElement(new VertexElement(semantic, type));
+    addElement(new VertexElement(semantic, type, num));
 }
 
 void VertexDataDeclare::addElement(VertexElement* ele)
 {
-    auto it = mEles.begin();
-    while (it != mEles.end())
+    auto it = _eles.begin();
+    while (it != _eles.end())
     {
         if ((*it)->getVertexElementSemantic() == ele->getVertexElementSemantic())
         {
@@ -112,102 +123,311 @@ void VertexDataDeclare::addElement(VertexElement* ele)
         }
         ++it;
     }
-    mEles.push_back(ele);
-    mNumber++;
-    mStride += VertexElement::getVertexElementOffset(ele->getVertexElementType());
-    mComponentCount += VertexElement::getVertexElementComponentCount(ele->getVertexElementType());
+    _eles.push_back(ele);
+    _eleNumber++;
+    
+    _stride += (VertexElement::getVertexElementOffset(ele->getVertexElementType()) * ele->getArraySize());
+    _componentCount += (VertexElement::getVertexElementComponentCount(ele->getVertexElementType()) * ele->getArraySize());
 }
 
-const size_t &VertexDataDeclare::getNumber() const
+const size_t VertexDataDeclare::getSemanticNumber(const VertexElementSemantic semantic)
 {
-    return mNumber;
+    VertexElements::iterator it = _eles.begin();
+    for (; it != _eles.end(); ++it)
+    {
+        if ((*it)->getVertexElementSemantic() == semantic)
+        {
+            return (*it)->getArraySize();
+        }
+    }
+    return 0;
 }
 
-const size_t &VertexDataDeclare::getStride() const
+const size_t VertexDataDeclare::getElementOffset(const VertexElementSemantic semantic) const
 {
-    return mStride;
+    size_t offset = 0;
+    
+    for (int i=0; i<_eles.size(); ++i)
+    {
+        if (_eles[i]->getVertexElementSemantic() == semantic)
+            break;
+        offset += (VertexElement::getVertexElementOffset(_eles[i]->getVertexElementType()) * _eles[i]->getArraySize());
+    }
+    return offset;
 }
 
-const int VertexDataDeclare::getComponentCount() const
+const int VertexDataDeclare::getElementIndex(const VertexElementSemantic semantic) const
 {
-    return mComponentCount;
+    for (int i=0; i<_eles.size(); ++i)
+    {
+        if (_eles[i]->getVertexElementSemantic() == semantic)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void VertexDataDeclare::sort()
+{
+    std::sort(_eles.begin(), _eles.end(), _funcVertexElementSemanticCompare);
 }
 
 ////////////////////////////////////////////////
 
 VertexData::VertexData(VertexDataDeclare* dataDeclaration) :
-    mDeclaration(dataDeclaration),
-    _numVertices(0),
-    mVerBuffer(nullptr),
+    _declaration(dataDeclaration),
+    _verBuffer(nullptr),
     _isBinded(false)
 {
 }
 
 VertexData::~VertexData()
 {
-    LogManager::getSingleton().debug("Delete VertexData", "vertex number: " + std::to_string(mVerBuffer->getNumVertices()));
-    if (mDeclaration)
+    LogManager::getSingleton().debug("Delete VertexData", "vertex number: " + std::to_string(_numVertices));
+    if (_declaration)
     {
-        delete mDeclaration;
-        mDeclaration = nullptr;
+        delete _declaration;
+        _declaration = nullptr;
     }
     
-    if (mVerBuffer)
+    if (_verBuffer)
     {
-        delete mVerBuffer;
-        mVerBuffer = nullptr;
+        delete _verBuffer;
+        _verBuffer = nullptr;
     }
 }
 
-HardwareVertexBuffer* VertexData::createBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage)
+HardwareVertexBuffer* VertexData::createBuffer(const size_t bufSize, const HardwareBuffer::Usage usage)
 {
-    _numVertices = numVertices;
-    return mVerBuffer = new HardwareVertexBuffer(vertexSize, numVertices, usage);
+    return _verBuffer = new HardwareVertexBuffer(bufSize, usage);
 }
 
-void VertexData::bind()
+void VertexData::bind(const GLuint vao, const bool hasInstanceData)
 {
+    if (vao == 0)
+        LogManager::getSingleton().error("VertexData::bind", "The vertex array object can not be 0 !");
+    
+    glBindVertexArray(vao);
+    
     // First, bind the buffer.
-    glBindBuffer(GL_ARRAY_BUFFER, mVerBuffer->getBufferId());
+    glBindBuffer(GL_ARRAY_BUFFER, _verBuffer->getBufferId());
     
     if (_isBinded)
         return;
     
-    const VertexDataDeclare::VertexElements& ves = mDeclaration->getVertexElements();
-    for (unsigned int num=0; num<mDeclaration->getNumber(); ++num)
+    if (!hasInstanceData)
     {
-        VertexElement* ve = ves[num];
-        size_t offset = 0;
-        for (int j=num-1; j>=0; --j)
+        const VertexDataDeclare::VertexElements& ves = _declaration->getVertexElements();
+        if (_declaration->getVertexElementLayout() == VEL_ALIGN)
         {
-            offset += VertexElement::getVertexElementOffset(ves[j]->getVertexElementType());
+            size_t offset = 0;
+            for (unsigned int num=0; num<_declaration->getElementNumber(); ++num)
+            {
+                VertexElement* ve = ves[num];
+                glVertexAttribPointer(num,
+                                      (GLsizei) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()),
+                                      GL_FLOAT,
+                                      GL_FALSE,
+                                      0, GL_BUFFER_OFFSET(offset));
+                
+                glEnableVertexAttribArray(num);
+                
+                offset += ve->getArraySize() * VertexElement::getVertexElementOffset(ve->getVertexElementType());
+            }
         }
-        glVertexAttribPointer(num, (int) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()), GL_FLOAT, GL_FALSE, (GLsizei)mDeclaration->getStride(), (void *) offset);
-        glEnableVertexAttribArray(num);
+        else
+        {
+            for (unsigned int num=0; num<_declaration->getElementNumber(); ++num)
+            {
+                VertexElement* ve = ves[num];
+                size_t offset = 0;
+                for (int j=num-1; j>=0; --j)
+                {
+                    offset += VertexElement::getVertexElementOffset(ves[j]->getVertexElementType());
+                }
+                
+                glVertexAttribPointer(num,
+                                      (GLsizei) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()),
+                                      GL_FLOAT,
+                                      GL_FALSE,
+                                      (GLsizei)_declaration->getStride(), GL_BUFFER_OFFSET(offset));
+                
+                glEnableVertexAttribArray(num);
+            }
+        }
+    }
+    else
+    {
+        const VertexDataDeclare::VertexElements& ves = _declaration->getVertexElements();
+        size_t offset = 0;
+        for (unsigned int num=0; num<_declaration->getElementNumber(); ++num)
+        {
+            VertexElement* ve = ves[num];
+            glVertexAttribPointer(num,
+                                  (GLsizei) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()),
+                                  GL_FLOAT,
+                                  GL_FALSE,
+                                  0, GL_BUFFER_OFFSET(offset));
+            glEnableVertexAttribArray(num);
+            
+            offset += ve->getArraySize() * VertexElement::getVertexElementOffset(ve->getVertexElementType());
+            
+            // We must know which elements are the properties of instances.
+            // Set update in every frame.
+            if (ve->getVertexElementSemantic() >= VES_INSTANCE_POSITION)
+            {
+                glVertexAttribDivisor(num, 1);
+            }
+
+        }
     }
     
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glBindVertexArray(0);
+    
     _isBinded = true;
+}
+
+void VertexData::bind(const bool hasInstanceData)
+{
+    // First, bind the buffer.
+    glBindBuffer(GL_ARRAY_BUFFER, _verBuffer->getBufferId());
+    
+    if (_isBinded)
+        return;
+    
+    if (!hasInstanceData)
+    {
+        const VertexDataDeclare::VertexElements& ves = _declaration->getVertexElements();
+        if (_declaration->getVertexElementLayout() == VEL_ALIGN)
+        {
+            size_t offset = 0;
+            for (unsigned int num=0; num<_declaration->getElementNumber(); ++num)
+            {
+                VertexElement* ve = ves[num];
+                glVertexAttribPointer(num,
+                                      (GLsizei) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()),
+                                      GL_FLOAT,
+                                      GL_FALSE,
+                                      0, GL_BUFFER_OFFSET(offset));
+                
+                glEnableVertexAttribArray(num);
+                
+                offset += ve->getArraySize() * VertexElement::getVertexElementOffset(ve->getVertexElementType());
+            }
+        }
+        else
+        {
+            for (unsigned int num=0; num<_declaration->getElementNumber(); ++num)
+            {
+                VertexElement* ve = ves[num];
+                size_t offset = 0;
+                for (int j=num-1; j>=0; --j)
+                {
+                    offset += VertexElement::getVertexElementOffset(ves[j]->getVertexElementType());
+                }
+                
+                glVertexAttribPointer(num,
+                                      (GLsizei) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()),
+                                      GL_FLOAT,
+                                      GL_FALSE,
+                                      (GLsizei)_declaration->getStride(), GL_BUFFER_OFFSET(offset));
+                
+                glEnableVertexAttribArray(num);
+            }
+        }
+    }
+    else
+    {
+        const VertexDataDeclare::VertexElements& ves = _declaration->getVertexElements();
+        size_t offset = 0;
+        for (unsigned int num=0; num<_declaration->getElementNumber(); ++num)
+        {
+            VertexElement* ve = ves[num];
+            glVertexAttribPointer(num,
+                                  (GLsizei) VertexElement::getVertexElementComponentCount(ve->getVertexElementType()),
+                                  GL_FLOAT,
+                                  GL_FALSE,
+                                  0, GL_BUFFER_OFFSET(offset));
+            glEnableVertexAttribArray(num);
+            
+            offset += ve->getArraySize() * VertexElement::getVertexElementOffset(ve->getVertexElementType());
+            
+            // We must know which elements are the properties of instances.
+            // Set update in every frame.
+            if (ve->getVertexElementSemantic() >= VES_INSTANCE_POSITION)
+            {
+                glVertexAttribDivisor(num, 1);
+            }
+            
+        }
+    }
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    _isBinded = true;
+}
+
+void VertexData::bindAttr(const GLint location, const bool hasInstanceData)
+{
+    if (location < 0)
+        LogManager::getSingleton().error("VertexData::bind", "The location of vertex attributes can not be negtive number !");
+        
+    // First, bind the buffer.
+    glBindBuffer(GL_ARRAY_BUFFER, _verBuffer->getBufferId());
+    
+    if (_isBinded)
+        return;
+    
+    const VertexDataDeclare::VertexElements& ves = _declaration->getVertexElements();
+    
+    glVertexAttribPointer(location,
+                          (GLsizei) VertexElement::getVertexElementComponentCount(ves[0]->getVertexElementType()),
+                          GL_FLOAT,
+                          GL_FALSE,
+                          0,
+                          0);
+    
+    glEnableVertexAttribArray(location);
+    
+    // We must know which elements are the properties of instances.
+    // Set update in every frame.
+    if (ves[0]->getVertexElementSemantic() >= VES_INSTANCE_POSITION)
+    {
+        glVertexAttribDivisor(location, 1);
+    }
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    _isBinded = true;
+}
+
+void VertexData::unbind()
+{
+    _isBinded = false;
 }
 
 ///////////////////////////////////////////////
 
 IndexData::IndexData() :
-    mIdxBuffer(nullptr)
+    _idxBuffer(nullptr)
 {
 }
 
 IndexData::~IndexData()
 {
-    LogManager::getSingleton().debug("Delete VertexIndexData", "indices number: " + std::to_string(mIdxBuffer->getNumIndices()));
-    if (mIdxBuffer)
+    LogManager::getSingleton().debug("Delete VertexIndexData", "indices number: " + std::to_string(_idxBuffer->getNumIndices()));
+    if (_idxBuffer)
     {
-        delete mIdxBuffer;
-        mIdxBuffer = nullptr;
+        delete _idxBuffer;
+        _idxBuffer = nullptr;
     }
 }
 
 HardwareIndexBuffer* IndexData::createBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndices, HardwareBuffer::Usage usage)
 {
     _numIndices = numIndices;
-    return mIdxBuffer = new HardwareIndexBuffer(itype, numIndices, usage);
+    return _idxBuffer = new HardwareIndexBuffer(itype, numIndices, usage);
 }

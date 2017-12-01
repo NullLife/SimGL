@@ -66,6 +66,6 @@ void SkyBoxApp::keyCallback(int key, int scanCode, int action, int mods)
     }
 }
 
-void SkyBoxApp::mouseCallback(double x, double y)
+void SkyBoxApp::mousePositionCallback(double x, double y)
 {
 }

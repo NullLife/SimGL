@@ -11,11 +11,11 @@
 #include "SimRenderQueue.hpp"
 
 MovableObject::MovableObject(const String& name) :
-    mName(name),
-    mManager(nullptr),
-    mParent(nullptr),
-    mQueueID(RQT_NORMAL),
-    mVisible(true)
+    _name(name),
+    _sceneManager(nullptr),
+    _parent(nullptr),
+    _queueID(RQT_NORMAL),
+    _visible(true)
 {}
 
 MovableObject::~MovableObject()
@@ -23,22 +23,27 @@ MovableObject::~MovableObject()
 
 const String& MovableObject::getName()
 {
-    return mName;
+    return _name;
 }
 
 SceneManager* MovableObject::getSceneManager()
 {
-    return mManager;
+    return _sceneManager;
+}
+
+void MovableObject::setParent(Node* node)
+{
+    _parent = node;
 }
 
 Node* MovableObject::getParentNode()
 {
-    return mParent;
+    return _parent;
 }
 
 SceneNode* MovableObject::getParentSceneNode()
 {
-    return static_cast<SceneNode*>(mParent);
+    return static_cast<SceneNode*>(_parent);
 }
 
 const BoundingBox& MovableObject::getBoundingBox()
@@ -51,20 +56,20 @@ const BoundingBox& MovableObject::getBoundingBox()
 
 void MovableObject::setRenderQueueGroup(const int queueID)
 {
-    mQueueID = queueID;
+    _queueID = queueID;
 }
 
 const int MovableObject::getRenderQueueGroup()
 {
-    return mQueueID;
+    return _queueID;
 }
 
 void MovableObject::setVisible(bool visible)
 {
-    mVisible = visible;
+    _visible = visible;
 }
 
 const bool MovableObject::getVisible()
 {
-    return mVisible;
+    return _visible;
 }

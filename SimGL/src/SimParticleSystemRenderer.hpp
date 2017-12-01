@@ -9,10 +9,14 @@
 #ifndef SimParticleSystemRenderer_hpp
 #define SimParticleSystemRenderer_hpp
 
-#include "SimCommon.hpp"
+#include "SimRenderer.hpp"
+#include "SimRenderOperation.hpp"
 
-class ParticleSystemRenderer
+class ParticleSystem;
+
+class ParticleSystemRenderer : public Renderer
 {
+    friend class ParticleSystem;
 public:
     ParticleSystemRenderer();
     ~ParticleSystemRenderer();
@@ -20,7 +24,17 @@ public:
     void setMaterial(const String& mtlName);
     const MaterialPtr& getMaterial();
     
+    void render(GLRenderSystem* system, RenderOperation& op, Pass* pass);
+   
 private:
+    void startTransfromFeedback(const DrawType drawType);
+    void pauseTransfromFeedback();
+    void resumeTransfromFeedback();
+    void stopTransfromFeedback();
+    
+    void offRasterizer();
+    void onRasterizer();
+    
     MaterialPtr _mtl;
 };
 

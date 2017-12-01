@@ -15,6 +15,7 @@ enum RenderQueueGroupID {
     RQT_BACKGROUND = 0,
     RQT_SKIES = 10,
     RQT_NORMAL = 20,
+    RQT_PARTICLES = 30
 };
 
 class RenderQueue {

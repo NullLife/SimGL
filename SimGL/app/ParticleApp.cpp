@@ -9,9 +9,8 @@
 #include "ParticleApp.hpp"
 
 #include "SimParticleSystem.hpp"
-#include "SimInstanceBatch.hpp"
 
-#define NUM_INSTANCES 100
+#define NUM_INSTANCES 500
 
 ParticleApp::ParticleApp(const String& name, int width, int height) :
     App(name, width, height)
@@ -25,7 +24,7 @@ ParticleApp::ParticleApp(const String& name, int width, int height) :
     
     // Set camera
     Camera* camera = _sceneManager->createCamera("DefualtCamera");
-    camera->setPosition(Vec3(0, 1, -5));
+    camera->setPosition(Vec3(0.0f, 5.0f, 10.0f));
     camera->setNearClipDistance(0.1f);
     camera->setFarClipDistance(1000.0f);
     camera->setOrthWindow(width, height);
@@ -50,19 +49,12 @@ void ParticleApp::initScene()
     root->attach(planeModel);
     root->getTransform()->scale(Vec3(5.0f));
     
-//    for (unsigned int i=0; i<NUM_INSTANCES; ++i)
-//    {
-//
-//    }
-//    SceneNode* node = (SceneNode *) root->addChild("Instances");
-//    InstanceBatch* cubeBatch = _sceneManager->createInstanceBatch("cube", "cube.obj", "cube_instances.material");
-//    cubeBatch->setNumInstancePerBatch(NUM_INSTANCES);
-//    node->attach(cubeBatch);
-    
-//    SceneNode* node = (SceneNode *) root->addChild("Particle");
-//    ParticleSystem* ps = _sceneManager->createParticleSystem("Particle_TransFeedBack", 100);
-//    ps->setMaterial("particle_tfb.material");
-//    node->attach(ps);
+    SceneNode* child = root->createChild("grass");
+
+    // Particles
+    ParticleSystem* ps = _sceneManager->createParticleSystem("Particles", NUM_INSTANCES);
+    ps->setMaterial("particle_billboard.material");
+    child->attach(ps);
 }
 
 void ParticleApp::running()
@@ -105,6 +97,7 @@ void ParticleApp::keyCallback(int key, int scanCode, int action, int mods)
     }
 }
 
-void ParticleApp::mouseCallback(double x, double y)
+void ParticleApp::mousePositionCallback(double x, double y)
 {
+    //LogManager::getSingleton().debug("mouseCallback", StringUtils::toString(Vec3(x, y, 0)));
 }

@@ -169,7 +169,11 @@ MaterialTranslator::MaterialTranslator() : mMaterial(nullptr)
 
 void MaterialTranslator::translate(ScriptCompiler *compiler, const AbstractNodePtr &node)
 {
-    LogManager::getSingleton().debug(node->getValue());
+    std::stringstream ss;
+    ss << node->getValue() << ": "<< node->mFilename << "\r";
+    ss << "{";
+    LogManager::getSingleton().debug(ss);
+    
     ObjectAbstractNode* obj = reinterpret_cast<ObjectAbstractNode*>(node.get());
     if (obj->mName.empty())
     {
@@ -180,6 +184,7 @@ void MaterialTranslator::translate(ScriptCompiler *compiler, const AbstractNodeP
     
     // Create material and add to manager.
     mMaterial = new Material(obj->mFilename);
+    
     MaterialManager::getSingleton().add(mMaterial);
     
     obj->mCxt = mMaterial;
@@ -194,6 +199,11 @@ void MaterialTranslator::translate(ScriptCompiler *compiler, const AbstractNodeP
         else if (child->mType == ANT_OBJECT)
             processNode(compiler, child);
     }
+    
+    ss.clear();
+    ss.str("");
+    ss << "}\r\n";
+    LogManager::getSingleton().debug(ss);
 }
 
 //======================== TechniqueTranslator ================================//
@@ -237,7 +247,7 @@ PassTranslator::PassTranslator() : mPass(nullptr)
 
 void PassTranslator::translate(ScriptCompiler *compiler, const AbstractNodePtr &node)
 {
-    LogManager::getSingleton().debug(node->getValue());
+    LogManager::getSingleton().debug(node->getValue(), ((ObjectAbstractNode*)node.get())->mName);
     
     ObjectAbstractNode* obj = reinterpret_cast<ObjectAbstractNode*>(node.get());
     Technique* tech = reinterpret_cast<Technique*>(obj->mParent->mCxt);
@@ -297,9 +307,13 @@ void TextureUnitTranslator::translate(ScriptCompiler *compiler, const AbstractNo
                     Texture::TextureType texType = Texture::TEX_TYPE_2D;
                     
                     if (atom1->mId == ID_2D)
+                    {
                         texType = Texture::TEX_TYPE_2D;
+                    }
                     else if (atom1->mId == ID_CUBIC)
+                    {
                         texType = Texture::TEX_TYPE_CUBIC;
+                    }
                     
                     // Get numbers of picture.
                     int texNum = (int) property->mValues.size() - 1;
@@ -391,7 +405,7 @@ GpuShaderTranslator::GpuShaderTranslator()
 
 void GpuShaderTranslator::translate(ScriptCompiler *compiler, const AbstractNodePtr &node)
 {
-    LogManager::getSingleton().debug(node->getValue());
+    LogManager::getSingleton().debug(node->getValue(), ((ObjectAbstractNode*) node.get())->mName);
     ObjectAbstractNode* obj = reinterpret_cast<ObjectAbstractNode*>(node.get());
     
     if (obj->mName.empty())
@@ -424,12 +438,15 @@ void GpuShaderTranslator::translateVertexShader(ScriptCompiler *compiler, Object
     Pass* pass = reinterpret_cast<Pass*>(obj->mParent->mCxt);
     pass->setVertexShaderName(obj->mName);
     
-    GLShader* vs = ShaderManager::getSingleton().createShader(obj->mName).get();
-    vs->setType(GST_VERTEX);
-    vs->setLanguage(obj->mValues[0]->getValue());
-    vs->setLanguageVerison(obj->mValues[1]->getValue());
+    GLShaderPtr vsPtr = ShaderManager::getSingleton().getShader(obj->mName);
+    if (vsPtr == nullptr)
+        vsPtr = ShaderManager::getSingleton().createShader(obj->mName);
     
-    obj->mCxt = vs;
+    vsPtr->setType(GST_VERTEX);
+    vsPtr->setLanguage(obj->mValues[0]->getValue());
+    vsPtr->setLanguageVerison(obj->mValues[1]->getValue());
+    
+    obj->mCxt = vsPtr.get();
     
     for (AbstractNodePtr& child : obj->mChildren)
     {
@@ -443,12 +460,12 @@ void GpuShaderTranslator::translateVertexShader(ScriptCompiler *compiler, Object
                 if (atomNum < 2)
                 {
                     std::stringstream ss;
-                    ss << "The vertex shader is no property or less values at lineNo: "<< child->mLineNo << ", in file:" << child->mFilename << "\n";
+                    ss << "Invalid values at lineNo: "<< child->mLineNo << ", in vertex shader file:" << child->mFilename << "\n";
                     LogManager::getSingleton().debug(ss);
                     return;
                 }
                 
-                GLShaderParamsPtr params = vs->getParameters();
+                GLShaderParamsPtr params = vsPtr->getParameters();
                 
                 AbstractNodeList::const_iterator i0 = getNodeAt(property->mValues, 0);
                 AbstractNodeList::const_iterator i1 = getNodeAt(property->mValues, 1);
@@ -467,6 +484,91 @@ void GpuShaderTranslator::translateVertexShader(ScriptCompiler *compiler, Object
                     params->addConstantDefinition(name, SCT_MATRIX_4X4, ScriptTranslatorManager::_ccMap[name]);
                     params->setNamedConstant(name, matirx);
                 }
+                else if (type == "float1")
+                {
+                    params->addConstantDefinition(name, SCT_FLOAT1, ScriptTranslatorManager::_ccMap[name]);
+                    params->setNamedConstant(name, 0.0f);
+                }
+                else if (type == "subroutine")
+                {
+                    params->addConstantDefinition(name, SCT_SUBROUTINE, ScriptTranslatorManager::_ccMap[name]);
+                    params->setNamedConstant(name, 0);
+                }
+                
+                std::stringstream ss;
+                ss << "\t";
+                ss << name << ": " << type;
+                ss << "\r";
+                LogManager::getSingleton().debug(ss);
+            }
+            else if (property->mId == ID_FEEDBACK_OUT_VARYING)
+            {
+                const size_t atomNum = property->mValues.size();
+                if (atomNum < 2)
+                {
+                    std::stringstream ss;
+                    ss << "Invalid values at lineNo: "<< child->mLineNo << ", in vertex shader file:" << child->mFilename << "\n";
+                    LogManager::getSingleton().debug(ss);
+                    return;
+                }
+                
+                AbstractNodeList::const_iterator i0 = getNodeAt(property->mValues, 0);
+                AbstractNodeList::const_iterator i1 = getNodeAt(property->mValues, 1);
+                
+                AtomAbstractNode* atom0 = (AtomAbstractNode*)(*i0).get();
+                AtomAbstractNode* atom1 = (AtomAbstractNode*)(*i1).get();
+                
+                String name = atom0->mValue;
+                String type = atom1->mValue;
+                
+                if (type == "matrix4")
+                {
+                    vsPtr->addFeedbackVarying(name);
+                }
+                else if (type == "float1")
+                {
+                    vsPtr->addFeedbackVarying(name);
+                }
+                else if (type == "float3")
+                {
+                    vsPtr->addFeedbackVarying(name);
+                }
+                else if (type == "float4")
+                {
+                    vsPtr->addFeedbackVarying(name);
+                }
+                
+                std::stringstream ss;
+                ss << "\t";
+                ss << name << ": " << type;
+                ss << "\r";
+                LogManager::getSingleton().debug(ss);
+            }
+            else if (property->mId == ID_FEEDBACK_OUT_MODE)
+            {
+                const size_t atomNum = property->mValues.size();
+                if (atomNum != 1)
+                {
+                    std::stringstream ss;
+                    ss << "Invalid values at lineNo: "<< child->mLineNo << ", in vertex shader file:" << child->mFilename << "\n";
+                    LogManager::getSingleton().debug(ss);
+                    return;
+                }
+                
+                AbstractNodeList::const_iterator i = getNodeAt(property->mValues, 0);
+                AtomAbstractNode* atom = (AtomAbstractNode*)(*i).get();
+                
+                String feedbackMode = atom->getValue();
+                if (feedbackMode == "separate")
+                    vsPtr->setTransformFeedbackMode(TransformFeedbackMode::TFM_SEPARATE);
+                else
+                    vsPtr->setTransformFeedbackMode(TransformFeedbackMode::TFM_INTERLEAVED);
+                
+                std::stringstream ss;
+                ss << "\t";
+                ss << "feedback mode" << ": " << feedbackMode;
+                ss << "\r";
+                LogManager::getSingleton().debug(ss);
             }
         }
         else if (child->mType == ANT_OBJECT)
@@ -481,12 +583,15 @@ void GpuShaderTranslator::translateFragmentShader(ScriptCompiler *compiler, Obje
     Pass* pass = reinterpret_cast<Pass*>(obj->mParent->mCxt);
     pass->setFragmentShaderName(obj->mName);
     
-    GLShader* fs = ShaderManager::getSingleton().createShader(obj->mName).get();
-    fs->setType(GST_FRAGMENT);
-    fs->setLanguage(obj->mValues[0]->getValue());
-    fs->setLanguageVerison(obj->mValues[1]->getValue());
+    GLShaderPtr fsPtr = ShaderManager::getSingleton().getShader(obj->mName);
+    if (fsPtr == nullptr)
+        fsPtr = ShaderManager::getSingleton().createShader(obj->mName);
     
-    obj->mCxt = fs;
+    fsPtr->setType(GST_FRAGMENT);
+    fsPtr->setLanguage(obj->mValues[0]->getValue());
+    fsPtr->setLanguageVerison(obj->mValues[1]->getValue());
+    
+    obj->mCxt = fsPtr.get();
     
     for (AbstractNodePtr& child : obj->mChildren)
     {
@@ -506,7 +611,7 @@ void GpuShaderTranslator::translateFragmentShader(ScriptCompiler *compiler, Obje
                     return;
                 }
                 
-                GLShaderParamsPtr params = fs->getParameters();
+                GLShaderParamsPtr params = fsPtr->getParameters();
                 
                 AbstractNodeList::const_iterator i0 = getNodeAt(property->mValues, 0);
                 AbstractNodeList::const_iterator i1 = getNodeAt(property->mValues, 1);
@@ -526,6 +631,11 @@ void GpuShaderTranslator::translateFragmentShader(ScriptCompiler *compiler, Obje
                     params->setNamedConstant(name, val);
                 }
                 
+                std::stringstream ss;
+                ss << "\t";
+                ss << name << ": " << type;
+                ss << "\r\n";
+                LogManager::getSingleton().debug(ss);
             }
         }
         else if (child->mType == ANT_OBJECT) {
@@ -730,6 +840,9 @@ ConstantContentMap ScriptTranslatorManager::_ccMap =
     { "surface_specular_color", SCC_SURFACE_SPECULAR_COLOR },
     { "surface_emissive_color", SCC_SURFACE_EMISSIVE_COLOR },
     { "surface_shininess", SCC_SURFACE_SHININESS },
+    
+    // Subroutine
+    { "render_pass", SCC_RENDER_PASS},
     
     { "time", SCC_TIME }
 };

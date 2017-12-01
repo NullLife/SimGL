@@ -39,9 +39,11 @@ protected:
     GameWindow* mWindow;
 
 public:
-    virtual void keyCallback(int key, int scanCode, int action, int mods) = 0;
+    virtual void keyCallback(int key, int scanCode, int action, int mods) {}
 
-    virtual void mouseCallback(double x, double y) = 0;
+    virtual void mousePositionCallback(double x, double y) {}
+    
+    virtual void mouseButtonCallback(int button, int action, int mods) {}
 
     void setSceneManager(SceneManager* sceneManager);
 

@@ -18,39 +18,50 @@ MeshManager::MeshManager()
 
 MeshManager::~MeshManager()
 {
-    mCache.clear();
+    _cache.clear();
 }
 
-MeshManager::MeshPtr MeshManager::getMesh(const String &name)
+MeshPtr MeshManager::getMesh(const String &name)
 {
-    auto it = mCache.find(name);
-    if (it != mCache.end())
-    {
-        return it->second;
-    }
-    
+    auto it = _cache.find(name);
+    if (it == _cache.end())
+        return nullptr;
+        
+    return it->second;
+}
+
+MeshPtr MeshManager::loadMesh(const String& name)
+{
     // Create mesh and load it.
     Mesh* mesh = createMesh(name);
-    MeshPtr ptr(mesh);
-    if (!ptr)
+    if (!mesh)
     {
-        return ptr;
+        LogManager::getSingleton().debug("MeshManager::loadMesh", "load the " + name + "of mesh failed...");
+        return nullptr;
     }
+    
+    
+    MeshPtr ptr(mesh);
+    
     // Cache it.
-    mCache.insert(MeshCache::value_type(name, ptr));
+    _cache.insert(MeshCache::value_type(name, ptr));
     
     return ptr;
+}
+
+bool MeshManager::removeMesh(String& name)
+{
+    return _cache.erase(name);
 }
 
 
 Mesh* MeshManager::createMesh(const String& name)
 {
+    // For assimp lib to read file.
+    int assimpVertComps = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs;
+    
     Assimp::Importer import;
-    const aiScene *ai_scene = import.ReadFile(MODEL_RESOURCE_DIR + name,
-                                              aiProcess_Triangulate |
-                                              aiProcess_GenSmoothNormals |
-                                              aiProcess_FlipUVs |
-                                              aiProcess_CalcTangentSpace);
+    const aiScene *ai_scene = import.ReadFile(MODEL_RESOURCE_DIR + name, assimpVertComps);
     
     if (!ai_scene || ai_scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode)
     {
@@ -82,15 +93,7 @@ void MeshManager::processAiNode(const aiScene* ai_scene, aiNode* ai_node, Mesh* 
 void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* mesh)
 {
     if (ai_mesh->mNumVertices <= 0)
-    {
         return;
-    }
-    // Vertex data declare. [position, normal, tangent, texcoord]
-    VertexDataDeclare* vertexDD = new VertexDataDeclare();
-    vertexDD->addElement(new VertexElement(VES_POSITION, VET_FLOAT3));
-    vertexDD->addElement(new VertexElement(VES_NORMAL, VET_FLOAT3));
-    vertexDD->addElement(new VertexElement(VES_TANGENT, VET_FLOAT3));
-    vertexDD->addElement(new VertexElement(VES_TEXCOORD, VET_FLOAT2));
     
     // Create vertex array object.
     GLuint vao;
@@ -98,29 +101,35 @@ void MeshManager::processAiMesh(const aiScene* ai_scene, aiMesh* ai_mesh, Mesh* 
     
     glBindVertexArray(vao);
     
+    // Deal the components of vertex.
+    VertexDataDeclare* vdd = new VertexDataDeclare();
+    vdd->addElement(VES_POSITION, VET_FLOAT3);
+    vdd->addElement(VES_NORMAL, VET_FLOAT3);
+    vdd->addElement(VES_TANGENT, VET_FLOAT3);
+    vdd->addElement(VES_TEXCOORD, VET_FLOAT3);
+    
     // Vertex data.
-    VertexData* vertexData = new VertexData(vertexDD);
+    VertexData* vertexData = new VertexData(vdd);
+    vertexData->setNumberVertices(ai_mesh->mNumVertices);
+    
     // Initializing vertex gpu buffer.
-    HardwareVertexBuffer* hvb = vertexData->createBuffer(vertexDD->getStride(), ai_mesh->mNumVertices, HardwareBuffer::Usage::HBU_STATIC);
+    HardwareVertexBuffer* hvb = vertexData->createBuffer(vdd->getStride()*ai_mesh->mNumVertices, HardwareBuffer::Usage::HBU_STATIC);
     
     const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
     Vector<float> vertices;
     for (unsigned int i = 0; i < ai_mesh->mNumVertices; i++)
     {
-        // Pos
         const aiVector3D v3dPos = ai_mesh->mVertices[i];
-        // Normal
         const aiVector3D v3dNormal = ai_mesh->mNormals[i];
-        // Tangent
         const aiVector3D v3dTangent = ai_mesh->mTangents[i];
-        // Tex
         const aiVector3D v3dTexCoord = ai_mesh->HasTextureCoords(0)? ai_mesh->mTextureCoords[0][i] : aiZeroVector;
         
         vertices.push_back(v3dPos.x);vertices.push_back(v3dPos.y);vertices.push_back(v3dPos.z);
         vertices.push_back(v3dNormal.x);vertices.push_back(v3dNormal.y);vertices.push_back(v3dNormal.z);
         vertices.push_back(v3dTangent.x);vertices.push_back(v3dTangent.y);vertices.push_back(v3dTangent.z);
-        vertices.push_back(v3dTexCoord.x);vertices.push_back(v3dTexCoord.y);
+        vertices.push_back(v3dTexCoord.x);vertices.push_back(v3dTexCoord.y);vertices.push_back(v3dTexCoord.z);
     }
+    
     hvb->writeData(0, hvb->getSize(), &vertices[0]);
     // Release.
     vertices.clear();
@@ -186,16 +195,3 @@ void MeshManager::processAiMaterial(aiMaterial *mtl, const aiTextureType type, c
 //        Texture *tex = load2DTexture(realName);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
